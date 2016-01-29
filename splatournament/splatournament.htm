@@ -1,0 +1,556 @@
+﻿<!doctype html>
+<html ng-app="splatournament">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>splatournament</title>
+
+    <!-- angular.js with ui.bootstrap -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-touch.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.min.js" rel="stylesheet"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- onedrive -->
+    <!--
+    <script type="text/javascript" src="https://js.live.net/v5.0/OneDrive.js" id="onedrive-js" client-id="splatournament_public"></script>
+    -->
+    <!--  https://account.live.com/developers/applications -->
+
+    <!-- d3.js -->
+    <script src="http://mbostock.github.com/d3/d3.v2.js"></script>
+
+
+    <style type="text/css">
+        body,
+        table,
+        div,
+        .node text {
+            font-family: "Yu Gothic UI", "Meiryo UI", "メイリオ", "MS UI Gothic", sans-serif;
+        }
+
+        body {
+            background-color:#EEEEEE;
+        }
+        .body {
+            background-color:#FFFFFF;
+            padding-bottom:24px;
+        }
+
+        .tab-content {
+            padding: 8px
+        }
+        .list-group-item {
+            min-height: 12px;
+        }
+
+        .pull-xs-right {
+            float:right;
+        }
+        .label-pill {
+            padding-right: 0.6em;
+            padding-left: 0.6em;
+            border-radius: 10rem;
+        }
+
+        .node circle {
+            cursor: pointer;
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+        .node text {
+            font-size: 12px;
+        }
+        path.link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+        }
+        path.red {
+            stroke: #f88;
+        }
+
+        .footer .container ul {
+            margin: 16px;
+        }
+        .footer .container ul li {
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body id="body" ng-controller="splatornament">
+    <div class="body">
+        <header class="navbar navbar-inverse navbar-fixed-top navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3" ng-click="isCollapsed = !isCollapsed">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand visible-xs" href="#">splatournament</a>
+                </div>
+                <nav class="navbar-collapse collapse" uib-collapse="!isCollapsed">
+                    <a href="#" role="button" class="navbar-brand">splatournament</a>
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">edit</a></li>
+                        <li><a href="#tree">tree</a></li>
+                        <li><a href="#match">match</a></li>
+                        <li><a href="#entry">entry</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <div class="container theme-showcase" role="main">
+
+            <div class="jumbotron">
+                <div class="alert alert-danger" role="alert" ng-hide="true"><strong>JavaScriptが無効になっています。</strong>このページは JavaScript に強く依存しています。JavaScriptを有効にしてから再読み込みしてください。</div>
+                <h1>splatournament</h1>
+                <p>
+                    このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
+                    各種トーナメント形式での大会向けのトーナメント管理ツールです。
+                </p>
+            </div>
+
+            <!--
+            <div id="picker"></div>
+            <br/>
+            -->
+
+            <uib-tabset>
+                <uib-tab heading="event">
+                    <input type="text" class="form-control" ng-model="model.event.name" placeholder="名前">
+                    <input type="text" class="form-control" ng-model="model.event.description" placeholder="説明">
+                    <input type="text" class="form-control" ng-model="model.event.url" placeholder="URL">
+                </uib-tab>
+                <uib-tab heading="entry">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <ul class="list-group">
+                                <li class="list-group-item list-group-item-success" ng-click="addEntry()">＋ new entry</li>
+                                <li class="list-group-item" ng-class="$index == selected.entry ? 'active': ''" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry($index)">
+                                    {{entry.name}}
+                                    <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-9" id="entryDetail">
+                            <div ng-show="0 <= selected.entry">
+                                <input type="text" class="form-control" ng-model="model.entries[selected.entry].name" placeholder="名前">
+                                <input type="text" class="form-control" ng-model="model.entries[selected.entry].description" placeholder="説明">
+                                <input type="text" class="form-control" ng-model="model.entries[selected.entry].url" placeholder="URL">
+                                <button type="button" class='btn btn-danger' ng-click="removeEntry(model.entries[selected.entry])">✘delete</button>
+                            </div>
+                            <div ng-hide="selected.entry">
+                                <p>entry を選択あるいは追加してください</p>
+                            </div>
+                        </div>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="import/export">
+                    <textarea json-text class="form-control" rows="10" ng-model="model"></textarea>
+                </uib-tab>
+                <uib-tab heading="chart">
+                    <div id="chart"></div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <ul>
+                <li>splatournament ver {{app.version}}</li>
+                <li>&copy; 2016 <a href="https://twitter.com/wraith13">@wraith13</a></li>
+                <li><a href="https://github.com/wraith13/splatournament">github</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+
+        //window.onload = function () {
+        //    var pickerOptions = {
+        //        success: function(files) {
+        //            // Handle returned file object(s)
+        //            alert("You picked " + files.values[0].fileName);
+        //        },
+        //
+        //        cancel: function() {
+        //            // handle when the user cancels picking a file
+        //        },
+        //
+        //        linkType: "webViewLink", // or "downloadLink",
+        //        multiSelect: false // or true
+        //    };
+        //    var pickerButton = OneDrive.createOpenButton(pickerOptions);
+        //    document.getElementById("picker").appendChild(pickerButton);
+        //};
+
+        var margin = { top: 30, right: 10, bottom: 10, left: 10 },
+            width = screen.width - margin.left - margin.right,
+            halfWidth = width / 2,
+            height = 500 - margin.top - margin.bottom,
+            i = 0,
+            duration = 500,
+            root;
+
+        var getChildren = function (d) {
+            var a = [];
+            if (d.winners) for (var i = 0; i < d.winners.length; i++) {
+                d.winners[i].isRight = false;
+                d.winners[i].parent = d;
+                a.push(d.winners[i]);
+            }
+            if (d.challengers) for (var i = 0; i < d.challengers.length; i++) {
+                d.challengers[i].isRight = true;
+                d.challengers[i].parent = d;
+                a.push(d.challengers[i]);
+            }
+            return a.length ? a : null;
+        };
+
+        var tree = d3.layout.tree()
+            .size([height, width]);
+
+        var diagonal = d3.svg.diagonal()
+            .projection(function (d) { return [d.y, d.x]; });
+        var elbow = function (d, i) {
+            var source = calcLeft(d.source);
+            var target = calcLeft(d.target);
+            var hy = (target.y - source.y) / 2;
+            if (d.isRight) hy = -hy;
+            return "M" + source.y + "," + source.x
+                    + "H" + (source.y + hy)
+                    + "V" + target.x + "H" + target.y;
+        };
+        var connector = elbow;
+
+        var calcLeft = function (d) {
+            var l = d.y;
+            if (!d.isRight) {
+                l = d.y - halfWidth;
+                l = halfWidth - l;
+            }
+            return { x: d.x, y: l };
+        };
+
+        var vis = d3.select("#chart").append("svg")
+            .attr("width", width + margin.right + margin.left)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var tournament_tree = {
+            "name": "Overall Winner",
+            "winners": [
+                {
+                    "name": "とつげきたろうex+",
+                    "winners": [
+                    { "name": "Winner Left 3" },
+                    { "name": "Winner Left 4" }
+                    ]
+                },
+                { "name": "Winner Left 2" }
+            ],
+            "challengers": [
+                {
+                    "name": "Challenger Right 1",
+                    "challengers": [
+                    { "name": "Challenger Right 3" },
+                    { "name": "Challenger Right 4" }
+                    ]
+                },
+                {
+                    "name": "Challenger Right 2",
+                    "challengers": [
+                    { "name": "Challenger Right 5" },
+                    { "name": "Challenger Right 6" }
+                    ]
+                }
+            ]
+        };
+        var tournament_tree2 = {
+            "name": "Overall Winner",
+            "winners": [
+                {
+                    "name": "とつげきたろうex+",
+                    "winners": [
+                    { "name": "Winner Left 3" },
+                    {
+                        "name": "Winner Left 4",
+                        "winners": [
+                            { "name": "Winner Left 3" },
+                            { "name": "Winner Left 4" }
+                        ]
+                    }
+                    ]
+                },
+                { "name": "Winner Left 2" }
+            ],
+            "challengers": [
+                {
+                    "name": "Challenger Right 1",
+                    "challengers": [
+                    { "name": "Challenger Right 3" },
+                    { "name": "Challenger Right 4" }
+                    ]
+                },
+                {
+                    "name": "Challenger Right 2",
+                    "challengers": [
+                    { "name": "Challenger Right 5" },
+                    { "name": "Challenger Right 6" }
+                    ]
+                }
+            ]
+        };
+
+        var update_tournament_tree = function (json) {
+            root = json;
+            root.x0 = height / 2;
+            root.y0 = width / 2;
+
+            var t1 = d3.layout.tree().size([height, halfWidth]).children(function (d) { return d.winners; }),
+                t2 = d3.layout.tree().size([height, halfWidth]).children(function (d) { return d.challengers; });
+            t1.nodes(root);
+            t2.nodes(root);
+
+            var rebuildChildren = function (node) {
+                node.children = getChildren(node);
+                if (node.children) node.children.forEach(rebuildChildren);
+            }
+            rebuildChildren(root);
+            root.isRight = false;
+            update(root);
+            //});
+        }
+
+        var toArray = function (item, arr) {
+            arr = arr || [];
+            var i = 0, l = item.children ? item.children.length : 0;
+            arr.push(item);
+            for (; i < l; i++) {
+                toArray(item.children[i], arr);
+            }
+            return arr;
+        };
+
+        function update(source) {
+            // Compute the new tree layout.
+            var nodes = toArray(source);
+
+            // Normalize for fixed-depth.
+            nodes.forEach(function (d) { d.y = d.depth * 180 + halfWidth; });
+
+            // Update the nodes…
+            var node = vis.selectAll("g.node")
+                .data(nodes, function (d) { return d.id || (d.id = ++i); });
+
+            // Enter any new nodes at the parent's previous position.
+            var nodeEnter = node.enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+                .on("click", click);
+
+            nodeEnter.append("circle")
+                .attr("r", 1e-6)
+                .style("fill", function (d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+            nodeEnter.append("text")
+                .attr("dy", function (d) { return d.isRight ? 14 : -8; })
+                .attr("text-anchor", "middle")
+                .text(function (d) { return d.name; })
+                .style("fill-opacity", 1e-6);
+
+            // Transition nodes to their new position.
+            var nodeUpdate = node.transition()
+                .duration(duration)
+                .attr("transform", function (d) { p = calcLeft(d); return "translate(" + p.y + "," + p.x + ")"; });
+
+            nodeUpdate.select("circle")
+                .attr("r", 4.5)
+                .style("fill", function (d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+            nodeUpdate.select("text")
+                .style("fill-opacity", 1);
+
+            // Transition exiting nodes to the parent's new position.
+            var nodeExit = node.exit().transition()
+                .duration(duration)
+                .attr("transform", function (d) { p = calcLeft(d.parent || source); return "translate(" + p.y + "," + p.x + ")"; })
+                .remove();
+
+            nodeExit.select("circle")
+                .attr("r", 1e-6);
+
+            nodeExit.select("text")
+                .style("fill-opacity", 1e-6);
+
+            // Update the links...
+            var link = vis.selectAll("path.link")
+                .data(tree.links(nodes), function (d) { return d.target.id; });
+
+            // Enter any new links at the parent's previous position.
+            link.enter().insert("path", "g")
+                .attr("class", "link")
+                //.attr("class", "link red")
+                .attr("d", function (d) {
+                    var o = { x: source.x0, y: source.y0 };
+                    return connector({ source: o, target: o });
+                });
+
+            // Transition links to their new position.
+            link.transition()
+                .duration(duration)
+                .attr("d", connector);
+
+            // Transition exiting nodes to the parent's new position.
+            link.exit().transition()
+                .duration(duration)
+                .attr("d", function (d) {
+                    var o = calcLeft(d.source || source);
+                    if (d.source.isRight) o.y -= halfWidth - (d.target.y - d.source.y);
+                    else o.y += halfWidth - (d.target.y - d.source.y);
+                    return connector({ source: o, target: o });
+                })
+                .remove();
+            // Stash the old positions for transition.
+            nodes.forEach(function (d) {
+                var p = calcLeft(d);
+                d.x0 = p.x;
+                d.y0 = p.y;
+            });
+
+            // Toggle children on click.
+            function click(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                update(source);
+            }
+        }
+
+        //d3.json("bracket.json", update_tournament_tree);
+        setTimeout(function () { update_tournament_tree(tournament_tree); }, 0);
+        //setTimeout(function () { update_tournament_tree(tournament_tree2); }, 3000);
+
+        var app = angular.module("splatournament", ["ui.bootstrap"]);
+
+        //  http://stackoverflow.com/questions/17893708/angularjs-textarea-bind-to-json-object-shows-object-object
+        app.directive('jsonText', function() {
+            return {
+                restrict: 'A', // only activate on element attribute
+                require: 'ngModel', // get a hold of NgModelController
+                link: function(scope, element, attrs, ngModelCtrl) {
+
+                    var lastValid;
+
+                    // push() if faster than unshift(), and avail. in IE8 and earlier (unshift isn't)
+                    ngModelCtrl.$parsers.push(fromUser);
+                    ngModelCtrl.$formatters.push(toUser);
+
+                    // clear any invalid changes on blur
+                    element.bind('blur', function() {
+                        element.val(toUser(scope.$eval(attrs.ngModel)));
+                    });
+
+                    // $watch(attrs.ngModel) wouldn't work if this directive created a new scope;
+                    // see http://stackoverflow.com/questions/14693052/watch-ngmodel-from-inside-directive-using-isolate-scope how to do it then
+                    scope.$watch(attrs.ngModel, function(newValue, oldValue) {
+                        lastValid = lastValid || newValue;
+
+                        if (newValue != oldValue) {
+                            ngModelCtrl.$setViewValue(toUser(newValue));
+
+                            // TODO avoid this causing the focus of the input to be lost..
+                            ngModelCtrl.$render();
+                        }
+                    }, true); // MUST use objectEquality (true) here, for some reason..
+
+                    function fromUser(text) {
+                        // Beware: trim() is not available in old browsers
+                        if (!text || text.trim() === '') {
+                            return {};
+                        } else {
+                            try {
+                                lastValid = angular.fromJson(text);
+                                ngModelCtrl.$setValidity('invalidJson', true);
+                            } catch (e) {
+                                ngModelCtrl.$setValidity('invalidJson', false);
+                            }
+                            return lastValid;
+                        }
+                    }
+
+                    function toUser(object) {
+                        // better than JSON.stringify(), because it formats + filters $$hashKey etc.
+                        return angular.toJson(object, true);
+                    }
+                }
+            };
+        });
+
+        app.controller("splatornament", function ($scope, $http) {
+
+            $scope.app = {
+                version: "X.XX.XXX"
+            };
+
+            $http({
+                method: 'GET',
+                url: "version.json"
+            }).success(function (data, status, headers, config) {
+                $scope.app.version = data;
+            }).error(function (data, status, headers, config) {
+            });
+
+
+            //$scope.change = function () {
+            //};
+
+            $scope.selected = {
+            };
+            $scope.model = {
+                event: { },
+                entries: []
+            };
+
+            $scope.selectEntry = function (index) {
+                $scope.selected.entry = index;
+            }
+            $scope.addEntry = function () {
+                $scope.model.entries.push({ tags:["new","4"] });
+                $scope.selectEntry($scope.model.entries.length - 1);
+            };
+            $scope.removeEntry = function (entry) {
+                var index = $scope.model.entries.indexOf(entry);
+                $scope.model.entries.splice(index, 1);
+                $scope.selectEntry(null);
+            }
+
+            $scope.checkResults = [];
+
+            $scope.$watchCollection('checkModel', function () {
+                $scope.checkResults = [];
+                angular.forEach($scope.checkModel, function (value, key) {
+                    if (value) {
+                        $scope.checkResults.push(key);
+                    }
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>
