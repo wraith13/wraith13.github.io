@@ -76,6 +76,40 @@
         }
 
     </style>
+
+    <script type="text/javascript">
+        // hand include from http://ngmodules.org/modules/Angular.uuid
+        'use strict'
+        angular.module('angularUUID2', []).factory('uuid2', [
+            function () {
+                function s4() {
+                    return Math.floor((1 + Math.random()) * 0x10000)
+                        .toString(16)
+                        .substring(1);
+                }
+
+                return {
+
+                    newuuid: function () {
+                        // http://www.ietf.org/rfc/rfc4122.txt
+                        var s = [];
+                        var hexDigits = "0123456789abcdef";
+                        for (var i = 0; i < 36; i++) {
+                            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+                        }
+                        s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+                        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+                        s[8] = s[13] = s[18] = s[23] = "-";
+                        return s.join("");
+                    },
+                    newguid: function () {
+                        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                            s4() + '-' + s4() + s4() + s4();
+                    }
+                }
+
+            }]);
+    </script>
 </head>
 <body id="body" ng-controller="splatornament">
     <div class="body">
@@ -102,11 +136,6 @@
         <div class="container theme-showcase" role="main">
 
             <div class="alert alert-danger" role="alert" ng-hide="true"><strong>JavaScriptが無効になっています。</strong>このページは JavaScript に強く依存しています。JavaScriptを有効にしてから再読み込みしてください。</div>
-            <script type="text/ng-template" id="alert.html">
-                <div class="alert" style="background-color:#fa39c3;color:white;" role="alert">
-                    <div ng-transclude></div>
-                </div>
-            </script>
             <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000">{{alert.msg}}</uib-alert>
 
             <!--
@@ -133,12 +162,12 @@
             <div ng-show="active_tab=='entry'">
                 <div ng-hide="selected.entry">
                     <ul class="list-group">
-                        <li class="list-group-item list-group-item-success" ng-click="addEntry()">＋ new entry</li>
-                        <li class="list-group-item" ng-class="entry == selected.entry ? 'active': ''" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
+                        <li class="list-group-item list-group-item-success glyphicon glyphicon-plus" ng-click="addEntry()">チームの追加</li>
+                        <li class="list-group-item" ng-class="{'active': entry == selected.entry}" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
                             <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
                             <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
                             <p class="list-group-item-text">{{entry.description}}</p>
-                            <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank">{{entry.url}}</p>
+                            <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank" ng-click="$event.stopPropagation()">{{entry.url}}</a></p>
                         </li>
                     </ul>
                 </div>
@@ -146,8 +175,56 @@
                     <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
                     <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
                     <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
-                    <button type="button" class='btn' ng-click="selectEntry(null)">⇦back</button>
-                    <button type="button" class='btn btn-danger' ng-click="removeEntry(selected.entry)" style="float:right">✘delete</button>
+                    <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
+                    <button type="button" class='btn btn-danger glyphicon glyphicon-trash' ng-click="removeEntry(selected.entry)" style="float:right">チームの削除</button>
+                </div>
+            </div>
+
+            <div ng-show="active_tab=='match'">
+                <div ng-hide="1 < model.entries.length">
+                    <uib-alert type="info">まずは entry から2チーム以上登録してください。</uib-alert>
+                </div>
+                <div ng-show="1 < model.entries.length">
+                    <div ng-show="0 == model.matches.length">
+                        <uib-alert type="info">トーナメントの抽選を行い試合を組み合わせ、試合表とトーナメントツリーを作成します。</uib-alert>
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">抽選の実行</button>
+                    </div>
+                    <div ng-show="0 < model.matches.length">
+                        <div ng-show="0 < unmatches.length" style="margin-bottom:24px;">
+                            <uib-alert type="info">次のチームがトーナメントに組み込まれていません。</uib-alert>
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="entry in unmatches track by $index">
+                                    <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getEntry(entry).tags track by tag">{{tag}}</span>
+                                    {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
+                                </li>
+                            </ul>
+                            <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">追加の抽選の実行</button>
+                        </div>
+
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="match in model.matches track by $index">
+                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
+                                <h4 class="list-group-item-heading">{{match.name}}</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item" ng-repeat="entry in match.entries track by $index">
+                                        <div ng-show="getEntry(entry)">
+                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getEntry(entry).tags track by tag">{{tag}}</span>
+                                            {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
+                                        </div>
+                                        <div ng-show="getMatch(entry)">
+                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
+                                            <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
+                                            <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
+                                            {{getMatch(entry).name}} の勝者
+                                        </div>
+                                    </li>
+                                </ul>
+                                {{match.description}}
+                            </li>
+                        </ul>
+
+                        <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()">現在の抽選を全て破棄して抽選の再実行</button>
+                    </div>
                 </div>
             </div>
 
@@ -448,7 +525,7 @@
         setTimeout(function () { update_tournament_tree(tournament_tree); }, 0);
         //setTimeout(function () { update_tournament_tree(tournament_tree2); }, 3000);
 
-        var app = angular.module("splatournament", ["ui.bootstrap"]);
+        var app = angular.module("splatournament", ["ui.bootstrap", "angularUUID2"]);
 
         //  http://stackoverflow.com/questions/17893708/angularjs-textarea-bind-to-json-object-shows-object-object
         app.directive('jsonText', function() {
@@ -504,7 +581,35 @@
             };
         });
 
-        app.controller("splatornament", function ($scope, $http) {
+        app.controller("splatornament", function ($scope, $http, $filter, uuid2) {
+
+            //  http://stackoverflow.com/questions/20789373/shuffle-array-in-ng-repeat-angular
+            $scope.shuffleArray = function (array) {
+                var m = array.length, t, i;
+
+                // While there remain elements to shuffle
+                while (m) {
+                    // Pick a remaining element…
+                    i = Math.floor(Math.random() * m--);
+
+                    // And swap it with the current element.
+                    t = array[m];
+                    array[m] = array[i];
+                    array[i] = t;
+                }
+
+                return array;
+            }
+
+            //  http://stackoverflow.com/questions/23120077/how-to-get-the-indexof-an-object-within-an-angularjs-response-object-collection
+            $scope.arrayObjectIndexOf = function (arr, obj) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (angular.equals(arr[i], obj)) {
+                        return i;
+                    }
+                };
+                return -1;
+            }
 
             $scope.alerts = [];
             $scope.addAlert = function (alert) {
@@ -534,21 +639,50 @@
             //$scope.change = function () {
             //};
 
-            $scope.tabs = [ "info", "event", "entry", "import", "export", "chart" ];
+            $scope.tabs = [ "info", "event", "entry", "match", "import", "export", "chart" ];
             $scope.active_tab = $scope.tabs[0];
             $scope.selectTab = function (tab) {
                 $scope.active_tab = tab;
                 $scope.isCollapsed = false;
-                $scope.$apply();
+                if ("match" == tab) {
+                    $scope.update_unmatches();
+                }
             };
 
-            $scope.selected = {
-            };
+            $scope.selected = { };
             $scope.model = {
                 event: { },
-                entries: []
+                entries: [],
+                matches: []
             };
 
+            //  id
+            $scope.makeSureId = function (object) {
+                if (!object.id) {
+                    object.id = uuid2.newuuid();
+                }
+                return object.id;
+            };
+            $scope.getEntry = function (id) {
+                var result = null;
+                angular.forEach($scope.model.entries, function (entry, i) {
+                    if (id == entry.id) {
+                        result = entry;
+                    }
+                });
+                return result;
+            };
+            $scope.getMatch = function (id) {
+                var result = null;
+                angular.forEach($scope.model.matches, function (match, i) {
+                    if (id == match.id) {
+                        result = match;
+                    }
+                });
+                return result;
+            };
+
+            //  entry
             $scope.selectEntry = function (entry) {
                 $scope.selected.entry = entry;
             }
@@ -563,9 +697,107 @@
                 $scope.selectEntry(null);
             };
 
+            //  match
+            $scope.get_matched_entries = function () {
+                var result = [];
+                angular.forEach($scope.model.matches, function (match, i) {
+                    angular.forEach(match.entries, function (entry, j) {
+                        if (result.indexOf(entry) < 0) {
+                            result.push(entry);
+                        }
+                    });
+                });
+                return result;
+            }
+            $scope.update_unmatches = function () {
+                var matched_entries = $scope.get_matched_entries();
+
+                $scope.unmatches = [];
+                angular.forEach($scope.model.entries, function (entry, i) {
+                    var entry_id = $scope.makeSureId(entry);
+                    if (matched_entries.indexOf(entry_id) < 0) {
+                        $scope.unmatches.push(entry_id);
+                    }
+                });
+            };
+            $scope.makeMatch = function () {
+                var shuffle_unmatches = $scope.shuffleArray(angular.fromJson(angular.toJson($scope.unmatches, true)));
+                for (var i = 0; i < (shuffle_unmatches.length &~1) ; i += 2) {
+                    var match = { };
+                    match.entries = [shuffle_unmatches[i], shuffle_unmatches[i+1]];
+                    match.weight = match.entries.length;
+                    match.level = 1;
+                    $scope.model.matches.push(match);
+                }
+
+                var matched_entries = $scope.get_matched_entries();
+                var unmatched_match = [];
+                angular.forEach($scope.model.matches, function (match, i) {
+                    var match_id = $scope.makeSureId(match);
+                    if (matched_entries.indexOf(match_id) < 0) {
+                        unmatched_match.push(match);
+                    }
+                });
+                var lastMatch = null;
+                var addMatch = function(match) {
+                    $scope.model.matches.push(match);
+                    unmatched_match.push(match);
+                    unmatched_match = $filter('orderBy')(unmatched_match, "weight");
+                    lastMatch = match;
+                }
+                var takeLightMatch = function () {
+                    var result = null;
+                    if (0 < unmatched_match.length) {
+                        result = unmatched_match.shift();
+                    }
+                    return result;
+                }
+                if (shuffle_unmatches.length & 1) {
+                    var parent_match = takeLightMatch();
+                    var match = { };
+                    match.entries = [$scope.makeSureId(parent_match), shuffle_unmatches[shuffle_unmatches.length - 1]];
+                    match.weight = parent_match.weight +1;
+                    match.level = parent_match.level + 1;
+                    addMatch(match);
+                }
+                while(true) {
+                    var match1 = takeLightMatch();
+                    var match2 = takeLightMatch();
+                    if (match1 && match2) {
+                        var match = {};
+                        match.entries = [$scope.makeSureId(match1), $scope.makeSureId(match2)];
+                        match.weight = match1.weight + match2.weight;
+                        match.level = Math.max(match1.level, match2.level) + 1;
+                        addMatch(match);
+                    } else {
+                        break;
+                    }
+                }
+                angular.forEach($scope.model.matches, function (match, i) {
+                    match.name = "第" +(i +1) +"試合";
+                });
+                if (null != lastMatch) {
+                    lastMatch.name = "決勝戦";
+                    var number = 0;
+                    angular.forEach(lastMatch.entries, function (match_id, i) {
+                        var match = $scope.getMatch(match_id);
+                        if (null != match) {
+                            match.name = "準決勝 第" + (++number) + "試合";
+                        }
+                    });
+                }
+                $scope.update_unmatches();
+            };
+
             $scope.import = function (text) {
                 try {
                     $scope.model = angular.fromJson(text);
+                    $scope.model = $scope.model || {}
+                    $scope.model.event = $scope.model.event || {}
+                    $scope.makeSureId($scope.model.event);
+                    $scope.model.entries = $scope.model.entries || []
+                    $scope.model.matches = $scope.model.matches || []
+                    $scope.selected = { };
                     $scope.addAlert({ type: 'success', msg: 'インポートしました。' });
                 } catch (e) {
                     $scope.addAlert({ type: 'danger', msg: 'インポート中に例外が発生しました。 ' + e });
