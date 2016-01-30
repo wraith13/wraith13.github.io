@@ -81,7 +81,7 @@
 </head>
 <body id="body" ng-controller="splatornament">
     <div class="body">
-        <header class="navbar navbar-inverse navbar-inner">
+        <header class="navbar navbar-inverse navbar-static-top">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3" ng-click="isCollapsed = !isCollapsed">
@@ -133,28 +133,23 @@
                     <input type="text" class="form-control" ng-model="model.event.url" placeholder="URL">
                 </uib-tab>
                 <uib-tab heading="entry" active="active_tab=='entry'" ng-click="selectTab('entry')">
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <ul class="list-group">
-                                <li class="list-group-item list-group-item-success" ng-click="addEntry()">＋ new entry</li>
-                                <li class="list-group-item" ng-class="entry == selected.entry ? 'active': ''" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
-                                    {{entry.name}}
-                                    <span ng-hide="entry.name"><i>名称未設定</i></span>
-                                    <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-9" id="entryDetail">
-                            <div ng-show="selected.entry">
-                                <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
-                                <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
-                                <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
-                                <button type="button" class='btn btn-danger' ng-click="removeEntry(selected.entry)">✘delete</button>
-                            </div>
-                            <div ng-hide="selected.entry">
-                                <p>entry を選択あるいは追加してください</p>
-                            </div>
-                        </div>
+                    <div ng-hide="selected.entry">
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-success" ng-click="addEntry()">＋ new entry</li>
+                            <li class="list-group-item" ng-class="entry == selected.entry ? 'active': ''" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
+                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
+                                <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
+                                <p class="list-group-item-text">{{entry.description}}</p>
+                                <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank">{{entry.url}}</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div ng-show="selected.entry">
+                        <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
+                        <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
+                        <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
+                        <button type="button" class='btn' ng-click="selectEntry(null)">⇦back</button>
+                        <button type="button" class='btn btn-danger' ng-click="removeEntry(selected.entry)" style="float:right">✘delete</button>
                     </div>
                 </uib-tab>
                 <uib-tab heading="import" active="active_tab=='import'" ng-click="selectTab('import')">
@@ -543,6 +538,7 @@
             $scope.active_tab = $scope.tabs[0];
             $scope.selectTab = function (tab) {
                 $scope.active_tab = tab;
+                $scope.isCollapsed = false;
                 $scope.$apply();
             };
 
