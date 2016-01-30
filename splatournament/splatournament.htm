@@ -118,6 +118,14 @@
                 </p>
             </div>
 
+            <script type="text/ng-template" id="alert.html">
+                <div class="alert" style="background-color:#fa39c3;color:white;" role="alert">
+                    <div ng-transclude></div>
+                </div>
+            </script>
+
+            <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000">{{alert.msg}}</uib-alert>
+
             <!--
             <div id="picker"></div>
             <br/>
@@ -134,18 +142,19 @@
                         <div class="col-lg-3">
                             <ul class="list-group">
                                 <li class="list-group-item list-group-item-success" ng-click="addEntry()">＋ new entry</li>
-                                <li class="list-group-item" ng-class="$index == selected.entry ? 'active': ''" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry($index)">
+                                <li class="list-group-item" ng-class="entry == selected.entry ? 'active': ''" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
                                     {{entry.name}}
+                                    <span ng-hide="entry.name"><i>名称未設定</i></span>
                                     <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
                                 </li>
                             </ul>
                         </div>
                         <div class="col-lg-9" id="entryDetail">
-                            <div ng-show="0 <= selected.entry">
-                                <input type="text" class="form-control" ng-model="model.entries[selected.entry].name" placeholder="名前">
-                                <input type="text" class="form-control" ng-model="model.entries[selected.entry].description" placeholder="説明">
-                                <input type="text" class="form-control" ng-model="model.entries[selected.entry].url" placeholder="URL">
-                                <button type="button" class='btn btn-danger' ng-click="removeEntry(model.entries[selected.entry])">✘delete</button>
+                            <div ng-show="selected.entry">
+                                <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
+                                <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
+                                <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
+                                <button type="button" class='btn btn-danger' ng-click="removeEntry(selected.entry)">✘delete</button>
                             </div>
                             <div ng-hide="selected.entry">
                                 <p>entry を選択あるいは追加してください</p>
@@ -153,8 +162,12 @@
                         </div>
                     </div>
                 </uib-tab>
-                <uib-tab heading="import/export">
-                    <textarea json-text class="form-control" rows="10" ng-model="model"></textarea>
+                <uib-tab heading="import">
+                    <textarea class="form-control" rows="10" ng-model="json"></textarea>
+                    <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="import(json)">import</button>
+                </uib-tab>
+                <uib-tab heading="export">
+                    <textarea class="form-control" rows="10">{{toJson(model)}}</textarea>
                 </uib-tab>
                 <uib-tab heading="chart">
                     <div id="chart"></div>
@@ -503,6 +516,18 @@
 
         app.controller("splatornament", function ($scope, $http) {
 
+            $scope.alerts = [];
+            $scope.addAlert = function (alert) {
+                $scope.alerts.push(alert);
+            };
+            $scope.closeAlert = function (index) {
+                $scope.alerts.splice(index, 1);
+            };
+
+            $scope.toJson = function (object) {
+                return angular.toJson(object, true);
+            };
+
             $scope.app = {
                 version: "X.XX.XXX"
             };
@@ -526,18 +551,29 @@
                 entries: []
             };
 
-            $scope.selectEntry = function (index) {
-                $scope.selected.entry = index;
+            $scope.selectEntry = function (entry) {
+                $scope.selected.entry = entry;
             }
             $scope.addEntry = function () {
-                $scope.model.entries.push({ tags:["new","4"] });
-                $scope.selectEntry($scope.model.entries.length - 1);
+                var entry = { tags: ["new", "4"] };
+                $scope.model.entries.push(entry);
+                $scope.selectEntry(entry);
             };
             $scope.removeEntry = function (entry) {
                 var index = $scope.model.entries.indexOf(entry);
                 $scope.model.entries.splice(index, 1);
                 $scope.selectEntry(null);
-            }
+            };
+
+            $scope.import = function (text) {
+                try {
+                    $scope.model = angular.fromJson(text);
+                    $scope.addAlert({ type: 'success', msg: 'インポートしました。' });
+                } catch (e) {
+                    $scope.addAlert({ type: 'danger', msg: 'インポート中に例外が発生しました。 ' + e });
+                }
+            };
+
 
             $scope.checkResults = [];
 
