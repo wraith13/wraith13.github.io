@@ -40,13 +40,6 @@
             padding-bottom:24px;
         }
 
-        .tab-content {
-            padding: 8px
-        }
-        .list-group-item {
-            min-height: 12px;
-        }
-
         .pull-xs-right {
             float:right;
         }
@@ -80,11 +73,15 @@
         .footer .container ul li {
             list-style-type: none;
         }
+
+        #BodyTab .nav-tabs {
+            display: none;
+        }
     </style>
 </head>
 <body id="body" ng-controller="splatornament">
     <div class="body">
-        <header class="navbar navbar-inverse navbar-fixed-top navbar-inner">
+        <header class="navbar navbar-inverse navbar-inner">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3" ng-click="isCollapsed = !isCollapsed">
@@ -98,10 +95,7 @@
                 <nav class="navbar-collapse collapse" uib-collapse="!isCollapsed">
                     <a href="#" role="button" class="navbar-brand">splatournament</a>
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">edit</a></li>
-                        <li><a href="#tree">tree</a></li>
-                        <li><a href="#match">match</a></li>
-                        <li><a href="#entry">entry</a></li>
+                        <li ng-class="active_tab == tab ? 'active': ''" ng-repeat="tab in tabs track by $index"><a href="#{{tab}}" ng-click="selectTab(tab)">{{tab}}</a></li>
                     </ul>
                 </nav>
             </div>
@@ -109,21 +103,12 @@
 
         <div class="container theme-showcase" role="main">
 
-            <div class="jumbotron">
-                <div class="alert alert-danger" role="alert" ng-hide="true"><strong>JavaScriptが無効になっています。</strong>このページは JavaScript に強く依存しています。JavaScriptを有効にしてから再読み込みしてください。</div>
-                <h1>splatournament</h1>
-                <p>
-                    このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
-                    各種トーナメント形式での大会向けのトーナメント管理ツールです。
-                </p>
-            </div>
-
+            <div class="alert alert-danger" role="alert" ng-hide="true"><strong>JavaScriptが無効になっています。</strong>このページは JavaScript に強く依存しています。JavaScriptを有効にしてから再読み込みしてください。</div>
             <script type="text/ng-template" id="alert.html">
                 <div class="alert" style="background-color:#fa39c3;color:white;" role="alert">
                     <div ng-transclude></div>
                 </div>
             </script>
-
             <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000">{{alert.msg}}</uib-alert>
 
             <!--
@@ -131,13 +116,23 @@
             <br/>
             -->
 
-            <uib-tabset>
-                <uib-tab heading="event">
+            <uib-tabset id="BodyTab">
+                <uib-tab xheading="info" active="active_tab=='info'" ng-click="selectTab('info')">
+                    <div class="jumbotron">
+                        <h1>splatournament</h1>
+                        <p>
+                            このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
+                            各種トーナメント形式での大会向けのトーナメント管理ツールです。
+                        </p>
+                    </div>
+                </uib-tab>
+
+                <uib-tab heading="event" active="active_tab=='event'" ng-click="selectTab('event')">
                     <input type="text" class="form-control" ng-model="model.event.name" placeholder="名前">
                     <input type="text" class="form-control" ng-model="model.event.description" placeholder="説明">
                     <input type="text" class="form-control" ng-model="model.event.url" placeholder="URL">
                 </uib-tab>
-                <uib-tab heading="entry">
+                <uib-tab heading="entry" active="active_tab=='entry'" ng-click="selectTab('entry')">
                     <div class="row">
                         <div class="col-lg-3">
                             <ul class="list-group">
@@ -162,14 +157,14 @@
                         </div>
                     </div>
                 </uib-tab>
-                <uib-tab heading="import">
+                <uib-tab heading="import" active="active_tab=='import'" ng-click="selectTab('import')">
                     <textarea class="form-control" rows="10" ng-model="json"></textarea>
                     <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="import(json)">import</button>
                 </uib-tab>
-                <uib-tab heading="export">
+                <uib-tab heading="export" active="active_tab=='export'" ng-click="selectTab('export')">
                     <textarea class="form-control" rows="10">{{toJson(model)}}</textarea>
                 </uib-tab>
-                <uib-tab heading="chart">
+                <uib-tab heading="chart" active="active_tab=='chart'" ng-click="selectTab('chart')">
                     <div id="chart"></div>
                 </uib-tab>
             </uib-tabset>
@@ -543,6 +538,13 @@
 
             //$scope.change = function () {
             //};
+
+            $scope.tabs = [ "info", "event", "entry", "import", "export", "chart" ];
+            $scope.active_tab = $scope.tabs[0];
+            $scope.selectTab = function (tab) {
+                $scope.active_tab = tab;
+                $scope.$apply();
+            };
 
             $scope.selected = {
             };
