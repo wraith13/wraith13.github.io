@@ -25,6 +25,7 @@
 
 
     <style type="text/css">
+
         body,
         table,
         div,
@@ -74,9 +75,6 @@
             list-style-type: none;
         }
 
-        #BodyTab .nav-tabs {
-            display: none;
-        }
     </style>
 </head>
 <body id="body" ng-controller="splatornament">
@@ -116,53 +114,55 @@
             <br/>
             -->
 
-            <uib-tabset id="BodyTab">
-                <uib-tab xheading="info" active="active_tab=='info'" ng-click="selectTab('info')">
-                    <div class="jumbotron">
-                        <h1>splatournament</h1>
-                        <p>
-                            このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
-                            各種トーナメント形式での大会向けのトーナメント管理ツールです。
-                        </p>
-                    </div>
-                </uib-tab>
+            <div ng-show="active_tab=='info'">
+                <div class="jumbotron">
+                    <h1>splatournament</h1>
+                    <p>
+                        このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
+                        各種トーナメント形式での大会向けのトーナメント管理ツールです。
+                    </p>
+                </div>
+            </div>
 
-                <uib-tab heading="event" active="active_tab=='event'" ng-click="selectTab('event')">
-                    <input type="text" class="form-control" ng-model="model.event.name" placeholder="名前">
-                    <input type="text" class="form-control" ng-model="model.event.description" placeholder="説明">
-                    <input type="text" class="form-control" ng-model="model.event.url" placeholder="URL">
-                </uib-tab>
-                <uib-tab heading="entry" active="active_tab=='entry'" ng-click="selectTab('entry')">
-                    <div ng-hide="selected.entry">
-                        <ul class="list-group">
-                            <li class="list-group-item list-group-item-success" ng-click="addEntry()">＋ new entry</li>
-                            <li class="list-group-item" ng-class="entry == selected.entry ? 'active': ''" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
-                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
-                                <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
-                                <p class="list-group-item-text">{{entry.description}}</p>
-                                <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank">{{entry.url}}</p>
-                            </li>
-                        </ul>
-                    </div>
-                    <div ng-show="selected.entry">
-                        <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
-                        <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
-                        <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
-                        <button type="button" class='btn' ng-click="selectEntry(null)">⇦back</button>
-                        <button type="button" class='btn btn-danger' ng-click="removeEntry(selected.entry)" style="float:right">✘delete</button>
-                    </div>
-                </uib-tab>
-                <uib-tab heading="import" active="active_tab=='import'" ng-click="selectTab('import')">
-                    <textarea class="form-control" rows="10" ng-model="json"></textarea>
-                    <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="import(json)">import</button>
-                </uib-tab>
-                <uib-tab heading="export" active="active_tab=='export'" ng-click="selectTab('export')">
-                    <textarea class="form-control" rows="10">{{toJson(model)}}</textarea>
-                </uib-tab>
-                <uib-tab heading="chart" active="active_tab=='chart'" ng-click="selectTab('chart')">
-                    <div id="chart"></div>
-                </uib-tab>
-            </uib-tabset>
+            <div ng-show="active_tab=='event'" ng-click="selectTab('event')">
+                <input type="text" class="form-control" ng-model="model.event.name" placeholder="名前">
+                <input type="text" class="form-control" ng-model="model.event.description" placeholder="説明">
+                <input type="text" class="form-control" ng-model="model.event.url" placeholder="URL">
+            </div>
+
+            <div ng-show="active_tab=='entry'">
+                <div ng-hide="selected.entry">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-success" ng-click="addEntry()">＋ new entry</li>
+                        <li class="list-group-item" ng-class="entry == selected.entry ? 'active': ''" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
+                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
+                            <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
+                            <p class="list-group-item-text">{{entry.description}}</p>
+                            <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank">{{entry.url}}</p>
+                        </li>
+                    </ul>
+                </div>
+                <div ng-show="selected.entry">
+                    <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
+                    <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
+                    <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
+                    <button type="button" class='btn' ng-click="selectEntry(null)">⇦back</button>
+                    <button type="button" class='btn btn-danger' ng-click="removeEntry(selected.entry)" style="float:right">✘delete</button>
+                </div>
+            </div>
+
+            <div ng-show="active_tab=='import'">
+                <textarea class="form-control" rows="10" ng-model="json"></textarea>
+                <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="import(json)">import</button>
+            </div>
+
+            <div ng-show="active_tab=='export'">
+                <textarea class="form-control" rows="10">{{toJson(model)}}</textarea>
+            </div>
+
+            <div ng-show="active_tab=='chart'">
+                <div id="chart"></div>
+            </div>
         </div>
     </div>
 
