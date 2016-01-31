@@ -187,6 +187,7 @@
                 <div ng-show="1 < model.entries.length">
                     <div ng-show="0 == model.matches.length">
                         <uib-alert type="info">トーナメントの抽選を行い試合を組み合わせ、試合表とトーナメントツリーを作成します。</uib-alert>
+                        <uib-alert type="warning">現在の splatournament のバージョンではトーナメントツリー作成後に entry の追加/削除を行うと抽選のやり直しになります。</uib-alert>
                         <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">抽選の実行</button>
                     </div>
                     <div ng-show="0 < model.matches.length">
@@ -198,25 +199,31 @@
                                     {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
                                 </li>
                             </ul>
-                            <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">追加の抽選の実行</button>
+                            <uib-alert type="denger">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
+                            <!--
+                                <uib-alert ng-show="over_bit_level" type="denger">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
+                                <button ng-hide="over_bit_level" type="button" class='btn btn-primary btn-lg btn-block' ng-click="appendMatch()">追加の抽選の実行</button>
+                            -->
                         </div>
-
                         <ul class="list-group">
-                            <li class="list-group-item" ng-repeat="match in model.matches track by $index">
+                            <li class="list-group-item" ng-repeat="match in model.matches track by $index" ng-show="2<=match.entries.length">
                                 <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
                                 <h4 class="list-group-item-heading">{{match.name}}</h4>
                                 <ul class="list-group">
-                                    <li class="list-group-item" ng-repeat="entry in match.entries track by $index">
-                                        <div ng-show="getEntry(entry)">
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getEntry(entry).tags track by tag">{{tag}}</span>
-                                            {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
-                                        </div>
-                                        <div ng-show="getMatch(entry)">
+                                    <li class="list-group-item"
+                                        ng-repeat="entry in match.entries track by $index"
+                                        ng-click="setWinner(match,entry)"
+                                        ng-class="getMatchEntryClass(match,entry)">
+                                        <span ng-show="searchEntry(entry)">
+                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
+                                            {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
+                                        </span>
+                                        <span ng-hide="searchEntry(entry)">
                                             <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
                                             <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
                                             <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
                                             {{getMatch(entry).name}} の勝者
-                                        </div>
+                                        </span>
                                     </li>
                                 </ul>
                                 {{match.description}}
@@ -409,7 +416,6 @@
             rebuildChildren(root);
             root.isRight = false;
             update(root);
-            //});
         }
 
         var toArray = function (item, arr) {
@@ -655,6 +661,16 @@
                 entries: [],
                 matches: []
             };
+            $scope.cache = { };
+
+            //  cache
+            $scope.getCache = function (type, key) {
+                return ($scope.cache[type] || { })[key];
+            }
+            $scope.setCache = function (type, key, value) {
+                $scope.cache[type] = $scope.cache[type] || {};
+                $scope.cache[type][key] = value;
+            }
 
             //  id
             $scope.makeSureId = function (object) {
@@ -664,21 +680,47 @@
                 return object.id;
             };
             $scope.getEntry = function (id) {
-                var result = null;
-                angular.forEach($scope.model.entries, function (entry, i) {
-                    if (id == entry.id) {
-                        result = entry;
-                    }
-                });
+                var result = $scope.getCache("entry", id);
+                if (!result) {
+                    angular.forEach($scope.model.entries, function (entry, i) {
+                        if (id == entry.id) {
+                            result = entry;
+                            $scope.setCache("entry", id, entry);
+                        }
+                    });
+                }
                 return result;
             };
             $scope.getMatch = function (id) {
-                var result = null;
-                angular.forEach($scope.model.matches, function (match, i) {
-                    if (id == match.id) {
-                        result = match;
+                var result = $scope.getCache("match", id);
+                if (!result) {
+                    angular.forEach($scope.model.matches, function (match, i) {
+                        if (id == match.id) {
+                            result = match;
+                            $scope.setCache("match", id, match);
+                        }
+                    });
+                }
+                return result;
+            };
+            $scope.searchEntry = function (id) {
+                var result = $scope.getCache("search_entry", id);
+                if (!result) {
+                    result = $scope.getEntry(id);
+                    if (!result) {
+                        var match = $scope.getMatch(id);
+                        if (match) {
+                            if (1 == match.entries.length) {
+                                result = $scope.searchEntry(match.entries[0]);
+                            } else if (match.winners && 1 == match.winners.length) {
+                                result = $scope.searchEntry(match.winners[0]);
+                            }
+                        }
                     }
-                });
+                    if (result) {
+                        $scope.setCache("search_entry", id, result);
+                    }
+                }
                 return result;
             };
 
@@ -708,7 +750,7 @@
                     });
                 });
                 return result;
-            }
+            };
             $scope.update_unmatches = function () {
                 var matched_entries = $scope.get_matched_entries();
 
@@ -719,62 +761,34 @@
                         $scope.unmatches.push(entry_id);
                     }
                 });
-            };
-            $scope.makeMatch = function () {
-                var shuffle_unmatches = $scope.shuffleArray(angular.fromJson(angular.toJson($scope.unmatches, true)));
-                for (var i = 0; i < (shuffle_unmatches.length &~1) ; i += 2) {
-                    var match = { };
-                    match.entries = [shuffle_unmatches[i], shuffle_unmatches[i+1]];
-                    match.weight = match.entries.length;
-                    match.level = 1;
-                    $scope.model.matches.push(match);
-                }
 
-                var matched_entries = $scope.get_matched_entries();
-                var unmatched_match = [];
-                angular.forEach($scope.model.matches, function (match, i) {
-                    var match_id = $scope.makeSureId(match);
-                    if (matched_entries.indexOf(match_id) < 0) {
-                        unmatched_match.push(match);
-                    }
-                });
+                var entries_count = $scope.model.entries.length;
+                var matched_entries_count = entries_count - $scope.unmatches.length;
+                $scope.over_bit_level = matched_entries_count < (entries_count & ~matched_entries_count);
+            };
+            $scope.regulateMatch = function () {
                 var lastMatch = null;
-                var addMatch = function(match) {
-                    $scope.model.matches.push(match);
-                    unmatched_match.push(match);
-                    unmatched_match = $filter('orderBy')(unmatched_match, "weight");
-                    lastMatch = match;
-                }
-                var takeLightMatch = function () {
-                    var result = null;
-                    if (0 < unmatched_match.length) {
-                        result = unmatched_match.shift();
-                    }
-                    return result;
-                }
-                if (shuffle_unmatches.length & 1) {
-                    var parent_match = takeLightMatch();
-                    var match = { };
-                    match.entries = [$scope.makeSureId(parent_match), shuffle_unmatches[shuffle_unmatches.length - 1]];
-                    match.weight = parent_match.weight +1;
-                    match.level = parent_match.level + 1;
-                    addMatch(match);
-                }
-                while(true) {
-                    var match1 = takeLightMatch();
-                    var match2 = takeLightMatch();
-                    if (match1 && match2) {
-                        var match = {};
-                        match.entries = [$scope.makeSureId(match1), $scope.makeSureId(match2)];
-                        match.weight = match1.weight + match2.weight;
-                        match.level = Math.max(match1.level, match2.level) + 1;
-                        addMatch(match);
-                    } else {
-                        break;
-                    }
-                }
+                var display_count = 0;
                 angular.forEach($scope.model.matches, function (match, i) {
-                    match.name = "第" +(i +1) +"試合";
+                    if (2 <= match.entries.length) {
+                        match.name = "第" + (++display_count) + "試合";
+                        match.weight = 0;
+                        match.level = 0;
+                        angular.forEach(match.entries, function (entry, i) {
+                            var subMatch = $scope.getMatch(entry);
+                            if (subMatch) {
+                                match.weight += subMatch.weight;
+                                match.level = Math.max(match.level, subMatch.level);
+                            } else {
+                                match.weight += 1;
+                            }
+                        });
+                        match.level += 1;
+                        lastMatch = match;
+                    } else {
+                        match.weight = match.entries.length;
+                        match.level = 0;
+                    }
                 });
                 if (null != lastMatch) {
                     lastMatch.name = "決勝戦";
@@ -787,7 +801,124 @@
                     });
                 }
                 $scope.update_unmatches();
+            }
+            $scope.makeMatch = function () {
+                var shuffle_unmatches = $scope.shuffleArray(angular.fromJson(angular.toJson($scope.unmatches, true)));
+                var entries_count = $scope.model.entries.length;
+                var unmatched_match = [];
+                var addMatch = function (entries) {
+                    var match = {};
+                    match.entries = entries;
+                    $scope.model.matches.push(match);
+                    unmatched_match.push(match);
+                };
+
+                //  level 0 マッチの生成
+                while (($scope.model.matches.length * 2) < entries_count) {
+                    do {
+                        addMatch([shuffle_unmatches.shift()]);
+                    } while ($scope.model.matches.length & ($scope.model.matches.length -1)); // 次の 2^n 境界の数までマッチを作成
+                }
+
+                //  level 1 マッチの生成
+                var matched_entry_count = $scope.model.matches.length;
+                var tournament_tree_capacity = $scope.model.matches.length * 2;
+                var add_count = 0;
+                var delta = 0.00001; // 浮動小数点演算誤差で最後の要素が追加されないことを防ぐ為の補正
+                for (var i = 0; i < $scope.model.matches.length; ++i) {
+                    if (add_count < (((i * (entries_count - matched_entry_count)) / (tournament_tree_capacity /2)) + delta)) {
+                        ++add_count;
+                        var entry = shuffle_unmatches.shift();
+                        if (entry) {
+                            $scope.model.matches[i].entries.push(entry);
+                        } else {
+                            console.log("【🐛バグ】shuffle_unmatches が足りない。計算があってない。");
+                        }
+                    }
+                }
+                if (0 < shuffle_unmatches.length) {
+                    console.log("【🐛バグ】shuffle_unmatches が余った。計算があってない。");
+                }
+
+                //  level 2 以降のマッチの生成
+                while (true) {
+                    var match1 = unmatched_match.shift();
+                    var match2 = unmatched_match.shift();
+                    if (match1 && match2) {
+                        addMatch([$scope.makeSureId(match1), $scope.makeSureId(match2)]);
+                    } else {
+                        break;
+                    }
+                }
+
+                $scope.regulateMatch();
             };
+            $scope.appendMatch = function () {
+                console.log("【🐛バグ】ここはまだ実装中！！！💢💢💢");
+
+                var entries_count = $scope.model.entries.length;
+                var matched_entries_count = entries_count - $scope.unmatches.length;
+                var over_bit_level = matched_entries_count < (entries_count & ~matched_entries_count);
+                if (over_bit_level) {
+                    // level を底上げする
+                }
+                var shuffle_unmatches = $scope.shuffleArray(angular.fromJson(angular.toJson($scope.unmatches, true)));
+
+                //  level 1 マッチの生成
+                var matched_entry_count = $scope.model.matches.length;
+                var tournament_tree_capacity = $scope.model.matches.length * 2;
+                var add_count = 0;
+                var delta = 0.00001; // 浮動小数点演算誤差で最後の要素が追加されないことを防ぐ為の補正
+                for (var i = 0; i < $scope.model.matches.length; ++i) {
+                    if ($scope.model.matches[i].entries.length < 2) {
+                        if (add_count < (((i * (entries_count - matched_entry_count)) / (tournament_tree_capacity / 2)) + delta)) {
+                            ++add_count;
+                            var entry = shuffle_unmatches.shift();
+                            if (entry) {
+                                $scope.model.matches[i].entries.push(entry);
+                            } else {
+                                console.log("【🐛バグ】shuffle_unmatches が足りない。計算があってない。");
+                            }
+                        }
+                    }
+                }
+                if (0 < shuffle_unmatches.length) {
+                    console.log("【🐛バグ】shuffle_unmatches が余った。計算があってない。");
+                }
+
+                $scope.regulateMatch();
+            };
+            $scope.remakeMatch = function () {
+                $scope.cache = {};
+                $scope.model.matches = [];
+                $scope.update_unmatches();
+                $scope.makeMatch();
+            };
+            $scope.setWinner = function (match, entry) {
+                var winner = $scope.searchEntry(entry);
+                if (match && winner) {
+                    if (match.winners && 0 <= match.winners.indexOf(entry)) {
+                        match.winners = [];
+                    } else {
+                        match.winners = [entry];
+                    }
+                }
+                $scope.cache = {};
+            }
+            $scope.getMatchEntryClass = function (match, entry) {
+                if ($scope.searchEntry(entry)) {
+                    if (match.winners && 0 < match.winners.length) {
+                        if (0 <= match.winners.indexOf(entry)) {
+                            return 'glyphicon glyphicon-ok list-group-item-success';
+                        } else {
+                            return 'glyphicon glyphicon-remove list-group-item-danger';
+                        }
+                    } else {
+                        return 'list-group-item-info';
+                    }
+                }
+                return 'list-group-item-warning';
+            }
 
             $scope.import = function (text) {
                 try {
