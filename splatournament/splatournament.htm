@@ -144,12 +144,17 @@
             -->
 
             <div ng-show="active_tab=='info'">
-                <div class="jumbotron">
+                <div class="jumbotron" ng-hide="viewmode">
                     <h1>splatournament</h1>
                     <p>
                         このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
                         各種トーナメント形式での大会向けのトーナメント管理ツールです。
                     </p>
+                </div>
+                <div class="jumbotron" ng-show="viewmode">
+                    <h1>{{model.event.name}}</h1>
+                    <p>{{model.event.description}}</p>
+                    <p><a ng-href="{{model.event.url}}" target="_blank">{{model.event.url}}</p>
                 </div>
             </div>
 
@@ -533,6 +538,13 @@
 
         var app = angular.module("splatournament", ["ui.bootstrap", "angularUUID2"]);
 
+        app.config(["$locationProvider", function ($locationProvider) {
+            $locationProvider.html5Mode({
+                enabled: true,
+                requireBase: false
+            });
+        }]);
+
         //  http://stackoverflow.com/questions/17893708/angularjs-textarea-bind-to-json-object-shows-object-object
         app.directive('jsonText', function() {
             return {
@@ -587,7 +599,7 @@
             };
         });
 
-        app.controller("splatornament", function ($scope, $http, $filter, uuid2) {
+        app.controller("splatornament", function ($scope, $http, $location, $filter, uuid2) {
 
             //  http://stackoverflow.com/questions/20789373/shuffle-array-in-ng-repeat-angular
             $scope.shuffleArray = function (array) {
@@ -641,11 +653,35 @@
             }).error(function (data, status, headers, config) {
             });
 
+            $scope.regulateModel = function () {
+                $scope.model = $scope.model || {}
+                $scope.model.event = $scope.model.event || {}
+                $scope.makeSureId($scope.model.event);
+                $scope.model.entries = $scope.model.entries || []
+                $scope.model.matches = $scope.model.matches || []
+                $scope.selected = {};
+                $scope.cache = {};
+            };
+
+            var data_json = $location.search()["data"];
+            if (data_json && 0 < data_json.length) {
+                $http({
+                    method: 'GET',
+                    url: data_json
+                }).success(function (data, status, headers, config) {
+                    $scope.model = data;
+                    $scope.regulateModel();
+                    $scope.viewmode = true;
+                    $scope.tabs = ["info", "entry", "match", "chart"];
+                }).error(function (data, status, headers, config) {
+                    $scope.addAlert({ type: 'danger', msg: 'インポート中にエラーが発生しました。 '});
+                });
+            }
 
             //$scope.change = function () {
             //};
 
-            $scope.tabs = [ "info", "event", "entry", "match", "import", "export", "chart" ];
+            $scope.tabs = ["info", "event", "entry", "match", "import", "export", "chart"];
             $scope.active_tab = $scope.tabs[0];
             $scope.selectTab = function (tab) {
                 $scope.active_tab = tab;
@@ -654,14 +690,6 @@
                     $scope.update_unmatches();
                 }
             };
-
-            $scope.selected = { };
-            $scope.model = {
-                event: { },
-                entries: [],
-                matches: []
-            };
-            $scope.cache = { };
 
             //  cache
             $scope.getCache = function (type, key) {
@@ -923,18 +951,14 @@
             $scope.import = function (text) {
                 try {
                     $scope.model = angular.fromJson(text);
-                    $scope.model = $scope.model || {}
-                    $scope.model.event = $scope.model.event || {}
-                    $scope.makeSureId($scope.model.event);
-                    $scope.model.entries = $scope.model.entries || []
-                    $scope.model.matches = $scope.model.matches || []
-                    $scope.selected = { };
+                    $scope.regulateModel();
                     $scope.addAlert({ type: 'success', msg: 'インポートしました。' });
                 } catch (e) {
                     $scope.addAlert({ type: 'danger', msg: 'インポート中に例外が発生しました。 ' + e });
                 }
             };
 
+            $scope.regulateModel();
 
             $scope.checkResults = [];
 
