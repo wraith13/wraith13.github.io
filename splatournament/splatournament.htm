@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>splatournament</title>
+    <title ng-bind="title">splatournament</title>
 
     <!-- angular.js with ui.bootstrap -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-touch.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.17/angular-ui-router.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.min.js" rel="stylesheet"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
 
@@ -122,11 +123,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand visible-xs" href="#">splatournament</a>
+                    <a class="navbar-brand visible-xs" href="#" ng-click="selectTab(null)">{{app.name}}</a>
                 </div>
                 <nav class="navbar-collapse collapse" uib-collapse="!isCollapsed">
-                    <a href="#" role="button" class="navbar-brand">splatournament</a>
-                    <ul class="nav navbar-nav">
+                    <a href="#" role="button" class="navbar-brand" ng-click="selectTab()">{{app.name}}</a>
+                    <ul class="nav navbar-nav" ng-hide="is_loading">
                         <li ng-class="active_tab == tab ? 'active': ''" ng-repeat="tab in tabs track by $index"><a href="#{{tab}}" ng-click="selectTab(tab)">{{tab}}</a></li>
                     </ul>
                 </nav>
@@ -139,118 +140,126 @@
             <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000">{{alert.msg}}</uib-alert>
 
             <!--
-            <div id="picker"></div>
-            <br/>
-            -->
+        <div id="picker"></div>
+        <br/>
+        -->
 
-            <div ng-show="active_tab=='info'">
-                <div class="jumbotron" ng-hide="viewmode">
-                    <h1>splatournament</h1>
-                    <p>
-                        このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
-                        各種トーナメント形式での大会向けのトーナメント管理ツールです。
-                    </p>
-                </div>
-                <div class="jumbotron" ng-show="viewmode">
-                    <h1>{{model.event.name}}</h1>
-                    <p>{{model.event.description}}</p>
-                    <p><a ng-href="{{model.event.url}}" target="_blank">{{model.event.url}}</p>
+            <div ng-show="is_loading">
+                <div class="jumbotron">
+                    <h1>loading...</h1>
                 </div>
             </div>
-
-            <div ng-show="active_tab=='event'" ng-click="selectTab('event')">
-                <input type="text" class="form-control" ng-model="model.event.name" placeholder="名前">
-                <input type="text" class="form-control" ng-model="model.event.description" placeholder="説明">
-                <input type="text" class="form-control" ng-model="model.event.url" placeholder="URL">
-            </div>
-
-            <div ng-show="active_tab=='entry'">
-                <div ng-hide="selected.entry">
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-success glyphicon glyphicon-plus" ng-click="addEntry()">チームの追加</li>
-                        <li class="list-group-item" ng-class="{'active': entry == selected.entry}" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
-                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
-                            <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
-                            <p class="list-group-item-text">{{entry.description}}</p>
-                            <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank" ng-click="$event.stopPropagation()">{{entry.url}}</a></p>
-                        </li>
-                    </ul>
-                </div>
-                <div ng-show="selected.entry">
-                    <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
-                    <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
-                    <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
-                    <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
-                    <button type="button" class='btn btn-danger glyphicon glyphicon-trash' ng-click="removeEntry(selected.entry)" style="float:right">チームの削除</button>
-                </div>
-            </div>
-
-            <div ng-show="active_tab=='match'">
-                <div ng-hide="1 < model.entries.length">
-                    <uib-alert type="info">まずは entry から2チーム以上登録してください。</uib-alert>
-                </div>
-                <div ng-show="1 < model.entries.length">
-                    <div ng-show="0 == model.matches.length">
-                        <uib-alert type="info">トーナメントの抽選を行い試合を組み合わせ、試合表とトーナメントツリーを作成します。</uib-alert>
-                        <uib-alert type="warning">現在の splatournament のバージョンではトーナメントツリー作成後に entry の追加/削除を行うと抽選のやり直しになります。</uib-alert>
-                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">抽選の実行</button>
+            <div ng-hide="is_loading">
+                <div ng-hide="active_tab">
+                    <div class="jumbotron" ng-hide="viewmode">
+                        <h1>splatournament</h1>
+                        <p>
+                            このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
+                            各種トーナメント形式での大会向けのトーナメント管理ツールです。
+                        </p>
                     </div>
-                    <div ng-show="0 < model.matches.length">
-                        <div ng-show="0 < unmatches.length" style="margin-bottom:24px;">
-                            <uib-alert type="info">次のチームがトーナメントに組み込まれていません。</uib-alert>
-                            <ul class="list-group">
-                                <li class="list-group-item" ng-repeat="entry in unmatches track by $index">
-                                    <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getEntry(entry).tags track by tag">{{tag}}</span>
-                                    {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
-                                </li>
-                            </ul>
-                            <uib-alert type="denger">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
-                            <!--
+                    <div class="jumbotron" ng-show="viewmode">
+                        <h1>{{model.event.name}}</h1>
+                        <p>{{model.event.description}}</p>
+                        <p><a ng-href="{{model.event.url}}" target="_blank">{{model.event.url}}</a></p>
+                    </div>
+                </div>
+
+                <div ng-show="active_tab=='event'" ng-click="selectTab('event')">
+                    <input type="text" class="form-control" ng-model="model.event.name" placeholder="名前">
+                    <input type="text" class="form-control" ng-model="model.event.description" placeholder="説明">
+                    <input type="text" class="form-control" ng-model="model.event.url" placeholder="URL">
+                </div>
+
+                <div ng-show="active_tab=='entry'">
+                    <div ng-hide="selected.entry">
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-success glyphicon glyphicon-plus" ng-click="addEntry()">チームの追加</li>
+                            <li class="list-group-item" ng-class="{'active': entry == selected.entry}" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
+                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
+                                <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
+                                <p class="list-group-item-text">{{entry.description}}</p>
+                                <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank" ng-click="$event.stopPropagation()">{{entry.url}}</a></p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div ng-show="selected.entry">
+                        <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
+                        <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
+                        <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
+                        <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
+                        <button type="button" class='btn btn-danger glyphicon glyphicon-trash' ng-click="removeEntry(selected.entry)" style="float:right">チームの削除</button>
+                    </div>
+                </div>
+
+                <div ng-show="active_tab=='match'">
+                    <div ng-hide="1 < model.entries.length">
+                        <uib-alert type="info">まずは entry から2チーム以上登録してください。</uib-alert>
+                    </div>
+                    <div ng-show="1 < model.entries.length">
+                        <div ng-show="0 == model.matches.length">
+                            <uib-alert type="info">トーナメントの抽選を行い試合を組み合わせ、試合表とトーナメントツリーを作成します。</uib-alert>
+                            <uib-alert type="warning">現在の splatournament のバージョンではトーナメントツリー作成後に entry の追加/削除を行うと抽選のやり直しになります。</uib-alert>
+                            <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">抽選の実行</button>
+                        </div>
+                        <div ng-show="0 < model.matches.length">
+                            <div ng-show="0 < unmatches.length" style="margin-bottom:24px;">
+                                <uib-alert type="info">次のチームがトーナメントに組み込まれていません。</uib-alert>
+                                <ul class="list-group">
+                                    <li class="list-group-item" ng-repeat="entry in unmatches track by $index">
+                                        <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getEntry(entry).tags track by tag">{{tag}}</span>
+                                        {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
+                                    </li>
+                                </ul>
+                                <uib-alert type="denger">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
+                                <!--
                                 <uib-alert ng-show="over_bit_level" type="denger">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
                                 <button ng-hide="over_bit_level" type="button" class='btn btn-primary btn-lg btn-block' ng-click="appendMatch()">追加の抽選の実行</button>
                             -->
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item" ng-repeat="match in model.matches track by $index" ng-show="2<=match.entries.length">
-                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
-                                <h4 class="list-group-item-heading">{{match.name}}</h4>
-                                <ul class="list-group">
-                                    <li class="list-group-item"
-                                        ng-repeat="entry in match.entries track by $index"
-                                        ng-click="setWinner(match,entry)"
-                                        ng-class="getMatchEntryClass(match,entry)">
-                                        <span ng-show="searchEntry(entry)">
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
-                                            {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
-                                        </span>
-                                        <span ng-hide="searchEntry(entry)">
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
-                                            <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
-                                            <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
-                                            {{getMatch(entry).name}} の勝者
-                                        </span>
-                                    </li>
-                                </ul>
-                                {{match.description}}
-                            </li>
-                        </ul>
+                            </div>
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="match in model.matches track by $index" ng-show="2<=match.entries.length">
+                                    <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
+                                    <h4 class="list-group-item-heading">{{match.name}}</h4>
+                                    <ul class="list-group">
+                                        <li class="list-group-item"
+                                            ng-repeat="entry in match.entries track by $index"
+                                            ng-click="setWinner(match,entry)"
+                                            ng-class="getMatchEntryClass(match,entry)">
+                                            <span ng-show="searchEntry(entry)">
+                                                <span ng-class="getMatchResultClass(match,entry)"></span>
+                                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
+                                                {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
+                                            </span>
+                                            <span ng-hide="searchEntry(entry)">
+                                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
+                                                <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
+                                                <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
+                                                {{getMatch(entry).name}} の勝者
+                                            </span>
+                                        </li>
+                                    </ul>
+                                    {{match.description}}
+                                </li>
+                            </ul>
 
-                        <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()">現在の抽選を全て破棄して抽選の再実行</button>
+                            <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()">現在の抽選を全て破棄して抽選の再実行</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div ng-show="active_tab=='import'">
-                <textarea class="form-control" rows="10" ng-model="json"></textarea>
-                <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="import(json)">import</button>
-            </div>
+                <div ng-show="active_tab=='import'">
+                    <textarea class="form-control" rows="10" ng-model="json"></textarea>
+                    <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="import(json)">import</button>
+                </div>
 
-            <div ng-show="active_tab=='export'">
-                <textarea class="form-control" rows="10">{{toJson(model)}}</textarea>
-            </div>
+                <div ng-show="active_tab=='export'">
+                    <textarea class="form-control" rows="10">{{toJson(model)}}</textarea>
+                </div>
 
-            <div ng-show="active_tab=='chart'">
-                <div id="chart"></div>
+                <div ng-show="active_tab=='tree'">
+                    <div id="chart"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -531,12 +540,9 @@
                 update(source);
             }
         }
-
         //d3.json("bracket.json", update_tournament_tree);
-        setTimeout(function () { update_tournament_tree(tournament_tree); }, 0);
-        //setTimeout(function () { update_tournament_tree(tournament_tree2); }, 3000);
 
-        var app = angular.module("splatournament", ["ui.bootstrap", "angularUUID2"]);
+        var app = angular.module("splatournament", ['ui.router', "ui.bootstrap", "angularUUID2"]);
 
         app.config(["$locationProvider", function ($locationProvider) {
             $locationProvider.html5Mode({
@@ -599,7 +605,7 @@
             };
         });
 
-        app.controller("splatornament", function ($scope, $http, $location, $filter, uuid2) {
+        app.controller("splatornament", function ($rootScope, $scope, $http, $location, $filter, uuid2) {
 
             //  http://stackoverflow.com/questions/20789373/shuffle-array-in-ng-repeat-angular
             $scope.shuffleArray = function (array) {
@@ -642,8 +648,10 @@
             };
 
             $scope.app = {
+                name: "splatournament",
                 version: "X.XX.XXX"
             };
+            $rootScope.title = $scope.app.name;
 
             $http({
                 method: 'GET',
@@ -665,6 +673,7 @@
 
             var data_json = $location.search()["data"];
             if (data_json && 0 < data_json.length) {
+                $scope.is_loading = true;
                 $http({
                     method: 'GET',
                     url: data_json
@@ -672,24 +681,38 @@
                     $scope.model = data;
                     $scope.regulateModel();
                     $scope.viewmode = true;
-                    $scope.tabs = ["info", "entry", "match", "chart"];
+                    $scope.tabs = ["entry", "match", "tree"];
+                    $scope.selectTab($location.hash());
+                    $rootScope.title = $scope.app.name = $scope.model.event.name;
+                    $scope.is_loading = false;
                 }).error(function (data, status, headers, config) {
                     $scope.addAlert({ type: 'danger', msg: 'インポート中にエラーが発生しました。 '});
+                    $scope.is_loading = false;
                 });
             }
 
             //$scope.change = function () {
             //};
 
-            $scope.tabs = ["info", "event", "entry", "match", "import", "export", "chart"];
-            $scope.active_tab = $scope.tabs[0];
+            $scope.mastertabs = ["event", "entry", "match", "import", "export", "tree"];
+            $scope.tabs = $scope.mastertabs;
             $scope.selectTab = function (tab) {
-                $scope.active_tab = tab;
                 $scope.isCollapsed = false;
-                if ("match" == tab) {
+                if (0 <= $scope.mastertabs.indexOf(tab)) {
+                    $scope.active_tab = tab;
+                } else {
+                    $scope.active_tab = null;
+                }
+                if ("match" == $scope.active_tab) {
                     $scope.update_unmatches();
                 }
+                if ("tree" == $scope.active_tab) {
+                    $scope.update_tree();
+                }
             };
+            setTimeout(function () {
+                $scope.selectTab($location.hash());
+            }, 0);
 
             //  cache
             $scope.getCache = function (type, key) {
@@ -937,15 +960,27 @@
                 if ($scope.searchEntry(entry)) {
                     if (match.winners && 0 < match.winners.length) {
                         if (0 <= match.winners.indexOf(entry)) {
-                            return 'glyphicon glyphicon-ok list-group-item-success';
+                            return 'list-group-item-success';
                         } else {
-                            return 'glyphicon glyphicon-remove list-group-item-danger';
+                            return 'list-group-item-danger';
                         }
                     } else {
                         return 'list-group-item-info';
                     }
                 }
                 return 'list-group-item-warning';
+            }
+            $scope.getMatchResultClass = function (match, entry) {
+                if ($scope.searchEntry(entry)) {
+                    if (match.winners && 0 < match.winners.length) {
+                        if (0 <= match.winners.indexOf(entry)) {
+                            return 'glyphicon glyphicon-ok';
+                        } else {
+                            return 'glyphicon glyphicon-remove';
+                        }
+                    }
+                }
+                return '';
             }
 
             $scope.import = function (text) {
@@ -956,6 +991,10 @@
                 } catch (e) {
                     $scope.addAlert({ type: 'danger', msg: 'インポート中に例外が発生しました。 ' + e });
                 }
+            };
+
+            $scope.update_tree = function () {
+                update_tournament_tree(tournament_tree);
             };
 
             $scope.regulateModel();
