@@ -65,8 +65,9 @@
             stroke: #ccc;
             stroke-width: 1.5px;
         }
-        path.red {
-            stroke: #f88;
+        path.winner {
+            stroke: #6d6;
+            stroke-width: 3.0px;
         }
 
         .footer .container ul {
@@ -431,8 +432,7 @@
 
             // Enter any new links at the parent's previous position.
             link.enter().insert("path", "g")
-                .attr("class", "link")
-                //.attr("class", "link red")
+                .attr("class", function (d) { return d.target.is_winner ? "link winner": "link";})
                 .attr("d", function (d) {
                     var o = { x: source.x0, y: source.y0 };
                     return connector({ source: o, target: o });
@@ -880,10 +880,20 @@
             $scope.setWinner = function (match, entry) {
                 var winner = $scope.searchEntry(entry);
                 if (match && winner) {
+                    var sub_match = $scope.getMatch(entry);
+                    if (sub_match && 1 != sub_match.entries.length) {
+                        sub_match = null;
+                    }
                     if (match.winners && 0 <= match.winners.indexOf(entry)) {
                         match.winners = [];
+                        if (sub_match) {
+                            sub_match.winners = [];
+                        }
                     } else {
                         match.winners = [entry];
+                        if (sub_match) {
+                            sub_match.winners = [sub_match.entries[0]];
+                        }
                     }
                 }
                 $scope.cache = {};
@@ -932,12 +942,15 @@
                         entries: []
                     };
                     angular.forEach(match.entries, function (entry, i) {
+                        var sub_result = null;
                         var sub_match = $scope.getMatch(entry);
                         if (sub_match) {
-                            result.entries.push(match_to_tree(sub_match));
+                            sub_result = match_to_tree(sub_match);
                         } else {
-                            result.entries.push({ name: $scope.getEntry(entry).name });
+                            sub_result = { name: $scope.getEntry(entry).name };
                         }
+                        sub_result.is_winner = match.winners && 0 <= match.winners.indexOf(entry);
+                        result.entries.push(sub_result);
                     });
                     return result;
                 };
