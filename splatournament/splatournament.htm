@@ -174,9 +174,13 @@
 
                 <div ng-show="active_tab=='entry'">
                     <div ng-hide="selected.entry">
+                        <div class="input-group">
+                            <span class="input-group-addon glyphicon glyphicon-search" id="entry-search-icon"></span>
+                            <input type="text" class="form-control" placeholder="キーワード" aria-describedby="entry-search-icon" ng-model="selected.search">
+                        </div>
                         <ul class="list-group">
-                            <li class="list-group-item list-group-item-success glyphicon glyphicon-plus" ng-click="addEntry()">チームの追加</li>
-                            <li class="list-group-item" ng-class="{'active': entry == selected.entry}" ng-repeat="entry in model.entries track by $index" ng-click="selectEntry(entry)">
+                            <li class="list-group-item list-group-item-success glyphicon glyphicon-plus" ng-click="addEntry()" ng-hide="viewmode">チームの追加</li>
+                            <li class="list-group-item" ng-class="{'active': entry == selected.entry}" ng-repeat="entry in model.entries | filter:filterEntry track by $index" ng-click="selectEntry(entry)">
                                 <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
                                 <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
                                 <p class="list-group-item-text">{{entry.description}}</p>
@@ -184,24 +188,86 @@
                             </li>
                         </ul>
                     </div>
-                    <div ng-show="selected.entry">
+                    <div ng-show="selected.entry && !viewmode">
                         <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
                         <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
                         <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
                         <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
                         <button type="button" class='btn btn-danger glyphicon glyphicon-trash' ng-click="removeEntry(selected.entry)" style="float:right">チームの削除</button>
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="match in selected.entryMatches track by $index" ng-show="2<=match.entries.length">
+                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
+                                <h4 class="list-group-item-heading">{{match.name}}</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item"
+                                        ng-repeat="entry in match.entries track by $index"
+                                        ng-click="viewmode ? showEntry(entry): setWinner(match,entry)"
+                                        ng-class="getMatchEntryClass(match,entry)">
+                                        <span ng-show="searchEntry(entry)">
+                                            <span ng-class="getMatchResultClass(match,entry)"></span>
+                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
+                                            {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
+                                        </span>
+                                        <span ng-hide="searchEntry(entry)">
+                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
+                                            <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
+                                            <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
+                                            {{getMatch(entry).name}} の勝者
+                                        </span>
+                                    </li>
+                                </ul>
+                                {{match.description}}
+                            </li>
+                        </ul>
+                    </div>
+                    <div ng-show="selected.entry && viewmode">
+                        <div class="jumbotron">
+                            <h1>{{selected.entry.name}}</h1>
+                            <p>{{selected.entry.description}}</p>
+                            <p><a ng-href="{{selected.entry.url}}" target="_blank">{{selected.entry.url}}</a></p>
+                        </div>
+                        <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="match in selected.entryMatches track by $index" ng-show="2<=match.entries.length">
+                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
+                                <h4 class="list-group-item-heading">{{match.name}}</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item"
+                                        ng-repeat="entry in match.entries track by $index"
+                                        ng-click="viewmode ? showEntry(entry): setWinner(match,entry)"
+                                        ng-class="getMatchEntryClass(match,entry)">
+                                        <span ng-show="searchEntry(entry)">
+                                            <span ng-class="getMatchResultClass(match,entry)"></span>
+                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
+                                            {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
+                                        </span>
+                                        <span ng-hide="searchEntry(entry)">
+                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
+                                            <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
+                                            <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
+                                            {{getMatch(entry).name}} の勝者
+                                        </span>
+                                    </li>
+                                </ul>
+                                {{match.description}}
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
                 <div ng-show="active_tab=='match'">
                     <div ng-hide="1 < model.entries.length">
-                        <uib-alert type="info">まずは entry から2チーム以上登録してください。</uib-alert>
+                        <uib-alert type="info" ng-hide="viewmode">まずは entry から2チーム以上登録してください。</uib-alert>
+                        <uib-alert type="info" ng-show="viewmode">このトーナメントはまだ十分な数のチームが登録されていません。</uib-alert>
                     </div>
                     <div ng-show="1 < model.entries.length">
-                        <div ng-show="0 == model.matches.length">
+                        <div ng-show="0 == model.matches.length && !viewmode">
                             <uib-alert type="info">トーナメントの抽選を行い試合を組み合わせ、試合表とトーナメントツリーを作成します。</uib-alert>
                             <uib-alert type="warning">現在の splatournament のバージョンではトーナメントツリー作成後に entry の追加/削除を行うと抽選のやり直しになります。</uib-alert>
                             <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">抽選の実行</button>
+                        </div>
+                        <div ng-show="0 == model.matches.length && viewmode">
+                            <uib-alert type="info">このトーナメントはまだ試合の組み合わを決める抽選が行われていません。通常、抽選は参加登録が締め切られてから実施されます。</uib-alert>
                         </div>
                         <div ng-show="0 < model.matches.length">
                             <div ng-show="0 < unmatches.length" style="margin-bottom:24px;">
@@ -212,11 +278,11 @@
                                         {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
                                     </li>
                                 </ul>
-                                <uib-alert type="denger">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
+                                <uib-alert type="denger" ng-hide="viewmode">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
                                 <!--
                                 <uib-alert ng-show="over_bit_level" type="denger">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
                                 <button ng-hide="over_bit_level" type="button" class='btn btn-primary btn-lg btn-block' ng-click="appendMatch()">追加の抽選の実行</button>
-                            -->
+                                -->
                             </div>
                             <ul class="list-group">
                                 <li class="list-group-item" ng-repeat="match in model.matches track by $index" ng-show="2<=match.entries.length">
@@ -225,7 +291,7 @@
                                     <ul class="list-group">
                                         <li class="list-group-item"
                                             ng-repeat="entry in match.entries track by $index"
-                                            ng-click="setWinner(match,entry)"
+                                            ng-click="viewmode ? showEntry(entry): setWinner(match,entry)"
                                             ng-class="getMatchEntryClass(match,entry)">
                                             <span ng-show="searchEntry(entry)">
                                                 <span ng-class="getMatchResultClass(match,entry)"></span>
@@ -244,7 +310,7 @@
                                 </li>
                             </ul>
 
-                            <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()">現在の抽選を全て破棄して抽選の再実行</button>
+                            <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()" ng-hide="viewmode">現在の抽選を全て破棄して抽選の再実行</button>
                         </div>
                     </div>
                 </div>
@@ -432,7 +498,9 @@
 
             // Enter any new links at the parent's previous position.
             link.enter().insert("path", "g")
-                .attr("class", function (d) { return d.target.is_winner ? "link winner": "link";})
+                .attr("class", function (d) {
+                    return (d.target.is_winner || (d.source.is_winner && 1 == d.source.entries.length)) ? "link winner" : "link";
+                })
                 .attr("d", function (d) {
                     var o = { x: source.x0, y: source.y0 };
                     return connector({ source: o, target: o });
@@ -629,6 +697,7 @@
             $scope.mastertabs = ["event", "entry", "match", "import", "export", "tree"];
             $scope.tabs = $scope.mastertabs;
             $scope.selectTab = function (tab) {
+                $scope.selected = {};
                 $scope.isCollapsed = false;
                 if (0 <= $scope.mastertabs.indexOf(tab)) {
                     $scope.active_tab = tab;
@@ -674,18 +743,6 @@
                 }
                 return result;
             };
-            $scope.getMatch = function (id) {
-                var result = $scope.getCache("match", id);
-                if (!result) {
-                    angular.forEach($scope.model.matches, function (match, i) {
-                        if (id == match.id) {
-                            result = match;
-                            $scope.setCache("match", id, match);
-                        }
-                    });
-                }
-                return result;
-            };
             $scope.searchEntry = function (id) {
                 var result = $scope.getCache("search_entry", id);
                 if (!result) {
@@ -706,10 +763,38 @@
                 }
                 return result;
             };
+            $scope.getMatch = function (id) {
+                var result = $scope.getCache("match", id);
+                if (!result) {
+                    angular.forEach($scope.model.matches, function (match, i) {
+                        if (id == match.id) {
+                            result = match;
+                            $scope.setCache("match", id, match);
+                        }
+                    });
+                }
+                return result;
+            };
+            $scope.getNextMatch = function (id) {
+                var result = 0;
+                angular.forEach($scope.model.matches, function (match, i) {
+                    if (match.entries && 0 <= match.entries.indexOf(id)) {
+                        result = match;
+                    }
+                });
+                return result;
+            };
 
             //  entry
             $scope.selectEntry = function (entry) {
                 $scope.selected.entry = entry;
+                $scope.selected.entryMatches = [];
+                if ($scope.selected.entry && $scope.model.matches) {
+                    var match = entry;
+                    while (match = $scope.getNextMatch(match.id)) {
+                        $scope.selected.entryMatches.push(match);
+                    }
+                }
             }
             $scope.addEntry = function () {
                 var entry = { tags: ["new", "4"] };
@@ -721,6 +806,13 @@
                 $scope.model.entries.splice(index, 1);
                 $scope.selectEntry(null);
             };
+            $scope.filterEntry = function (value, index, array) {
+                return !($scope.selected.search) ||
+                    0 == $scope.selected.search.length ||
+                    0 <= (value.name || "").indexOf($scope.selected.search) ||
+                    0 <= (value.description || "").indexOf($scope.selected.search) ||
+                    0 <= (value.url || "").indexOf($scope.selected.search);
+            }
 
             //  match
             $scope.get_matched_entries = function () {
@@ -877,23 +969,20 @@
                 $scope.update_unmatches();
                 $scope.makeMatch();
             };
+            $scope.showEntry = function (entry) {
+                var entryBody = $scope.searchEntry(entry);
+                if (entryBody) {
+                    $scope.selectTab("entry");
+                    $scope.selectEntry(entryBody);
+                }
+            }
             $scope.setWinner = function (match, entry) {
                 var winner = $scope.searchEntry(entry);
                 if (match && winner) {
-                    var sub_match = $scope.getMatch(entry);
-                    if (sub_match && 1 != sub_match.entries.length) {
-                        sub_match = null;
-                    }
                     if (match.winners && 0 <= match.winners.indexOf(entry)) {
                         match.winners = [];
-                        if (sub_match) {
-                            sub_match.winners = [];
-                        }
                     } else {
                         match.winners = [entry];
-                        if (sub_match) {
-                            sub_match.winners = [sub_match.entries[0]];
-                        }
                     }
                 }
                 $scope.cache = {};
