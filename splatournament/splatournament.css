@@ -1,0 +1,55 @@
+﻿/* base */
+body,
+table,
+div,
+.node text {
+    font-family: "Yu Gothic UI", "Meiryo UI", "メイリオ", "MS UI Gothic", sans-serif;
+}
+
+/* body */
+body {
+    background-color:#EEEEEE;
+}
+.body {
+    background-color:#FFFFFF;
+    padding-bottom:24px;
+}
+
+/* ui.bootstrap fix */
+.pull-xs-right {
+    float:right;
+}
+.label-pill {
+    padding-right: 0.6em;
+    padding-left: 0.6em;
+    border-radius: 10rem;
+}
+
+/* tree */
+.node circle {
+    cursor: pointer;
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+.node text {
+    font-size: 12px;
+}
+path.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+path.winner {
+    stroke: #6d6;
+    stroke-width: 3.0px;
+}
+
+/* footer */
+.footer .container ul {
+    margin: 16px;
+}
+.footer .container ul li {
+    list-style-type: none;
+}
+
