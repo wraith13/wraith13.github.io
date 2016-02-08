@@ -66,7 +66,7 @@ var vis = d3.select("#chart").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var update_tournament_tree = function (json) {
+var update_tournament_tree = function (json, showObject) {
     root = json;
     root.x0 = height / 2;
     root.y0 = width / 2;
@@ -80,7 +80,7 @@ var update_tournament_tree = function (json) {
     }
     rebuildChildren(root);
     root.isRight = false;
-    update(root);
+    update(root, showObject);
 }
 
 var toArray = function (item, arr) {
@@ -93,7 +93,7 @@ var toArray = function (item, arr) {
     return arr;
 };
 
-function update(source) {
+function update(source, showObject) {
     // Compute the new tree layout.
     var nodes = toArray(source);
 
@@ -107,8 +107,8 @@ function update(source) {
     // Enter any new nodes at the parent's previous position.
     var nodeEnter = node.enter().append("g")
         .attr("class", "node")
-        .attr("transform", function (d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-        .on("click", click);
+        .attr("transform", function (d) { return "translate(" + source.y0 + "," + source.x0 + ")"; });
+        //.on("click", click);
 
     nodeEnter.append("circle")
         .attr("r", 1e-6)
@@ -117,6 +117,9 @@ function update(source) {
     nodeEnter.append("text")
         .attr("dy", function (d) { return d.isRight ? 14 : -8; })
         .attr("text-anchor", "middle")
+        .on("click", function (d) {
+            if (d.name) { showObject(d.original_id) }
+        })
         .text(function (d) { return d.name; })
         .style("fill-opacity", 1e-6);
 
@@ -181,16 +184,16 @@ function update(source) {
     });
 
     // Toggle children on click.
-    function click(d) {
-        if (d.children) {
-            d._children = d.children;
-            d.children = null;
-        } else {
-            d.children = d._children;
-            d._children = null;
-        }
-        update(source);
-    }
+    //function click(d) {
+    //    if (d.children) {
+    //        d._children = d.children;
+    //        d.children = null;
+    //    } else {
+    //        d.children = d._children;
+    //        d._children = null;
+    //    }
+    //    update(source, showObject);
+    //}
 }
 //d3.json("bracket.json", update_tournament_tree);
 
@@ -301,6 +304,7 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
 
     $scope.app = {
         name: "splatournament",
+        description: "このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる各種トーナメント形式での大会向けのトーナメント管理ツールです。",
         version: "X.XX.XXX"
     };
     $rootScope.title = $scope.app.name;
@@ -407,13 +411,33 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
         $scope.repository[type].splice(index, 1);
         $scope.selectObject(type, null);
     };
+    $scope.showObject = function (object) {
+        var id = $scope.makeSureId(object);
+        var entry = $scope.getEntry(id);
+        if (entry) {
+            $scope.selectTab("entry");
+            $scope.selectEntry(entry);
+            $scope.$apply();
+            return entry;
+        }
+        var match = $scope.getMatch(id);
+        if (match) {
+            $scope.selectMatch(match);
+            $scope.$apply();
+            return match;
+        }
+    }
 
     //  id
     $scope.makeSureId = function (object) {
-        if (!object.id) {
-            object.id = uuid2.newuuid();
+        if (null != object && "object" == typeof (object)) {
+            if (!object.id) {
+                object.id = uuid2.newuuid();
+            }
+            return object.id;
+        } else {
+            return object; // null or id
         }
-        return object.id;
     };
     $scope.getEntry = function (id) {
         return $scope.getObject("entry", id);
@@ -464,10 +488,10 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
         }
     }
     $scope.addEntry = function () {
-        $scope.addObject({ tags: ["new", "4"] });
+        $scope.addObject("entry", { tags: ["new", "4"] });
     };
     $scope.removeEntry = function (entry) {
-        $scope.removeObject(entry);
+        $scope.removeObject("entry", entry);
     };
     $scope.filterEntry = function (value, index, array) {
         var search = $scope.selected.entrySearch;
@@ -733,8 +757,11 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
                 var sub_match = $scope.getMatch(entry);
                 if (sub_match) {
                     sub_result = match_to_tree(sub_match);
+                    sub_result.original_id = sub_match.id;
                 } else {
-                    sub_result = { name: $scope.getEntry(entry).name };
+                    var sub_entry = $scope.getEntry(entry);
+                    sub_result = { name: sub_entry.name };
+                    sub_result.original_id = sub_entry.id;
                 }
                 sub_result.is_winner = match.winners && 0 <= match.winners.indexOf(entry);
                 result.entries.push(sub_result);
@@ -742,7 +769,7 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
             return result;
         };
         if ($scope.model.matches && 0 < $scope.model.matches.length) {
-            update_tournament_tree(match_to_tree($scope.model.matches[$scope.model.matches.length -1]));
+            update_tournament_tree(match_to_tree($scope.model.matches[$scope.model.matches.length -1]), $scope.showObject);
         }
     };
 

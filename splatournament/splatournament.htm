@@ -82,6 +82,58 @@
             </div>
         </header>
 
+        <script type="text/ng-template" id="jumbotron.html">
+            <div class="jumbotron">
+                <h1>{{model.name}}</h1>
+                <p>{{model.description}}</p>
+                <p><a ng-href="{{model.url}}" target="_blank">{{model.url}}</a></p>
+                <div ng-show="model.entries" ng-include="'match.entries.list.html'"></div>
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="edit.html">
+            <input type="text" class="form-control" ng-model="model.name" placeholder="名前">
+            <input type="text" class="form-control" ng-model="model.description" placeholder="説明">
+            <input type="text" class="form-control" ng-model="model.url" placeholder="URL">
+        </script>
+
+        <script type="text/ng-template" id="match.entries.list.html">
+            <ul class="list-group" ng-click="$event.stopPropagation()">
+                <li class="list-group-item"
+                    ng-repeat="entry in model.entries track by $index"
+                    ng-click="viewmode ? showEntry(entry): setWinner(model,entry)"
+                    ng-class="getMatchEntryClass(model,entry)">
+                    <span ng-show="searchEntry(entry)">
+                        <span ng-class="getMatchResultClass(model,entry)"></span>
+                        <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
+                        {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
+                    </span>
+                    <span ng-hide="searchEntry(entry)">
+                        <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
+                        <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
+                        <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
+                        {{getMatch(entry).name}} の勝者
+                    </span>
+                </li>
+            </ul>
+        </script>
+
+        <script type="text/ng-template" id="matches.list.html">
+            <div class="input-group">
+                <span class="input-group-addon glyphicon glyphicon-search" id="match-search-icon"></span>
+                <input type="text" class="form-control" placeholder="キーワード" aria-describedby="match-search-icon" ng-model="selected.matchSearch">
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="match in model | filter:filterMatch track by $index" ng-show="2<=match.entries.length" ng-click="selectMatch(match)">
+                    <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
+                    <h4 class="list-group-item-heading">{{match.name}}</h4>
+                    <div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [match]"></div>
+                    {{match.description}}
+                </li>
+            </ul>
+        </script>
+
+
         <div class="container theme-showcase" role="main">
 
             <div class="alert alert-danger" role="alert" ng-hide="true"><strong>JavaScriptが無効になっています。</strong>このページは JavaScript に強く依存しています。JavaScriptを有効にしてから再読み込みしてください。</div>
@@ -98,26 +150,9 @@
                 </div>
             </div>
             <div ng-hide="is_loading">
-                <div ng-hide="active_tab">
-                    <div class="jumbotron" ng-hide="viewmode">
-                        <h1>splatournament</h1>
-                        <p>
-                            このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる
-                            各種トーナメント形式での大会向けのトーナメント管理ツールです。
-                        </p>
-                    </div>
-                    <div class="jumbotron" ng-show="viewmode">
-                        <h1>{{model.event.name}}</h1>
-                        <p>{{model.event.description}}</p>
-                        <p><a ng-href="{{model.event.url}}" target="_blank">{{model.event.url}}</a></p>
-                    </div>
-                </div>
+                <div ng-hide="active_tab" ng-include="'jumbotron.html'" ng-repeat="model in [viewmode?model.event:app]"></div>
 
-                <div ng-show="active_tab=='event'" ng-click="selectTab('event')">
-                    <input type="text" class="form-control" ng-model="model.event.name" placeholder="名前">
-                    <input type="text" class="form-control" ng-model="model.event.description" placeholder="説明">
-                    <input type="text" class="form-control" ng-model="model.event.url" placeholder="URL">
-                </div>
+                <div ng-show="active_tab=='event'" ng-include="'edit.html'" ng-repeat="model in [model.event]"></div>
 
                 <div ng-show="active_tab=='entry'">
                     <div ng-hide="selected.entry">
@@ -136,69 +171,15 @@
                         </ul>
                     </div>
                     <div ng-show="selected.entry && !viewmode">
-                        <input type="text" class="form-control" ng-model="selected.entry.name" placeholder="名前">
-                        <input type="text" class="form-control" ng-model="selected.entry.description" placeholder="説明">
-                        <input type="text" class="form-control" ng-model="selected.entry.url" placeholder="URL">
+                        <div ng-include="'edit.html'" ng-repeat="model in [selected.entry]"></div>
                         <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
                         <button type="button" class='btn btn-danger glyphicon glyphicon-trash' ng-click="removeEntry(selected.entry)" style="float:right">チームの削除</button>
-                        <ul class="list-group">
-                            <li class="list-group-item" ng-repeat="match in selected.entryMatches track by $index" ng-show="2<=match.entries.length" ng-click="selectMatch(match)">
-                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
-                                <h4 class="list-group-item-heading">{{match.name}}</h4>
-                                <ul class="list-group" ng-click="$event.stopPropagation()">
-                                    <li class="list-group-item"
-                                        ng-repeat="entry in match.entries track by $index"
-                                        ng-click="viewmode ? showEntry(entry): setWinner(match,entry)"
-                                        ng-class="getMatchEntryClass(match,entry)">
-                                        <span ng-show="searchEntry(entry)">
-                                            <span ng-class="getMatchResultClass(match,entry)"></span>
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
-                                            {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
-                                        </span>
-                                        <span ng-hide="searchEntry(entry)">
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
-                                            <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
-                                            <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
-                                            {{getMatch(entry).name}} の勝者
-                                        </span>
-                                    </li>
-                                </ul>
-                                {{match.description}}
-                            </li>
-                        </ul>
+                        <div ng-include="'matches.list.html'" ng-repeat="model in [selected.entryMatches]"></div>
                     </div>
                     <div ng-show="selected.entry && viewmode">
-                        <div class="jumbotron">
-                            <h1>{{selected.entry.name}}</h1>
-                            <p>{{selected.entry.description}}</p>
-                            <p><a ng-href="{{selected.entry.url}}" target="_blank">{{selected.entry.url}}</a></p>
-                        </div>
+                        <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.entry]"></div>
                         <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
-                        <ul class="list-group">
-                            <li class="list-group-item" ng-repeat="match in selected.entryMatches track by $index" ng-show="2<=match.entries.length" ng-click="selectMatch(match)">
-                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
-                                <h4 class="list-group-item-heading">{{match.name}}</h4>
-                                <ul class="list-group" ng-click="$event.stopPropagation()">
-                                    <li class="list-group-item"
-                                        ng-repeat="entry in match.entries track by $index"
-                                        ng-click="viewmode ? showEntry(entry): setWinner(match,entry)"
-                                        ng-class="getMatchEntryClass(match,entry)">
-                                        <span ng-show="searchEntry(entry)">
-                                            <span ng-class="getMatchResultClass(match,entry)"></span>
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
-                                            {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
-                                        </span>
-                                        <span ng-hide="searchEntry(entry)">
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
-                                            <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
-                                            <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
-                                            {{getMatch(entry).name}} の勝者
-                                        </span>
-                                    </li>
-                                </ul>
-                                {{match.description}}
-                            </li>
-                        </ul>
+                        <div ng-include="'matches.list.html'" ng-repeat="model in [selected.entryMatches]"></div>
                     </div>
                 </div>
 
@@ -231,86 +212,27 @@
                                 <button ng-hide="over_bit_level" type="button" class='btn btn-primary btn-lg btn-block' ng-click="appendMatch()">追加の抽選の実行</button>
                                 -->
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon glyphicon glyphicon-search" id="match-search-icon"></span>
-                                <input type="text" class="form-control" placeholder="キーワード" aria-describedby="match-search-icon" ng-model="selected.matchSearch">
-                            </div>
+
+                            <div ng-include="'matches.list.html'" ng-repeat="model in [model.matches]"></div>
+                            <!--
                             <ul class="list-group">
                                 <li class="list-group-item" ng-repeat="match in model.matches | filter:filterMatch track by $index" ng-show="2<=match.entries.length" ng-click="selectMatch(match)">
                                     <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
                                     <h4 class="list-group-item-heading">{{match.name}}</h4>
-                                    <ul class="list-group" ng-click="$event.stopPropagation()">
-                                        <li class="list-group-item"
-                                            ng-repeat="entry in match.entries track by $index"
-                                            ng-click="viewmode ? showEntry(entry): setWinner(match,entry)"
-                                            ng-class="getMatchEntryClass(match,entry)">
-                                            <span ng-show="searchEntry(entry)">
-                                                <span ng-class="getMatchResultClass(match,entry)"></span>
-                                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
-                                                {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
-                                            </span>
-                                            <span ng-hide="searchEntry(entry)">
-                                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
-                                                <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
-                                                <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
-                                                {{getMatch(entry).name}} の勝者
-                                            </span>
-                                        </li>
-                                    </ul>
+                                    <div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [match]"></div>
                                     {{match.description}}
                                 </li>
                             </ul>
-
+                            -->
                             <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()" ng-hide="viewmode">現在の抽選を全て破棄して抽選の再実行</button>
                         </div>
                         <div ng-show="selected.match && !viewmode">
-                            <input type="text" class="form-control" ng-model="selected.match.name" placeholder="名前">
-                            <input type="text" class="form-control" ng-model="selected.match.description" placeholder="説明">
-                            <input type="text" class="form-control" ng-model="selected.match.url" placeholder="URL">
+                            <div ng-include="'edit.html'" ng-repeat="model in [selected.match]"></div>
                             <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMatch(null)">戻る</button>
-                            <ul class="list-group" ng-click="$event.stopPropagation()">
-                                <li class="list-group-item"
-                                    ng-repeat="entry in selected.match.entries track by $index"
-                                    ng-click="viewmode ? showEntry(entry): setWinner(selected.match,entry)"
-                                    ng-class="getMatchEntryClass(selected.match,entry)">
-                                    <span ng-show="searchEntry(entry)">
-                                        <span ng-class="getMatchResultClass(selected.match,entry)"></span>
-                                        <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
-                                        {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
-                                    </span>
-                                    <span ng-hide="searchEntry(entry)">
-                                        <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
-                                        <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
-                                        <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
-                                        {{getMatch(entry).name}} の勝者
-                                    </span>
-                                </li>
-                            </ul>
+                            <div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [selected.match]"></div>
                         </div>
                         <div ng-show="selected.match && viewmode">
-                            <div class="jumbotron" ng-show="viewmode">
-                                <h1>{{selected.match.name}}</h1>
-                                <p>{{selected.match.description}}</p>
-                                <p><a ng-href="{{selected.match.url}}" target="_blank">{{selected.match.url}}</a></p>
-                                <ul class="list-group" ng-click="$event.stopPropagation()">
-                                    <li class="list-group-item"
-                                        ng-repeat="entry in selected.match.entries track by $index"
-                                        ng-click="viewmode ? showEntry(entry): setWinner(selected.match,entry)"
-                                        ng-class="getMatchEntryClass(selected.match,entry)">
-                                        <span ng-show="searchEntry(entry)">
-                                            <span ng-class="getMatchResultClass(selected.match,entry)"></span>
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
-                                            {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
-                                        </span>
-                                        <span ng-hide="searchEntry(entry)">
-                                            <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
-                                            <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
-                                            <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
-                                            {{getMatch(entry).name}} の勝者
-                                        </span>
-                                    </li>
-                                </ul>
-                            </div>
+                            <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.match]"></div>
                             <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMatch(null)">戻る</button>
                         </div>
                     </div>
