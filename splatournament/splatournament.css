@@ -32,6 +32,9 @@ body {
     stroke: steelblue;
     stroke-width: 1.5px;
 }
+.null circle {
+    display: none;
+}
 .node text {
     font-size: 12px;
 }

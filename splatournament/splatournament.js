@@ -1,4 +1,36 @@
-﻿//window.onload = function () {
+﻿// hand include from http://ngmodules.org/modules/Angular.uuid
+//'use strict' d3 周りのコードが上手く機能しなくなる問題が解決されたらコメントをハズすこと。
+angular.module('angularUUID2', []).factory('uuid2', [
+    function () {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+
+        return {
+
+            newuuid: function () {
+                // http://www.ietf.org/rfc/rfc4122.txt
+                var s = [];
+                var hexDigits = "0123456789abcdef";
+                for (var i = 0; i < 36; i++) {
+                    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+                }
+                s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+                s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+                s[8] = s[13] = s[18] = s[23] = "-";
+                return s.join("");
+            },
+            newguid: function () {
+                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                    s4() + '-' + s4() + s4() + s4();
+            }
+        }
+
+    }]);
+
+//window.onload = function () {
 //    var pickerOptions = {
 //        success: function(files) {
 //            // Handle returned file object(s)
@@ -106,7 +138,9 @@ function update(source, showObject) {
 
     // Enter any new nodes at the parent's previous position.
     var nodeEnter = node.enter().append("g")
-        .attr("class", "node")
+        .attr("class", function (d) {
+            return (d.name && 0 < d.name.length) ? "node" : "null";
+        })
         .attr("transform", function (d) { return "translate(" + source.y0 + "," + source.x0 + ")"; });
         //.on("click", click);
 
@@ -564,7 +598,7 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
             var number = 0;
             angular.forEach(lastMatch.entries, function (match_id, i) {
                 var match = $scope.getMatch(match_id);
-                if (null != match) {
+                if (null != match && null != match.entries && 2 <= match.entries.length) {
                     match.name = "準決勝 第" + (++number) + "試合";
                 }
             });

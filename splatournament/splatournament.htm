@@ -26,39 +26,6 @@
 
     <link href="splatournament.css" rel="stylesheet" />
 
-    <script type="text/javascript">
-        // hand include from http://ngmodules.org/modules/Angular.uuid
-        'use strict'
-        angular.module('angularUUID2', []).factory('uuid2', [
-            function () {
-                function s4() {
-                    return Math.floor((1 + Math.random()) * 0x10000)
-                        .toString(16)
-                        .substring(1);
-                }
-
-                return {
-
-                    newuuid: function () {
-                        // http://www.ietf.org/rfc/rfc4122.txt
-                        var s = [];
-                        var hexDigits = "0123456789abcdef";
-                        for (var i = 0; i < 36; i++) {
-                            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-                        }
-                        s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
-                        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
-                        s[8] = s[13] = s[18] = s[23] = "-";
-                        return s.join("");
-                    },
-                    newguid: function () {
-                        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-                            s4() + '-' + s4() + s4() + s4();
-                    }
-                }
-
-            }]);
-    </script>
 </head>
 <body id="body" ng-controller="splatornament">
     <div class="body">
@@ -105,13 +72,12 @@
                     ng-class="getMatchEntryClass(model,entry)">
                     <span ng-show="searchEntry(entry)">
                         <span ng-class="getMatchResultClass(model,entry)"></span>
-                        <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in searchEntry(entry).tags track by tag">{{tag}}</span>
+                        <span ng-include="'tag.html'" ng-repeat="model in searchEntry(entry).tags track by $index"></span>
                         {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
                     </span>
                     <span ng-hide="searchEntry(entry)">
-                        <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getMatch(entry).tags track by tag">{{tag}}</span>
-                        <span class="label label-default label-pill pull-xs-right">weight:{{getMatch(entry).weight}}</span>
-                        <span class="label label-default label-pill pull-xs-right">level:{{getMatch(entry).level}}</span>
+                        <span ng-include="'tag.html'" ng-repeat="model in getMatch(entry).tags track by $index"></span>
+                        <span ng-include="'tag.html'" ng-repeat="model in ['weight:'+getMatch(entry).weight,'level:'+getMatch(entry).level]"></span>
                         {{getMatch(entry).name}} の勝者
                     </span>
                 </li>
@@ -125,12 +91,15 @@
             </div>
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="match in model | filter:filterMatch track by $index" ng-show="2<=match.entries.length" ng-click="selectMatch(match)">
-                    <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
+                    <span ng-include="'tag.html'" ng-repeat="model in match.tags track by $index"></span>
                     <h4 class="list-group-item-heading">{{match.name}}</h4>
                     <div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [match]"></div>
                     {{match.description}}
                 </li>
             </ul>
+        </script>
+        <script type="text/ng-template" id="tag.html">
+            <span class="label label-default label-pill pull-xs-right">{{model}}</span>
         </script>
 
 
@@ -140,9 +109,9 @@
             <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000">{{alert.msg}}</uib-alert>
 
             <!--
-        <div id="picker"></div>
-        <br/>
-        -->
+            <div id="picker"></div>
+            <br/>
+            -->
 
             <div ng-show="is_loading">
                 <div class="jumbotron">
@@ -163,7 +132,7 @@
                         <ul class="list-group">
                             <li class="list-group-item list-group-item-success glyphicon glyphicon-plus" ng-click="addEntry()" ng-hide="viewmode">チームの追加</li>
                             <li class="list-group-item" ng-class="{'active': entry == selected.entry}" ng-repeat="entry in model.entries | filter:filterEntry track by $index" ng-click="selectEntry(entry)">
-                                <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in entry.tags track by tag">{{tag}}</span>
+                                <span ng-include="'tag.html'" ng-repeat="model in entry.tags track by $index"></span>
                                 <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
                                 <p class="list-group-item-text">{{entry.description}}</p>
                                 <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank" ng-click="$event.stopPropagation()">{{entry.url}}</a></p>
@@ -202,7 +171,7 @@
                                 <uib-alert type="info">次のチームがトーナメントに組み込まれていません。</uib-alert>
                                 <ul class="list-group">
                                     <li class="list-group-item" ng-repeat="entry in unmatches track by $index">
-                                        <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in getEntry(entry).tags track by tag">{{tag}}</span>
+                                        <span ng-include="'tag.html'" ng-repeat="model in getEntry(entry).tags track by $index"></span>
                                         {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
                                     </li>
                                 </ul>
@@ -212,18 +181,7 @@
                                 <button ng-hide="over_bit_level" type="button" class='btn btn-primary btn-lg btn-block' ng-click="appendMatch()">追加の抽選の実行</button>
                                 -->
                             </div>
-
                             <div ng-include="'matches.list.html'" ng-repeat="model in [model.matches]"></div>
-                            <!--
-                            <ul class="list-group">
-                                <li class="list-group-item" ng-repeat="match in model.matches | filter:filterMatch track by $index" ng-show="2<=match.entries.length" ng-click="selectMatch(match)">
-                                    <span class="label label-default label-pill pull-xs-right" ng-repeat="tag in match.tags track by tag">{{tag}}</span>
-                                    <h4 class="list-group-item-heading">{{match.name}}</h4>
-                                    <div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [match]"></div>
-                                    {{match.description}}
-                                </li>
-                            </ul>
-                            -->
                             <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()" ng-hide="viewmode">現在の抽選を全て破棄して抽選の再実行</button>
                         </div>
                         <div ng-show="selected.match && !viewmode">
