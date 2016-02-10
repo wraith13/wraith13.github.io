@@ -90,14 +90,18 @@
                 <input type="text" class="form-control" placeholder="キーワード" aria-describedby="match-search-icon" ng-model="selected.matchSearch">
             </div>
             <ul class="list-group">
-                <li class="list-group-item" ng-repeat="match in model | filter:filterMatch track by $index" ng-show="2<=match.entries.length" ng-click="selectMatch(match)">
-                    <span ng-include="'tag.html'" ng-repeat="model in match.tags track by $index"></span>
-                    <h4 class="list-group-item-heading">{{match.name}}</h4>
-                    <div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [match]"></div>
-                    {{match.description}}
-                </li>
+				<li ng-include="'entries.list.item.html'" class="list-group-item" ng-show="2<=model.entries.length"  ng-repeat="model in model | filter:filterMatch track by $index" ng-click="selectMatch(model)"></li>
             </ul>
         </script>
+		
+        <script type="text/ng-template" id="entries.list.item.html">
+			<span ng-include="'tag.html'" ng-repeat="model in model.tags track by $index"></span>
+			<h4 class="list-group-item-heading">{{model.name}}<span ng-hide="model.name"><i>名称未設定</i></span></h4>
+			<div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [model]"></div>
+			<p class="list-group-item-text">{{model.description}}</p>
+			<p class="list-group-item-text" ng-show="model.url"><a ng-href="{{model.url}}" target="_blank" ng-click="$event.stopPropagation()">{{model.url}}</a></p>
+        </script>
+		
         <script type="text/ng-template" id="tag.html">
             <span class="label label-default label-pill pull-xs-right">{{model}}</span>
         </script>
@@ -131,12 +135,7 @@
                         </div>
                         <ul class="list-group">
                             <li class="list-group-item list-group-item-success glyphicon glyphicon-plus" ng-click="addEntry()" ng-hide="viewmode">チームの追加</li>
-                            <li class="list-group-item" ng-class="{'active': entry == selected.entry}" ng-repeat="entry in model.entries | filter:filterEntry track by $index" ng-click="selectEntry(entry)">
-                                <span ng-include="'tag.html'" ng-repeat="model in entry.tags track by $index"></span>
-                                <h4 class="list-group-item-heading">{{entry.name}}<span ng-hide="entry.name"><i>名称未設定</i></span></h4>
-                                <p class="list-group-item-text">{{entry.description}}</p>
-                                <p class="list-group-item-text" ng-show="entry.url"><a ng-href="{{entry.url}}" target="_blank" ng-click="$event.stopPropagation()">{{entry.url}}</a></p>
-                            </li>
+                            <li ng-include="'entries.list.item.html'" class="list-group-item" ng-class="{'active': model == selected.entry}" ng-repeat="model in model.entries | filter:filterEntry track by $index" ng-click="selectEntry(model)"></li>
                         </ul>
                     </div>
                     <div ng-show="selected.entry && !viewmode">
@@ -170,10 +169,9 @@
                             <div ng-show="0 < unmatches.length" style="margin-bottom:24px;">
                                 <uib-alert type="info">次のチームがトーナメントに組み込まれていません。</uib-alert>
                                 <ul class="list-group">
-                                    <li class="list-group-item" ng-repeat="entry in unmatches track by $index">
-                                        <span ng-include="'tag.html'" ng-repeat="model in getEntry(entry).tags track by $index"></span>
-                                        {{getEntry(entry).name}}<span ng-hide="getEntry(entry).name"><i>名称未設定</i></span>
-                                    </li>
+									<li class="list-group-item" ng-repeat="model in unmatches track by $index" ng-click="selectEntry(model)">
+										<span ng-include="'entries.list.item.html'" ng-repeat="model in [getEntry(model)]"></span>
+									</li>
                                 </ul>
                                 <uib-alert type="denger" ng-hide="viewmode">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
                                 <!--
