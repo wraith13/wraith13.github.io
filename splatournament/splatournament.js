@@ -360,6 +360,23 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
         $scope.makeSureId($scope.model.event);
         $scope.repository.entry = $scope.model.entries = $scope.model.entries || []
         $scope.repository.match = $scope.model.matches = $scope.model.matches || []
+        $scope.initTag();
+    };
+    $scope.initTag = function () {
+        $scope.tags = {};
+        angular.forEach(["entry", "match"], function (type, i) {
+            $scope.tags[type] = [];
+            var temp_repository = {};
+            angular.forEach($scope.repository[type], function (object, i) {
+                angular.forEach(object.tags || [], function (tag, j) {
+                    if (temp_repository[tag]) {
+                        ++(temp_repository[tag].count);
+                    } else {
+                        $scope.tags[type].push(temp_repository[tag] = { name: tag, count: 1 });
+                    }
+                });
+            });
+        });
     };
 
     var data_json = $location.search()["data"];

@@ -32,7 +32,11 @@
         <header class="navbar navbar-inverse navbar-static-top">
             <div class="container">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3" ng-click="isCollapsed = !isCollapsed">
+                    <button type="button"
+                        class="navbar-toggle"
+                        data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-3"
+                        ng-click="isCollapsed = !isCollapsed">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -43,7 +47,9 @@
                 <nav class="navbar-collapse collapse" uib-collapse="!isCollapsed">
                     <a href="#" role="button" class="navbar-brand" ng-click="selectTab()" ng-hide="isCollapsed">{{app.name}}</a>
                     <ul class="nav navbar-nav" ng-hide="is_loading">
-                        <li ng-class="active_tab == tab ? 'active': ''" ng-repeat="tab in tabs track by $index"><a href="#{{tab}}" ng-click="selectTab(tab)">{{tab}}</a></li>
+                        <li ng-class="active_tab == tab ? 'active': ''" ng-repeat="tab in tabs track by $index">
+                            <a href="#{{tab}}" ng-click="selectTab(tab)">{{tab}}</a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -52,6 +58,7 @@
         <script type="text/ng-template" id="jumbotron.html">
             <div class="jumbotron">
                 <h1>{{model.name}}</h1>
+                <span ng-include="'tag.html'" ng-repeat="model in model.tags track by $index"></span>
                 <p>{{model.description}}</p>
                 <p><a ng-href="{{model.url}}" target="_blank">{{model.url}}</a></p>
                 <div ng-show="model.entries" ng-include="'match.entries.list.html'"></div>
@@ -59,9 +66,10 @@
         </script>
 
         <script type="text/ng-template" id="edit.html">
-            <input type="text" class="form-control" ng-model="model.name" placeholder="名前">
-            <input type="text" class="form-control" ng-model="model.description" placeholder="説明">
-            <input type="text" class="form-control" ng-model="model.url" placeholder="URL">
+            <input type="text" class="form-control" ng-model="model.name" placeholder="名前" />
+            <input type="text" class="form-control" ng-model="model.description" placeholder="説明" />
+            <input type="text" class="form-control" ng-model="model.url" placeholder="URL" />
+            <span ng-include="'tag.html'" ng-repeat="model in model.tags track by $index"></span>
         </script>
 
         <script type="text/ng-template" id="match.entries.list.html">
@@ -77,7 +85,10 @@
                     </span>
                     <span ng-hide="searchEntry(entry)">
                         <span ng-include="'tag.html'" ng-repeat="model in getMatch(entry).tags track by $index"></span>
-                        <span ng-include="'tag.html'" ng-repeat="model in ['weight:'+getMatch(entry).weight,'level:'+getMatch(entry).level]"></span>
+                        <span
+                            ng-include="'tag.html'"
+                            ng-repeat="model in ['weight:'+getMatch(entry).weight,'level:'+getMatch(entry).level]">
+                        </span>
                         {{getMatch(entry).name}} の勝者
                     </span>
                 </li>
@@ -87,10 +98,21 @@
         <script type="text/ng-template" id="matches.list.html">
             <div class="input-group">
                 <span class="input-group-addon glyphicon glyphicon-search" id="match-search-icon"></span>
-                <input type="text" class="form-control" placeholder="キーワード" aria-describedby="match-search-icon" ng-model="selected.matchSearch">
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="キーワード"
+                    aria-describedby="match-search-icon"
+                    ng-model="selected.matchSearch" />
             </div>
             <ul class="list-group">
-				<li ng-include="'entries.list.item.html'" class="list-group-item" ng-show="2<=model.entries.length"  ng-repeat="model in model | filter:filterMatch track by $index" ng-click="selectMatch(model)"></li>
+				<li
+                    ng-include="'entries.list.item.html'"
+                    class="list-group-item"
+                    ng-show="2<=model.entries.length"
+                    ng-repeat="model in model | filter:filterMatch track by $index"
+                    ng-click="selectMatch(model)">
+                </li>
             </ul>
         </script>
 		
@@ -99,7 +121,9 @@
 			<h4 class="list-group-item-heading">{{model.name}}<span ng-hide="model.name"><i>名称未設定</i></span></h4>
 			<div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [model]"></div>
 			<p class="list-group-item-text">{{model.description}}</p>
-			<p class="list-group-item-text" ng-show="model.url"><a ng-href="{{model.url}}" target="_blank" ng-click="$event.stopPropagation()">{{model.url}}</a></p>
+			<p class="list-group-item-text" ng-show="model.url">
+                <a ng-href="{{model.url}}" target="_blank" ng-click="$event.stopPropagation()">{{model.url}}</a>
+            </p>
         </script>
 		
         <script type="text/ng-template" id="tag.html">
@@ -109,8 +133,17 @@
 
         <div class="container theme-showcase" role="main">
 
-            <div class="alert alert-danger" role="alert" ng-hide="true"><strong>JavaScriptが無効になっています。</strong>このページは JavaScript に強く依存しています。JavaScriptを有効にしてから再読み込みしてください。</div>
-            <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000">{{alert.msg}}</uib-alert>
+            <div class="alert alert-danger" role="alert" ng-hide="true">
+                <strong>JavaScriptが無効になっています。</strong>
+                このページは JavaScript に強く依存しています。
+                JavaScriptを有効にしてから再読み込みしてください。
+            </div>
+            <uib-alert
+                ng-repeat="alert in alerts"
+                type="{{alert.type}}"
+                close="closeAlert($index)"
+                dismiss-on-timeout="3000">{{alert.msg}}
+            </uib-alert>
 
             <!--
             <div id="picker"></div>
@@ -129,19 +162,45 @@
 
                 <div ng-show="active_tab=='entry'">
                     <div ng-hide="selected.entry">
+                        <span ng-repeat="model in tags['entry'] track by $index">
+                            <span class="label label-default label-pill pull-xs-right">{{model.name}}({{model.count}})</span>
+                        </span>
                         <div class="input-group">
                             <span class="input-group-addon glyphicon glyphicon-search" id="entry-search-icon"></span>
-                            <input type="text" class="form-control" placeholder="キーワード" aria-describedby="entry-search-icon" ng-model="selected.entrySearch">
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="キーワード"
+                                aria-describedby="entry-search-icon"
+                                ng-model="selected.entrySearch"
+                            />
                         </div>
                         <ul class="list-group">
-                            <li class="list-group-item list-group-item-success glyphicon glyphicon-plus" ng-click="addEntry()" ng-hide="viewmode">チームの追加</li>
-                            <li ng-include="'entries.list.item.html'" class="list-group-item" ng-class="{'active': model == selected.entry}" ng-repeat="model in model.entries | filter:filterEntry track by $index" ng-click="selectEntry(model)"></li>
+                            <li
+                                class="list-group-item list-group-item-success glyphicon glyphicon-plus"
+                                ng-click="addEntry()"
+                                ng-hide="viewmode">
+                                チームの追加
+                            </li>
+                            <li
+                                ng-include="'entries.list.item.html'"
+                                class="list-group-item"
+                                ng-class="{'active': model == selected.entry}"
+                                ng-repeat="model in model.entries | filter:filterEntry track by $index"
+                                ng-click="selectEntry(model)">
+                            </li>
                         </ul>
                     </div>
                     <div ng-show="selected.entry && !viewmode">
                         <div ng-include="'edit.html'" ng-repeat="model in [selected.entry]"></div>
                         <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
-                        <button type="button" class='btn btn-danger glyphicon glyphicon-trash' ng-click="removeEntry(selected.entry)" style="float:right">チームの削除</button>
+                        <button
+                            type="button"
+                            class='btn btn-danger glyphicon glyphicon-trash'
+                            ng-click="removeEntry(selected.entry)"
+                            style="float:right">
+                            チームの削除
+                        </button>
                         <div ng-include="'matches.list.html'" ng-repeat="model in [selected.entryMatches]"></div>
                     </div>
                     <div ng-show="selected.entry && viewmode">
@@ -159,11 +218,16 @@
                     <div ng-show="1 < model.entries.length">
                         <div ng-show="0 == model.matches.length && !viewmode">
                             <uib-alert type="info">トーナメントの抽選を行い試合を組み合わせ、試合表とトーナメントツリーを作成します。</uib-alert>
-                            <uib-alert type="warning">現在の splatournament のバージョンではトーナメントツリー作成後に entry の追加/削除を行うと抽選のやり直しになります。</uib-alert>
+                            <uib-alert type="warning">
+                                現在の splatournament のバージョンではトーナメントツリー作成後に entry の追加/削除を行うと抽選のやり直しになります。
+                            </uib-alert>
                             <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">抽選の実行</button>
                         </div>
                         <div ng-show="0 == model.matches.length && viewmode">
-                            <uib-alert type="info">このトーナメントはまだ試合の組み合わを決める抽選が行われていません。通常、抽選は参加登録が締め切られてから実施されます。</uib-alert>
+                            <uib-alert type="info">
+                                このトーナメントはまだ試合の組み合わを決める抽選が行われていません。
+                                通常、抽選は参加登録が締め切られてから実施されます。
+                            </uib-alert>
                         </div>
                         <div ng-show="0 < model.matches.length && !selected.match">
                             <div ng-show="0 < unmatches.length" style="margin-bottom:24px;">
@@ -173,14 +237,26 @@
 										<span ng-include="'entries.list.item.html'" ng-repeat="model in [getEntry(model)]"></span>
 									</li>
                                 </ul>
-                                <uib-alert type="denger" ng-hide="viewmode">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
+                                <uib-alert type="denger" ng-hide="viewmode">
+                                    現在のトーナメントツリーのままで公平にエントリーを追加することができません。
+                                    これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。
+                                    この画面の一番下にあるボタンをクリックしてください。
+                                </uib-alert>
                                 <!--
-                                <uib-alert ng-show="over_bit_level" type="denger">現在のトーナメントツリーのままで公平にエントリーを追加することができません。これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。この画面の一番下にあるボタンをクリックしてください。</uib-alert>
-                                <button ng-hide="over_bit_level" type="button" class='btn btn-primary btn-lg btn-block' ng-click="appendMatch()">追加の抽選の実行</button>
+                                <uib-alert ng-show="over_bit_level" type="denger">
+                                    現在のトーナメントツリーのままで公平にエントリーを追加することができません。
+                                    これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。
+                                    この画面の一番下にあるボタンをクリックしてください。
+                                </uib-alert>
+                                <button ng-hide="over_bit_level" type="button" class='btn btn-primary btn-lg btn-block' ng-click="appendMatch()">
+                                    追加の抽選の実行
+                                </button>
                                 -->
                             </div>
                             <div ng-include="'matches.list.html'" ng-repeat="model in [model.matches]"></div>
-                            <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()" ng-hide="viewmode">現在の抽選を全て破棄して抽選の再実行</button>
+                            <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()" ng-hide="viewmode">
+                                現在の抽選を全て破棄して抽選の再実行
+                            </button>
                         </div>
                         <div ng-show="selected.match && !viewmode">
                             <div ng-include="'edit.html'" ng-repeat="model in [selected.match]"></div>
