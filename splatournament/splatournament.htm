@@ -69,7 +69,26 @@
             <input type="text" class="form-control" ng-model="model.name" placeholder="名前" />
             <input type="text" class="form-control" ng-model="model.description" placeholder="説明" />
             <input type="text" class="form-control" ng-model="model.url" placeholder="URL" />
-            <span ng-include="'tag.html'" ng-repeat="model in model.tags track by $index"></span>
+            <div ng-include="'tag.edit.html'" ng-show="tags[model.type]"></div>
+        </script>
+
+        <script type="text/ng-template" id="tag.edit.html">
+            <h4>tag</h4>
+            <button type="button" class="btn"
+                    ng-class="0<=arrayObjectIndexOf(model.tags||[],tag.name) ? 'btn-primary': 'btn-default'"
+                    ng-repeat="tag in tags[model.type]" ng-click="toggleTag(model,tag)">
+                <span class="glyphicon" ng-class="0<=arrayObjectIndexOf(model.tags||[],tag.name) ? 'glyphicon-check': 'glyphicon-unchecked'"></span>
+                {{tag.name}}
+            </button>
+            <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       placeholder="タグ"
+                       ng-model="tags.new" />
+                <span class="input-group-btn">
+                    <button class="btn btn-success" type="button" ng-click="addTag(model)"><span class="glyphicon glyphicon-plus"></span>追加</button>
+                </span>
+            </div>
         </script>
 
         <script type="text/ng-template" id="match.entries.list.html">
@@ -96,15 +115,7 @@
         </script>
 
         <script type="text/ng-template" id="matches.list.html">
-            <div class="input-group">
-                <span class="input-group-addon glyphicon glyphicon-search" id="match-search-icon"></span>
-                <input
-                    type="text"
-                    class="form-control"
-                    placeholder="キーワード"
-                    aria-describedby="match-search-icon"
-                    ng-model="selected.matchSearch" />
-            </div>
+            <div ng-include="'filter.html'" ng-repeat="type in ['match']"></div>
             <ul class="list-group">
 				<li
                     ng-include="'entries.list.item.html'"
@@ -127,9 +138,41 @@
         </script>
 		
         <script type="text/ng-template" id="tag.html">
-            <span class="label label-default label-pill pull-xs-right">{{model}}</span>
+            <span class="label label-primary label-pill pull-xs-right"><span class="glyphicon glyphicon-tag tag-default"></span>{{model}}</span>
         </script>
 
+        <script type="text/ng-template" id="filter.html">
+            <div class="input-group">
+                <span class="input-group-addon glyphicon glyphicon-search" id="entry-search-icon"></span>
+                <input type="text"
+                       class="form-control"
+                       placeholder="キーワード"
+                       aria-describedby="entry-search-icon"
+                       ng-model="selected[type+'Search']" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default glyphicon glyphicon-remove" type="button" ng-click="clearText(selected,type+'Search')"></button>
+                </span>
+                <div class="input-group-btn" ng-show="tags[type].length">
+                    <div class="btn-group" uib-dropdown>
+                        <button id="match-tag-filter" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+                            <span class="glyphicon tag-selector" ng-class="selected[type + 'FilterTags'] && 1==selected[type + 'FilterTags'].length ? 'glyphicon-tag': 'glyphicon-tags'"></span>
+                            <span ng-hide="selected[type + 'FilterTagsLabel']">All</span>
+                            {{selected[type + 'FilterTagsLabel']}}
+                            <span class="caret"></span>
+                        </button>
+                        <ul uib-dropdown-menu role="menu" aria-labelledby="match-tag-filter" class="right">
+                            <li role="menuitem" ng-click="clearFilterTag(type)" ng-class="selected[type + 'FilterTagsLabel'] && 1<=selected[type + 'FilterTags'].length ? '': 'active'"><a href="#"><span class="glyphicon glyphicon-tags tag-selector"></span>All({{repository[type].length}})</a></li>
+                            <li class="divider"></li>
+                            <li role="menuitem" ng-click="toggleFilterTag(type, model)" ng-repeat="model in tags[type] track by $index" ng-class="0<=arrayObjectIndexOf(selected[type + 'FilterTags'],model) ? 'active': ''">
+                                <a href="#">
+                                    <span class="glyphicon glyphicon-tag tag-selector"></span>{{model.name}}({{model.count}})
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </script>
 
         <div class="container theme-showcase" role="main">
 
@@ -156,25 +199,15 @@
                 </div>
             </div>
             <div ng-hide="is_loading">
+
                 <div ng-hide="active_tab" ng-include="'jumbotron.html'" ng-repeat="model in [viewmode?model.event:app]"></div>
 
                 <div ng-show="active_tab=='event'" ng-include="'edit.html'" ng-repeat="model in [model.event]"></div>
 
                 <div ng-show="active_tab=='entry'">
                     <div ng-hide="selected.entry">
-                        <span ng-repeat="model in tags['entry'] track by $index">
-                            <span class="label label-default label-pill pull-xs-right">{{model.name}}({{model.count}})</span>
-                        </span>
-                        <div class="input-group">
-                            <span class="input-group-addon glyphicon glyphicon-search" id="entry-search-icon"></span>
-                            <input
-                                type="text"
-                                class="form-control"
-                                placeholder="キーワード"
-                                aria-describedby="entry-search-icon"
-                                ng-model="selected.entrySearch"
-                            />
-                        </div>
+                        <div ng-include="'filter.html'" ng-repeat="type in ['entry']"></div>
+
                         <ul class="list-group">
                             <li
                                 class="list-group-item list-group-item-success glyphicon glyphicon-plus"
@@ -192,7 +225,6 @@
                         </ul>
                     </div>
                     <div ng-show="selected.entry && !viewmode">
-                        <div ng-include="'edit.html'" ng-repeat="model in [selected.entry]"></div>
                         <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
                         <button
                             type="button"
@@ -201,11 +233,14 @@
                             style="float:right">
                             チームの削除
                         </button>
-                        <div ng-include="'matches.list.html'" ng-repeat="model in [selected.entryMatches]"></div>
+                        <div ng-include="'edit.html'" ng-repeat="model in [selected.entry]"></div>
+                        <h4>match</h4>
+                        <div ng-include="'matches.list.html'" ng-show="0<selected.entryMatches.length" ng-repeat="model in [selected.entryMatches]"></div>
                     </div>
                     <div ng-show="selected.entry && viewmode">
-                        <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.entry]"></div>
                         <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
+                        <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.entry]"></div>
+                        <h4>match</h4>
                         <div ng-include="'matches.list.html'" ng-repeat="model in [selected.entryMatches]"></div>
                     </div>
                 </div>
@@ -259,13 +294,14 @@
                             </button>
                         </div>
                         <div ng-show="selected.match && !viewmode">
-                            <div ng-include="'edit.html'" ng-repeat="model in [selected.match]"></div>
                             <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMatch(null)">戻る</button>
+                            <div ng-include="'edit.html'" ng-repeat="model in [selected.match]"></div>
+                            <h4>entry</h4>
                             <div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [selected.match]"></div>
                         </div>
                         <div ng-show="selected.match && viewmode">
-                            <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.match]"></div>
                             <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMatch(null)">戻る</button>
+                            <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.match]"></div>
                         </div>
                     </div>
                 </div>

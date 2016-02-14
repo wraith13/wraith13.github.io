@@ -15,6 +15,20 @@ body {
     padding-bottom:24px;
 }
 
+/* tag */
+.tag-default {
+    font-size:xx-small;
+    padding-right:3px;
+}
+.tag-selector {
+    padding-right:8px;
+}
+.input-group ul.right {
+    left:auto;
+    right:0px;
+    min-width:60px;
+}
+
 /* ui.bootstrap fix */
 .pull-xs-right {
     float:right;
@@ -55,4 +69,3 @@ path.winner {
 .footer .container ul li {
     list-style-type: none;
 }
-
