@@ -1,0 +1,387 @@
+﻿{
+  "event": {
+    "type": "event",
+    "id": "8bdd6820-3491-4d20-83ad-1d4825864597",
+    "name": "ステージ原住民対抗マッチ",
+    "description": "これは splatournament のサンプルデータです。",
+    "url": "https://github.com/wraith13/splatournament"
+  },
+  "entries": [
+    {
+      "type": "entry",
+      "name": "デカライン高架下の住人",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#xe31c347",
+      "description": "自販機あるよ。",
+      "id": "842917a0-09b6-4fe6-828e-55be50212a81",
+      "tags": [
+        "homeless"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "シオノメ油田経営陣",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#q8efb038",
+      "description": "油売ってないで仕事しろ！！！",
+      "id": "444eb935-33a2-4da0-b059-3176492ec9ef",
+      "tags": [
+        "biz"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "Bバスパークキッズ",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#c60eff64",
+      "id": "7cea17b1-01d5-4be0-8296-aa59276673ac",
+      "tags": [
+        "kids"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "ハコフグ倉庫",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#h1c5f562",
+      "id": "fab3ec09-4e5e-4e69-9483-d452acabdbcd",
+      "tags": [
+        "biz"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "アロワナモール",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#o87d2ab5",
+      "id": "11e3748d-5d96-4056-826c-50032a4dd860",
+      "tags": [
+        "consumer"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "ホッケふ頭",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#c720b31e",
+      "id": "67e1a820-7912-42b8-a5fc-f5ec09db674d",
+      "tags": [
+        "biz"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "モズク農協",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#q1fc408a",
+      "description": "草食え！草！！！",
+      "id": "ffeead21-c0d1-433f-9c8b-3e9d2e7c6c30",
+      "tags": [
+        "biz"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "ネギトロ炭鉱",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#na19f438",
+      "id": "abd8be75-f3cd-4641-8886-eb2bc70cf8c5",
+      "tags": [
+        "biz"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "タチウオパー👑s",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#u6a70b8a",
+      "id": "2ad03454-1c6d-4343-abc3-a7e73e18943b",
+      "tags": [
+        "consumer"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "モンガラキャンプクラブ",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#ud1ba8b0",
+      "id": "4ef35436-e1b9-42bc-b4f3-e1dd32d1b9d8",
+      "tags": [
+        "kids",
+        "consumer"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "ヒラメが丘団地",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#l4503f76",
+      "id": "545cb6fd-beaf-4060-8d93-af523e94ce9b"
+    },
+    {
+      "type": "entry",
+      "name": "マサバ海峡大橋",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#ob4752e1",
+      "id": "93b3604a-a22a-4f72-8737-1f36d570d77f",
+      "tags": [
+        "homeless"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "キンメダイ美術館",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#jb053580",
+      "id": "e3de3864-f4cb-4aaa-bbd7-4254e5d1285e",
+      "tags": [
+        "art"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "マヒマヒリゾート＆スパ",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#mcf12d53",
+      "id": "dc759e8c-b058-422d-891d-0f5766293e61",
+      "tags": [
+        "consumer"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "ショッツル鉱山",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#fa0dfe5b",
+      "id": "6756e371-645d-4ac5-8f91-2f9a8610277d",
+      "tags": [
+        "biz"
+      ]
+    },
+    {
+      "type": "entry",
+      "name": "アンチョビットレトロゲーマーズ",
+      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#k82300e4",
+      "description": "ピコピコやろうぜ！",
+      "id": "c6d64f00-6b11-4755-87ba-54ae060d9853",
+      "tags": [
+        "art",
+        "consumer",
+        "kids"
+      ]
+    }
+  ],
+  "matches": [
+    {
+      "type": "match",
+      "entries": [
+        "2ad03454-1c6d-4343-abc3-a7e73e18943b",
+        "dc759e8c-b058-422d-891d-0f5766293e61"
+      ],
+      "id": "ce513c07-9423-4480-8bf7-04dd2996d029",
+      "name": "第1試合",
+      "weight": 2,
+      "level": 1,
+      "winners": [
+        "2ad03454-1c6d-4343-abc3-a7e73e18943b"
+      ],
+      "tags": [
+        "完封"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "842917a0-09b6-4fe6-828e-55be50212a81",
+        "4ef35436-e1b9-42bc-b4f3-e1dd32d1b9d8"
+      ],
+      "id": "7948bd5f-bb62-4aec-817a-fe78cc4ed47f",
+      "name": "第2試合",
+      "weight": 2,
+      "level": 1,
+      "winners": [
+        "842917a0-09b6-4fe6-828e-55be50212a81"
+      ],
+      "tags": [
+        "延長戦"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "444eb935-33a2-4da0-b059-3176492ec9ef",
+        "abd8be75-f3cd-4641-8886-eb2bc70cf8c5"
+      ],
+      "id": "81087d69-e9d4-43e0-827d-acca27541054",
+      "name": "第3試合",
+      "weight": 2,
+      "level": 1,
+      "winners": [
+        "abd8be75-f3cd-4641-8886-eb2bc70cf8c5"
+      ],
+      "tags": [
+        "不戦勝"
+      ],
+      "description": "会議が長引いた為、シオノメ油田経営陣のチームメンバーが揃わずネギトロ炭鉱の不戦勝"
+    },
+    {
+      "type": "match",
+      "entries": [
+        "545cb6fd-beaf-4060-8d93-af523e94ce9b",
+        "fab3ec09-4e5e-4e69-9483-d452acabdbcd"
+      ],
+      "id": "929b66ed-b763-4497-8f5c-50175cb05863",
+      "name": "第4試合",
+      "weight": 2,
+      "level": 1,
+      "winners": [
+        "fab3ec09-4e5e-4e69-9483-d452acabdbcd"
+      ],
+      "description": ""
+    },
+    {
+      "type": "match",
+      "entries": [
+        "6756e371-645d-4ac5-8f91-2f9a8610277d",
+        "7cea17b1-01d5-4be0-8296-aa59276673ac"
+      ],
+      "id": "7b81ba3a-ee57-48f4-9703-3149b0e03588",
+      "name": "第5試合",
+      "weight": 2,
+      "level": 1,
+      "winners": [
+        "7cea17b1-01d5-4be0-8296-aa59276673ac"
+      ],
+      "tags": [
+        "完封"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "c6d64f00-6b11-4755-87ba-54ae060d9853",
+        "67e1a820-7912-42b8-a5fc-f5ec09db674d"
+      ],
+      "id": "2980ec5f-e207-49b0-80a3-50b12f27757d",
+      "name": "第6試合",
+      "weight": 2,
+      "level": 1,
+      "winners": [
+        "c6d64f00-6b11-4755-87ba-54ae060d9853"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "ffeead21-c0d1-433f-9c8b-3e9d2e7c6c30",
+        "11e3748d-5d96-4056-826c-50032a4dd860"
+      ],
+      "id": "af5cab2f-e8c5-42ed-8242-954797a0a833",
+      "name": "第7試合",
+      "weight": 2,
+      "level": 1,
+      "winners": [
+        "ffeead21-c0d1-433f-9c8b-3e9d2e7c6c30"
+      ],
+      "tags": [],
+      "description": ""
+    },
+    {
+      "type": "match",
+      "entries": [
+        "e3de3864-f4cb-4aaa-bbd7-4254e5d1285e",
+        "93b3604a-a22a-4f72-8737-1f36d570d77f"
+      ],
+      "id": "f0169db9-497a-4c86-84ef-9b586259af5a",
+      "name": "第8試合",
+      "weight": 2,
+      "level": 1,
+      "winners": [
+        "e3de3864-f4cb-4aaa-bbd7-4254e5d1285e"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "ce513c07-9423-4480-8bf7-04dd2996d029",
+        "7948bd5f-bb62-4aec-817a-fe78cc4ed47f"
+      ],
+      "id": "a820498c-729a-4bcf-8ac5-01d2e9711d3b",
+      "name": "第9試合",
+      "weight": 4,
+      "level": 2,
+      "winners": [
+        "ce513c07-9423-4480-8bf7-04dd2996d029"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "81087d69-e9d4-43e0-827d-acca27541054",
+        "929b66ed-b763-4497-8f5c-50175cb05863"
+      ],
+      "id": "c41ee46c-15f3-4a5d-8fc2-f310dbcb71c3",
+      "name": "第10試合",
+      "weight": 4,
+      "level": 2,
+      "winners": [
+        "929b66ed-b763-4497-8f5c-50175cb05863"
+      ],
+      "description": "双方一人ずつ欠けた状態での変則マッチ"
+    },
+    {
+      "type": "match",
+      "entries": [
+        "7b81ba3a-ee57-48f4-9703-3149b0e03588",
+        "2980ec5f-e207-49b0-80a3-50b12f27757d"
+      ],
+      "id": "48bd685d-f14a-48e8-9841-f080b42070f5",
+      "name": "第11試合",
+      "weight": 4,
+      "level": 2,
+      "winners": [
+        "7b81ba3a-ee57-48f4-9703-3149b0e03588"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "af5cab2f-e8c5-42ed-8242-954797a0a833",
+        "f0169db9-497a-4c86-84ef-9b586259af5a"
+      ],
+      "id": "d1406880-7f3a-4584-86dd-ef6806dfc9a2",
+      "name": "第12試合",
+      "weight": 4,
+      "level": 2,
+      "winners": [
+        "af5cab2f-e8c5-42ed-8242-954797a0a833"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "a820498c-729a-4bcf-8ac5-01d2e9711d3b",
+        "c41ee46c-15f3-4a5d-8fc2-f310dbcb71c3"
+      ],
+      "id": "71c3dba3-c55d-4d86-826d-6a2de4eec1d0",
+      "name": "準決勝 第1試合",
+      "weight": 8,
+      "level": 3,
+      "winners": [
+        "a820498c-729a-4bcf-8ac5-01d2e9711d3b"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "48bd685d-f14a-48e8-9841-f080b42070f5",
+        "d1406880-7f3a-4584-86dd-ef6806dfc9a2"
+      ],
+      "id": "231a56bc-86c3-4e85-867e-6db763248733",
+      "name": "準決勝 第2試合",
+      "weight": 8,
+      "level": 3,
+      "winners": [
+        "48bd685d-f14a-48e8-9841-f080b42070f5"
+      ]
+    },
+    {
+      "type": "match",
+      "entries": [
+        "71c3dba3-c55d-4d86-826d-6a2de4eec1d0",
+        "231a56bc-86c3-4e85-867e-6db763248733"
+      ],
+      "name": "決勝戦",
+      "weight": 16,
+      "level": 4,
+      "winners": [
+        "231a56bc-86c3-4e85-867e-6db763248733"
+      ]
+    }
+  ]
+}

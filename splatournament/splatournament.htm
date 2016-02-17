@@ -57,8 +57,8 @@
 
         <script type="text/ng-template" id="jumbotron.html">
             <div class="jumbotron">
+                <span ng-include="'tag.html'"></span>
                 <h1>{{model.name}}</h1>
-                <span ng-include="'tag.html'" ng-repeat="model in model.tags track by $index"></span>
                 <p>{{model.description}}</p>
                 <p><a ng-href="{{model.url}}" target="_blank">{{model.url}}</a></p>
                 <div ng-show="model.entries" ng-include="'match.entries.list.html'"></div>
@@ -75,9 +75,9 @@
         <script type="text/ng-template" id="tag.edit.html">
             <h4>tag</h4>
             <button type="button" class="btn"
-                    ng-class="0<=arrayObjectIndexOf(model.tags||[],tag.name) ? 'btn-primary': 'btn-default'"
+                    ng-class="0<=arrayObjectIndexOf(model.tags,tag.name) ? (model.type=='match' ? 'btn-success': 'btn-primary'): 'btn-default'"
                     ng-repeat="tag in tags[model.type]" ng-click="toggleTag(model,tag)">
-                <span class="glyphicon" ng-class="0<=arrayObjectIndexOf(model.tags||[],tag.name) ? 'glyphicon-check': 'glyphicon-unchecked'"></span>
+                <span class="glyphicon" ng-class="0<=arrayObjectIndexOf(model.tags,tag.name) ? 'glyphicon-check': 'glyphicon-unchecked'"></span>
                 {{tag.name}}
             </button>
             <div class="input-group">
@@ -99,15 +99,11 @@
                     ng-class="getMatchEntryClass(model,entry)">
                     <span ng-show="searchEntry(entry)">
                         <span ng-class="getMatchResultClass(model,entry)"></span>
-                        <span ng-include="'tag.html'" ng-repeat="model in searchEntry(entry).tags track by $index"></span>
+                        <span ng-include="'tag.html'" ng-repeat="model in [searchEntry(entry)]"></span>
                         {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
                     </span>
                     <span ng-hide="searchEntry(entry)">
-                        <span ng-include="'tag.html'" ng-repeat="model in getMatch(entry).tags track by $index"></span>
-                        <span
-                            ng-include="'tag.html'"
-                            ng-repeat="model in ['weight:'+getMatch(entry).weight,'level:'+getMatch(entry).level]">
-                        </span>
+                        <span ng-include="'tag.html'" ng-repeat="model in [getMatch(entry)]"></span>
                         {{getMatch(entry).name}} の勝者
                     </span>
                 </li>
@@ -128,7 +124,7 @@
         </script>
 		
         <script type="text/ng-template" id="entries.list.item.html">
-			<span ng-include="'tag.html'" ng-repeat="model in model.tags track by $index"></span>
+			<span ng-include="'tag.html'"></span>
 			<h4 class="list-group-item-heading">{{model.name}}<span ng-hide="model.name"><i>名称未設定</i></span></h4>
 			<div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [model]"></div>
 			<p class="list-group-item-text">{{model.description}}</p>
@@ -138,7 +134,7 @@
         </script>
 		
         <script type="text/ng-template" id="tag.html">
-            <span class="label label-primary label-pill pull-xs-right"><span class="glyphicon glyphicon-tag tag-default"></span>{{model}}</span>
+            <span class="label label-pill pull-xs-right" ng-class="model.type=='match'?'label-success':'label-primary'" ng-repeat="tag in model.tags"><span class="glyphicon glyphicon-tag tag-default"></span>{{tag}}</span>
         </script>
 
         <script type="text/ng-template" id="filter.html">
@@ -154,7 +150,7 @@
                 </span>
                 <div class="input-group-btn" ng-show="tags[type].length">
                     <div class="btn-group" uib-dropdown>
-                        <button id="match-tag-filter" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+                        <button id="match-tag-filter" type="button" class="btn" uib-dropdown-toggle ng-disabled="disabled" ng-class="selected[type + 'FilterTagsLabel'] && 1<=selected[type + 'FilterTags'].length ? 'btn-primary': 'btn-default'">
                             <span class="glyphicon tag-selector" ng-class="selected[type + 'FilterTags'] && 1==selected[type + 'FilterTags'].length ? 'glyphicon-tag': 'glyphicon-tags'"></span>
                             <span ng-hide="selected[type + 'FilterTagsLabel']">All</span>
                             {{selected[type + 'FilterTagsLabel']}}
@@ -200,14 +196,27 @@
             </div>
             <div ng-hide="is_loading">
 
-                <div ng-hide="active_tab" ng-include="'jumbotron.html'" ng-repeat="model in [viewmode?model.event:app]"></div>
+                <div ng-hide="active_tab">
+                    <div ng-include="'jumbotron.html'" ng-repeat="model in [viewmode?model.event:app]"></div>
 
-                <div ng-show="active_tab=='event'" ng-include="'edit.html'" ng-repeat="model in [model.event]"></div>
+                    <div ng-hide="viewmode">
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('event')">イベント作成する</button>
+                    </div>
+                    <div ng-show="viewmode">
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('entry')">参加チーム一覧を見る</button>
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧を見る</button>
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('tree')">トーナメントツリーを見る</button>
+                    </div>
+                </div>
+
+                <div ng-show="active_tab=='event'">
+                    <div ng-include="'edit.html'" ng-repeat="model in [model.event]"></div>
+                    <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('entry')">参加チームを登録する</button>
+                </div>
 
                 <div ng-show="active_tab=='entry'">
                     <div ng-hide="selected.entry">
                         <div ng-include="'filter.html'" ng-repeat="type in ['entry']"></div>
-
                         <ul class="list-group">
                             <li
                                 class="list-group-item list-group-item-success glyphicon glyphicon-plus"
@@ -223,6 +232,8 @@
                                 ng-click="selectEntry(model)">
                             </li>
                         </ul>
+                        <button ng-show="viewmode" type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧を見る</button>
+                        <button ng-show="!viewmode&&2<=(mode.entries||[]).length" type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧の作成する</button>
                     </div>
                     <div ng-show="selected.entry && !viewmode">
                         <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
@@ -292,6 +303,7 @@
                             <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()" ng-hide="viewmode">
                                 現在の抽選を全て破棄して抽選の再実行
                             </button>
+                            <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('tree')">トーナメントツリーを見る</button>
                         </div>
                         <div ng-show="selected.match && !viewmode">
                             <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMatch(null)">戻る</button>
@@ -319,9 +331,11 @@
                     <div ng-hide="0 < model.matches.length">
                         <uib-alert type="info">match で抽選を行ってトーナメント表を作成してください。</uib-alert>
                     </div>
-                    <div id="chart"></div>
                 </div>
             </div>
+        </div>
+        <div ng-show="active_tab=='tree'">
+            <div id="chart"></div>
         </div>
     </div>
 

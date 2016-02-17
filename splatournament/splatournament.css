@@ -39,6 +39,20 @@ body {
     border-radius: 10rem;
 }
 
+/* chart */
+#chart {
+    text-align: center;
+    /* その他の正しいとされるセンタリングをいくつか試してみたが正常に機能せず */
+    /* その後、他の修正が入ったので正しいとされるセンタリングでよくなっているかもしれないが、正常に機能してるようなのでこのままにしておく。 */
+}
+#chart svg {
+    margin-top: -20px;
+    margin-bottom: -28px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: #FFFFFF;
+}
+
 /* tree */
 .node circle {
     cursor: pointer;
@@ -48,9 +62,6 @@ body {
 }
 .null circle {
     display: none;
-}
-.node text {
-    font-size: 12px;
 }
 path.link {
     fill: none;

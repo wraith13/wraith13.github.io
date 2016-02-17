@@ -48,189 +48,6 @@ angular.module('angularUUID2', []).factory('uuid2', [
 //    document.getElementById("picker").appendChild(pickerButton);
 //};
 
-var margin = { top: 30, right: 10, bottom: 10, left: 10 },
-    //width = screen.width - margin.left - margin.right,
-    width = 2700 - margin.left - margin.right,
-    halfWidth = width / 2,
-    height = 5000 - margin.top - margin.bottom,
-    i = 0,
-    duration = 500,
-    root;
-
-var getChildren = function (d) {
-    var a = [];
-    if (d.entries) for (var i = 0; i < d.entries.length; i++) {
-        d.entries[i].isRight = false;
-        d.entries[i].parent = d;
-        a.push(d.entries[i]);
-    }
-    return a.length ? a : null;
-};
-
-var tree = d3.layout.tree()
-    .size([height, width]);
-
-var diagonal = d3.svg.diagonal()
-    .projection(function (d) { return [d.y, d.x]; });
-var elbow = function (d, i) {
-    var source = calcLeft(d.source);
-    var target = calcLeft(d.target);
-    var hy = (target.y - source.y) / 2;
-    if (d.isRight) hy = -hy;
-    return "M" + source.y + "," + source.x
-            + "H" + (source.y + hy)
-            + "V" + target.x + "H" + target.y;
-};
-var connector = elbow;
-
-var calcLeft = function (d) {
-    var l = d.y;
-    if (!d.isRight) {
-        l = d.y - halfWidth;
-        l = halfWidth - l;
-    }
-    return { x: d.x, y: l };
-};
-
-var vis = d3.select("#chart").append("svg")
-    .attr("width", width + margin.right + margin.left)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var update_tournament_tree = function (json, showObject) {
-    root = json;
-    root.x0 = height / 2;
-    root.y0 = width / 2;
-
-    var t1 = d3.layout.tree().size([height, halfWidth]).children(function (d) { return d.entries; });
-    t1.nodes(root);
-
-    var rebuildChildren = function (node) {
-        node.children = getChildren(node);
-        if (node.children) node.children.forEach(rebuildChildren);
-    }
-    rebuildChildren(root);
-    root.isRight = false;
-    update(root, showObject);
-}
-
-var toArray = function (item, arr) {
-    arr = arr || [];
-    var i = 0, l = item.children ? item.children.length : 0;
-    arr.push(item);
-    for (; i < l; i++) {
-        toArray(item.children[i], arr);
-    }
-    return arr;
-};
-
-function update(source, showObject) {
-    // Compute the new tree layout.
-    var nodes = toArray(source);
-
-    // Normalize for fixed-depth.
-    nodes.forEach(function (d) { d.y = d.depth * 180 + halfWidth; });
-
-    // Update the nodes…
-    var node = vis.selectAll("g.node")
-        .data(nodes, function (d) { return d.id || (d.id = ++i); });
-
-    // Enter any new nodes at the parent's previous position.
-    var nodeEnter = node.enter().append("g")
-        .attr("class", function (d) {
-            return (d.name && 0 < d.name.length) ? "node" : "null";
-        })
-        .attr("transform", function (d) { return "translate(" + source.y0 + "," + source.x0 + ")"; });
-        //.on("click", click);
-
-    nodeEnter.append("circle")
-        .attr("r", 1e-6)
-        .style("fill", function (d) { return d._children ? "lightsteelblue" : "#fff"; });
-
-    nodeEnter.append("text")
-        .attr("dy", function (d) { return d.isRight ? 14 : -8; })
-        .attr("text-anchor", "middle")
-        .on("click", function (d) {
-            if (d.name) { showObject(d.original_id) }
-        })
-        .text(function (d) { return d.name; })
-        .style("fill-opacity", 1e-6);
-
-    // Transition nodes to their new position.
-    var nodeUpdate = node.transition()
-        .duration(duration)
-        .attr("transform", function (d) { p = calcLeft(d); return "translate(" + p.y + "," + p.x + ")"; });
-
-    nodeUpdate.select("circle")
-        .attr("r", 4.5)
-        .style("fill", function (d) { return d._children ? "lightsteelblue" : "#fff"; });
-
-    nodeUpdate.select("text")
-        .style("fill-opacity", 1);
-
-    // Transition exiting nodes to the parent's new position.
-    var nodeExit = node.exit().transition()
-        .duration(duration)
-        .attr("transform", function (d) { p = calcLeft(d.parent || source); return "translate(" + p.y + "," + p.x + ")"; })
-        .remove();
-
-    nodeExit.select("circle")
-        .attr("r", 1e-6);
-
-    nodeExit.select("text")
-        .style("fill-opacity", 1e-6);
-
-    // Update the links...
-    var link = vis.selectAll("path.link")
-        .data(tree.links(nodes), function (d) { return d.target.id; });
-
-    // Enter any new links at the parent's previous position.
-    link.enter().insert("path", "g")
-        .attr("class", function (d) {
-            return (d.target.is_winner || (d.source.is_winner && 1 == d.source.entries.length)) ? "link winner" : "link";
-        })
-        .attr("d", function (d) {
-            var o = { x: source.x0, y: source.y0 };
-            return connector({ source: o, target: o });
-        });
-
-    // Transition links to their new position.
-    link.transition()
-        .duration(duration)
-        .attr("d", connector);
-
-    // Transition exiting nodes to the parent's new position.
-    link.exit().transition()
-        .duration(duration)
-        .attr("d", function (d) {
-            var o = calcLeft(d.source || source);
-            if (d.source.isRight) o.y -= halfWidth - (d.target.y - d.source.y);
-            else o.y += halfWidth - (d.target.y - d.source.y);
-            return connector({ source: o, target: o });
-        })
-        .remove();
-    // Stash the old positions for transition.
-    nodes.forEach(function (d) {
-        var p = calcLeft(d);
-        d.x0 = p.x;
-        d.y0 = p.y;
-    });
-
-    // Toggle children on click.
-    //function click(d) {
-    //    if (d.children) {
-    //        d._children = d.children;
-    //        d.children = null;
-    //    } else {
-    //        d.children = d._children;
-    //        d._children = null;
-    //    }
-    //    update(source, showObject);
-    //}
-}
-//d3.json("bracket.json", update_tournament_tree);
-
 var app = angular.module("splatournament", ['ui.router', "ui.bootstrap", "angularUUID2"]);
 
 app.config(["$locationProvider", function ($locationProvider) {
@@ -294,7 +111,7 @@ app.directive('jsonText', function() {
     };
 });
 
-app.controller("splatornament", function ($rootScope, $scope, $http, $location, $filter, uuid2) {
+app.controller("splatornament", function ($rootScope, $window, $scope, $http, $location, $filter, uuid2) {
 
     //  http://stackoverflow.com/questions/20789373/shuffle-array-in-ng-repeat-angular
     $scope.shuffleArray = function (array) {
@@ -316,11 +133,13 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
 
     //  http://stackoverflow.com/questions/23120077/how-to-get-the-indexof-an-object-within-an-angularjs-response-object-collection
     $scope.arrayObjectIndexOf = function (arr, obj) {
-        for (var i = 0; i < arr.length; i++) {
-            if (angular.equals(arr[i], obj)) {
-                return i;
+        if (arr) {
+            for (var i = 0; i < arr.length; i++) {
+                if (angular.equals(arr[i], obj)) {
+                    return i;
+                }
             }
-        };
+        }
         return -1;
     }
 
@@ -545,13 +364,26 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
     $scope.removeEntry = function (entry) {
         $scope.removeObject("entry", entry);
     };
+    $scope.filterByTag = function (object) {
+        var result = true;
+        var filterTags = $scope.getFilterTags(object.type);
+        if (filterTags) {
+            angular.forEach(filterTags, function (tag, i) {
+                if ($scope.arrayObjectIndexOf(object.tags || [], tag.name) < 0) {
+                    result = false;
+                }
+            });
+        }
+        return result;
+    };
     $scope.filterEntry = function (value, index, array) {
         var search = $scope.selected.entrySearch;
-        return !(search) ||
+        return (!(search) ||
             0 == search.length ||
             0 <= (value.name || "").indexOf(search) ||
             0 <= (value.description || "").indexOf(search) ||
-            0 <= (value.url || "").indexOf(search);
+            0 <= (value.url || "").indexOf(search)) &&
+            $scope.filterByTag(value);
     }
 
     //  match
@@ -628,7 +460,7 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
         var entries_count = $scope.model.entries.length;
         var unmatched_match = [];
         var addMatch = function (entries) {
-            var match = {};
+            var match = { type:"match" };
             match.entries = entries;
             $scope.model.matches.push(match);
             unmatched_match.push(match);
@@ -783,6 +615,9 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
                 }
             });
         }
+        if (result) {
+            result = $scope.filterByTag(value);
+        }
         return result;
     }
 
@@ -798,30 +633,259 @@ app.controller("splatornament", function ($rootScope, $scope, $http, $location, 
     };
 
     //  tree
+    var vis = d3.select("#chart").append("svg").append("g");
+    
+    angular.element($window).on('resize', function () { $scope.update_tree(); });
     $scope.update_tree = function () {
-        var match_to_tree = function (match) {
-            var result = {
-                name: match.name,
-                entries: []
-            };
-            angular.forEach(match.entries, function (entry, i) {
-                var sub_result = null;
-                var sub_match = $scope.getMatch(entry);
-                if (sub_match) {
-                    sub_result = match_to_tree(sub_match);
-                    sub_result.original_id = sub_match.id;
-                } else {
-                    var sub_entry = $scope.getEntry(entry);
-                    sub_result = { name: sub_entry.name };
-                    sub_result.original_id = sub_entry.id;
-                }
-                sub_result.is_winner = match.winners && 0 <= match.winners.indexOf(entry);
-                result.entries.push(sub_result);
-            });
-            return result;
-        };
         if ($scope.model.matches && 0 < $scope.model.matches.length) {
-            update_tournament_tree(match_to_tree($scope.model.matches[$scope.model.matches.length -1]), $scope.showObject);
+            var document_height = document.documentElement.clientHeight -204;
+            var document_width = document.documentElement.clientWidth;
+
+            var height_count = ($scope.model.entries.length - ($scope.unmatches || []).length);
+            var width_count = $scope.model.matches[$scope.model.matches.length -1].level +2.0;
+
+            var height_base_unit = 32;
+            var width_base_unit = 64;
+
+            var height_unit = Math.max(document_height / height_count, height_base_unit);
+            var width_unit = Math.max(document_width / width_count, 64);
+            var font_size = 12 * (1 + (((width_unit - width_base_unit) / width_base_unit) + ((height_unit - height_base_unit) / (height_base_unit * 2))) / 4);
+
+            //var margin = { top: 30, right: 10, bottom: 10, left: 10 },
+            var margin = { top: 32, right: 0, bottom: 16, left: 0 },
+                //width = screen.width - margin.left - margin.right,
+                width = (width_count * width_unit),
+                //halfWidth = width / 2,
+                halfWidth = width - (width_unit * 0.75),
+                height = (height_count * height_unit),
+                i = 0,
+                duration = 1500,
+                root;
+
+            var getChildren = function (d) {
+                var a = [];
+                if (d.entries) for (var i = 0; i < d.entries.length; i++) {
+                    d.entries[i].isRight = false;
+                    d.entries[i].parent = d;
+                    a.push(d.entries[i]);
+                }
+                return a.length ? a : null;
+            };
+
+            var tree = d3.layout.tree()
+                .size([height, width]);
+            vis.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var diagonal = d3.svg.diagonal()
+                .projection(function (d) { return [halfWidth -(d.y - halfWidth), d.x]; });
+            var elbow = function (d, i) {
+                var source = calcLeft(d.source);
+                var target = calcLeft(d.target);
+                var hy = (target.y - source.y) / 2;
+                if (d.isRight) hy = -hy;
+                return "M" + source.y + "," + source.x
+                        + "H" + (source.y + hy)
+                        + "V" + target.x + "H" + target.y;
+            };
+            var connector = elbow;
+            //var connector = diagonal
+
+            var calcLeft = function (d) {
+                var l = d.y;
+                if (!d.isRight) {
+                    l = d.y - halfWidth;
+                    l = halfWidth - l;
+                }
+                return { x: d.x, y: l };
+            };
+
+            d3.select("#chart svg")
+                .attr("left", 0)
+                .attr("width", width + margin.right + margin.left)
+                .attr("height", height + margin.top + margin.bottom);
+                //.append("g")
+                //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var update_tournament_tree = function (json, showObject) {
+                root = json;
+                root.x0 = height / 2 +margin.left;
+                root.y0 = width / 2 +margin.top;
+
+                var t1 = d3.layout.tree().size([height, halfWidth]).children(function (d) { return d.entries; });
+                t1.separation(function (a, b) {
+                    // default code is return a.parent == b.parent ? 1 : 2;
+                    return 1;
+                });
+                t1.nodes(root);
+
+                var rebuildChildren = function (node) {
+                    node.children = getChildren(node);
+                    if (node.children) node.children.forEach(rebuildChildren);
+                }
+                rebuildChildren(root);
+                root.isRight = false;
+                update(root, showObject);
+            }
+
+            var toArray = function (item, arr) {
+                arr = arr || [];
+                var i = 0, l = item.children ? item.children.length : 0;
+                arr.push(item);
+                for (; i < l; i++) {
+                    toArray(item.children[i], arr);
+                }
+                return arr;
+            };
+
+            var update = function (source, showObject) {
+                // Compute the new tree layout.
+                var nodes = toArray(source);
+
+                // Normalize for fixed-depth.
+                nodes.forEach(function (d) { d.y = d.depth * width_unit + halfWidth; });
+
+                // Update the nodes…
+                var node = vis.selectAll("g.node")
+                    .data(nodes, function (d) { return d.id || (d.id = ++i); });
+
+                // Enter any new nodes at the parent's previous position.
+                var nodeEnter = node.enter().append("g")
+                    .attr("class", function (d) {
+                        return (d.name && 0 < d.name.length) ? "node" : "null";
+                    })
+                    .attr("transform", function (d) { return "translate(" + source.y0 + "," + source.x0 + ")"; });
+                //.on("click", click);
+
+                nodeEnter.append("circle")
+                    .attr("r", 1e-6)
+                    .style("fill", function (d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+                nodeEnter.append("text")
+                    .attr("dy", function (d) { return d.isRight ? 14 : -8; })
+                    .attr("text-anchor", "middle")
+                    .on("click", function (d) {
+                        if (d.name) { showObject(d.original_id) }
+                    })
+                    .text(function (d) { return d.name; })
+                    .attr("font-size", 1)
+                    .style("fill-opacity", 1e-6);
+
+                // Transition nodes to their new position.
+                var nodeUpdate = node.transition()
+                    .duration(duration)
+                    .attr("transform", function (d) { p = calcLeft(d); return "translate(" + p.y + "," + p.x + ")"; });
+
+                nodeUpdate.select("circle")
+                    .attr("r", 4.5)
+                    .style("fill", function (d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+                nodeUpdate.select("text")
+                    .attr("font-size", font_size)
+                    //.style("fill-opacity", 1);
+                    .style("fill-opacity", function (d) { return d.is_loser ? 0.5 : 1; });
+
+                // Transition exiting nodes to the parent's new position.
+                var nodeExit = node.exit().transition()
+                    .duration(duration)
+                    .attr("transform", function (d) { p = calcLeft(d.parent || source); return "translate(" + p.y + "," + p.x + ")"; })
+                    .remove();
+
+                nodeExit.select("circle")
+                    .attr("r", 1e-6);
+
+                nodeExit.select("text")
+                    .attr("font-size", 1)
+                    .style("fill-opacity", 1e-6);
+
+                // Update the links...
+                var link = vis.selectAll("path.link")
+                    .data(tree.links(nodes), function (d) { return d.target.id; });
+
+                // Enter any new links at the parent's previous position.
+                link.enter().insert("path", "g")
+                    .attr("class", function (d) {
+                        return (d.target.is_winner || (d.source.is_winner && 1 == d.source.entries.length)) ? "link winner" : "link";
+                    })
+                    .attr("d", function (d) {
+                        var o = { x: source.x0, y: source.y0 };
+                        return connector({ source: o, target: o });
+                    });
+
+                // Transition links to their new position.
+                link.transition()
+                    .duration(duration)
+                    .attr("class", function (d) {
+                        return (d.target.is_winner || (d.source.is_winner && 1 == d.source.entries.length)) ? "link winner" : "link";
+                    })
+                    .attr("d", connector);
+
+                // Transition exiting nodes to the parent's new position.
+                link.exit().transition()
+                    .duration(duration)
+                    .attr("d", function (d) {
+                        var o = calcLeft(d.source || source);
+                        if (d.source.isRight) o.y -= halfWidth - (d.target.y - d.source.y);
+                        else o.y += halfWidth - (d.target.y - d.source.y);
+                        return connector({ source: o, target: o });
+                    })
+                    .remove();
+                // Stash the old positions for transition.
+                nodes.forEach(function (d) {
+                    var p = calcLeft(d);
+                    d.x0 = p.x;
+                    d.y0 = p.y;
+                });
+
+                // Toggle children on click.
+                //function click(d) {
+                //    if (d.children) {
+                //        d._children = d.children;
+                //        d.children = null;
+                //    } else {
+                //        d.children = d._children;
+                //        d._children = null;
+                //    }
+                //    update(source, showObject);
+                //}
+            }
+            //d3.json("bracket.json", update_tournament_tree);
+
+            var match_to_tree = function (match, is_winner, is_loser) {
+                var result = {
+                    name: match.name,
+                    entries: [],
+                    is_winner: is_winner,
+                    is_loser: is_loser
+                };
+                angular.forEach(match.entries, function (entry, i) {
+                    var sub_is_winner = false;
+                    var sub_is_loser = is_loser;
+                    if (match.winners && 0 < match.winners.length) {
+                        if (0 <= match.winners.indexOf(entry)) {
+                            sub_is_winner = true;
+                        } else {
+                            sub_is_loser = true;
+                        }
+                    }
+                    var sub_result = null;
+                    var sub_match = $scope.getMatch(entry);
+                    if (sub_match) {
+                        sub_result = match_to_tree(sub_match, sub_is_winner, sub_is_loser);
+                        sub_result.original_id = sub_match.id;
+                    } else {
+                        var sub_entry = $scope.getEntry(entry);
+                        sub_result = {
+                            name: sub_entry.name,
+                            is_winner: sub_is_winner,
+                            is_loser: sub_is_loser
+                        };
+                        sub_result.original_id = sub_entry.id;
+                    }
+                    result.entries.push(sub_result);
+                });
+                return result;
+            };
+            update_tournament_tree(match_to_tree($scope.model.matches[$scope.model.matches.length - 1], false, false), $scope.showObject);
         }
     };
 
