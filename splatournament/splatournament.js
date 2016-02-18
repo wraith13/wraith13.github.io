@@ -648,7 +648,17 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
             var width_base_unit = 64;
 
             var height_unit = Math.max(document_height / height_count, height_base_unit);
-            var width_unit = Math.max(document_width / width_count, 64);
+            var width_unit = Math.max(document_width / width_count, width_base_unit);
+
+            var is_double_side_mode = 2.1 <= (width_unit / width_base_unit) / (height_unit / height_base_unit);
+            if (is_double_side_mode) {
+                height_count = height_count /2.0;
+                width_count = width_count *2.0;;
+
+                height_unit = Math.max(document_height / height_count, height_base_unit);
+                width_unit = Math.max(document_width / width_count, width_base_unit);
+            }
+
             var font_size = 12 * (1 + (((width_unit - width_base_unit) / width_base_unit) + ((height_unit - height_base_unit) / (height_base_unit * 2))) / 4);
 
             //var margin = { top: 30, right: 10, bottom: 10, left: 10 },
@@ -656,7 +666,7 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
                 //width = screen.width - margin.left - margin.right,
                 width = (width_count * width_unit),
                 //halfWidth = width / 2,
-                halfWidth = width - (width_unit * 0.75),
+                halfWidth = is_double_side_mode ? (width /2): (width - (width_unit * 0.75)),
                 height = (height_count * height_unit),
                 i = 0,
                 duration = 1500,
@@ -665,7 +675,7 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
             var getChildren = function (d) {
                 var a = [];
                 if (d.entries) for (var i = 0; i < d.entries.length; i++) {
-                    d.entries[i].isRight = false;
+                    //d.entries[i].is_right = false;
                     d.entries[i].parent = d;
                     a.push(d.entries[i]);
                 }
@@ -682,7 +692,7 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
                 var source = calcLeft(d.source);
                 var target = calcLeft(d.target);
                 var hy = (target.y - source.y) / 2;
-                if (d.isRight) hy = -hy;
+                if (d.is_right) hy = -hy;
                 return "M" + source.y + "," + source.x
                         + "H" + (source.y + hy)
                         + "V" + target.x + "H" + target.y;
@@ -691,12 +701,20 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
             //var connector = diagonal
 
             var calcLeft = function (d) {
-                var l = d.y;
-                if (!d.isRight) {
-                    l = d.y - halfWidth;
-                    l = halfWidth - l;
+                var result = { x: d.x, y: d.y };
+                if (is_double_side_mode) {
+                    if (d.is_root || d.is_semi_root) {
+                        result.x = height / 4;
+                    } else if (d.is_right) {
+                        result.x -= height / 2;
+                    }
+                    result.x *= 2;
                 }
-                return { x: d.x, y: l };
+                if (!d.is_right) {
+                    result.y = d.y - halfWidth;
+                    result.y = halfWidth - result.y;
+                }
+                return result;
             };
 
             d3.select("#chart svg")
@@ -723,7 +741,7 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
                     if (node.children) node.children.forEach(rebuildChildren);
                 }
                 rebuildChildren(root);
-                root.isRight = false;
+                root.is_right = false;
                 update(root, showObject);
             }
 
@@ -761,7 +779,7 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
                     .style("fill", function (d) { return d._children ? "lightsteelblue" : "#fff"; });
 
                 nodeEnter.append("text")
-                    .attr("dy", function (d) { return d.isRight ? 14 : -8; })
+                    .attr("dy", function (d) { return -8;/*d.is_right ? 14 : -8;*/ })
                     .attr("text-anchor", "middle")
                     .on("click", function (d) {
                         if (d.name) { showObject(d.original_id) }
@@ -824,7 +842,7 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
                     .duration(duration)
                     .attr("d", function (d) {
                         var o = calcLeft(d.source || source);
-                        if (d.source.isRight) o.y -= halfWidth - (d.target.y - d.source.y);
+                        if (d.source.is_right) o.y -= halfWidth - (d.target.y - d.source.y);
                         else o.y += halfWidth - (d.target.y - d.source.y);
                         return connector({ source: o, target: o });
                     })
@@ -850,12 +868,15 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
             }
             //d3.json("bracket.json", update_tournament_tree);
 
-            var match_to_tree = function (match, is_winner, is_loser) {
+            var match_to_tree = function (match, is_winner, is_loser, is_right, is_root) {
                 var result = {
                     name: match.name,
                     entries: [],
                     is_winner: is_winner,
-                    is_loser: is_loser
+                    is_loser: is_loser,
+                    is_right: is_right,
+                    is_root: is_root,
+                    is_semi_root: false
                 };
                 angular.forEach(match.entries, function (entry, i) {
                     var sub_is_winner = false;
@@ -867,25 +888,28 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
                             sub_is_loser = true;
                         }
                     }
+                    var sub_is_right = is_right || (is_root && 0 < i && is_double_side_mode);
                     var sub_result = null;
                     var sub_match = $scope.getMatch(entry);
                     if (sub_match) {
-                        sub_result = match_to_tree(sub_match, sub_is_winner, sub_is_loser);
+                        sub_result = match_to_tree(sub_match, sub_is_winner, sub_is_loser, sub_is_right, false);
                         sub_result.original_id = sub_match.id;
                     } else {
                         var sub_entry = $scope.getEntry(entry);
                         sub_result = {
                             name: sub_entry.name,
                             is_winner: sub_is_winner,
-                            is_loser: sub_is_loser
-                        };
+                            is_loser: sub_is_loser,
+                            is_right: sub_is_right
+                    };
                         sub_result.original_id = sub_entry.id;
                     }
+                    sub_result.is_semi_root = is_root;
                     result.entries.push(sub_result);
                 });
                 return result;
             };
-            update_tournament_tree(match_to_tree($scope.model.matches[$scope.model.matches.length - 1], false, false), $scope.showObject);
+            update_tournament_tree(match_to_tree($scope.model.matches[$scope.model.matches.length - 1], false, false, false, true), $scope.showObject);
         }
     };
 
