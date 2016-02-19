@@ -1,0 +1,354 @@
+﻿<!doctype html>
+<html ng-app="splatournament">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title ng-bind="title">splatournament</title>
+
+    <!-- angular.js with ui.bootstrap -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-touch.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.17/angular-ui-router.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.min.js" rel="stylesheet"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- onedrive -->
+    <!--
+    <script type="text/javascript" src="https://js.live.net/v5.0/OneDrive.js" id="onedrive-js" client-id="splatournament_public"></script>
+    -->
+    <!--  https://account.live.com/developers/applications -->
+
+    <!-- d3.js -->
+    <script src="http://mbostock.github.com/d3/d3.v2.js"></script>
+
+    <link href="splatournament.css" rel="stylesheet" />
+
+</head>
+<body id="body" ng-controller="splatornament">
+    <div class="body">
+        <header class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button"
+                        class="navbar-toggle"
+                        data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-3"
+                        ng-click="isCollapsed = !isCollapsed">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand visible-xs" href="#" ng-click="selectTab(null)">{{app.name}}</a>
+                </div>
+                <nav class="navbar-collapse collapse" uib-collapse="!isCollapsed">
+                    <a href="#" role="button" class="navbar-brand" ng-click="selectTab()" ng-hide="isCollapsed">{{app.name}}</a>
+                    <ul class="nav navbar-nav" ng-hide="is_loading">
+                        <li ng-class="active_tab == tab ? 'active': ''" ng-repeat="tab in tabs track by $index">
+                            <a href="#{{tab}}" ng-click="selectTab(tab)">{{tab}}</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <script type="text/ng-template" id="jumbotron.html">
+            <div class="jumbotron">
+                <span ng-include="'tag.html'"></span>
+                <h1>{{model.name}}</h1>
+                <p>{{model.description}}</p>
+                <p><a ng-href="{{model.url}}" target="_blank">{{model.url}}</a></p>
+                <div ng-show="model.entries" ng-include="'match.entries.list.html'"></div>
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="edit.html">
+            <input type="text" class="form-control" ng-model="model.name" placeholder="名前" />
+            <input type="text" class="form-control" ng-model="model.description" placeholder="説明" />
+            <input type="text" class="form-control" ng-model="model.url" placeholder="URL" />
+            <div ng-include="'tag.edit.html'" ng-show="tags[model.type]"></div>
+        </script>
+
+        <script type="text/ng-template" id="tag.edit.html">
+            <h4>tag</h4>
+            <button type="button" class="btn"
+                    ng-class="0<=arrayObjectIndexOf(model.tags,tag.name) ? (model.type=='match' ? 'btn-success': 'btn-primary'): 'btn-default'"
+                    ng-repeat="tag in tags[model.type]" ng-click="toggleTag(model,tag)">
+                <span class="glyphicon" ng-class="0<=arrayObjectIndexOf(model.tags,tag.name) ? 'glyphicon-check': 'glyphicon-unchecked'"></span>
+                {{tag.name}}
+            </button>
+            <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       placeholder="タグ"
+                       ng-model="tags.new" />
+                <span class="input-group-btn">
+                    <button class="btn btn-success" type="button" ng-click="addTag(model)"><span class="glyphicon glyphicon-plus"></span>追加</button>
+                </span>
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="match.entries.list.html">
+            <ul class="list-group" ng-click="$event.stopPropagation()">
+                <li class="list-group-item"
+                    ng-repeat="entry in model.entries track by $index"
+                    ng-click="viewmode ? showEntry(entry): setWinner(model,entry)"
+                    ng-class="getMatchEntryClass(model,entry)">
+                    <span ng-show="searchEntry(entry)">
+                        <span ng-class="getMatchResultClass(model,entry)"></span>
+                        <span ng-include="'tag.html'" ng-repeat="model in [searchEntry(entry)]"></span>
+                        {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
+                    </span>
+                    <span ng-hide="searchEntry(entry)">
+                        <span ng-include="'tag.html'" ng-repeat="model in [getMatch(entry)]"></span>
+                        {{getMatch(entry).name}} の勝者
+                    </span>
+                </li>
+            </ul>
+        </script>
+
+        <script type="text/ng-template" id="matches.list.html">
+            <div ng-include="'filter.html'" ng-repeat="type in ['match']"></div>
+            <ul class="list-group">
+				<li
+                    ng-include="'entries.list.item.html'"
+                    class="list-group-item"
+                    ng-show="2<=model.entries.length"
+                    ng-repeat="model in model | filter:filterMatch track by $index"
+                    ng-click="selectMatch(model)">
+                </li>
+            </ul>
+        </script>
+		
+        <script type="text/ng-template" id="entries.list.item.html">
+			<span ng-include="'tag.html'"></span>
+			<h4 class="list-group-item-heading">{{model.name}}<span ng-hide="model.name"><i>名称未設定</i></span></h4>
+			<div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [model]"></div>
+			<p class="list-group-item-text">{{model.description}}</p>
+			<p class="list-group-item-text" ng-show="model.url">
+                <a ng-href="{{model.url}}" target="_blank" ng-click="$event.stopPropagation()">{{model.url}}</a>
+            </p>
+        </script>
+		
+        <script type="text/ng-template" id="tag.html">
+            <span class="label label-pill pull-xs-right" ng-class="model.type=='match'?'label-success':'label-primary'" ng-repeat="tag in model.tags"><span class="glyphicon glyphicon-tag tag-default"></span>{{tag}}</span>
+        </script>
+
+        <script type="text/ng-template" id="filter.html">
+            <div class="input-group">
+                <span class="input-group-addon glyphicon glyphicon-search" id="entry-search-icon"></span>
+                <input type="text"
+                       class="form-control"
+                       placeholder="キーワード"
+                       aria-describedby="entry-search-icon"
+                       ng-model="selected[type+'Search']" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default glyphicon glyphicon-remove" type="button" ng-click="clearText(selected,type+'Search')"></button>
+                </span>
+                <div class="input-group-btn" ng-show="tags[type].length">
+                    <div class="btn-group" uib-dropdown>
+                        <button id="match-tag-filter" type="button" class="btn" uib-dropdown-toggle ng-disabled="disabled" ng-class="selected[type + 'FilterTagsLabel'] && 1<=selected[type + 'FilterTags'].length ? 'btn-primary': 'btn-default'">
+                            <span class="glyphicon tag-selector" ng-class="selected[type + 'FilterTags'] && 1==selected[type + 'FilterTags'].length ? 'glyphicon-tag': 'glyphicon-tags'"></span>
+                            <span ng-hide="selected[type + 'FilterTagsLabel']">All</span>
+                            {{selected[type + 'FilterTagsLabel']}}
+                            <span class="caret"></span>
+                        </button>
+                        <ul uib-dropdown-menu role="menu" aria-labelledby="match-tag-filter" class="right">
+                            <li role="menuitem" ng-click="clearFilterTag(type)" ng-class="selected[type + 'FilterTagsLabel'] && 1<=selected[type + 'FilterTags'].length ? '': 'active'"><a href="#"><span class="glyphicon glyphicon-tags tag-selector"></span>All({{repository[type].length}})</a></li>
+                            <li class="divider"></li>
+                            <li role="menuitem" ng-click="toggleFilterTag(type, model)" ng-repeat="model in tags[type] track by $index" ng-class="0<=arrayObjectIndexOf(selected[type + 'FilterTags'],model) ? 'active': ''">
+                                <a href="#">
+                                    <span class="glyphicon glyphicon-tag tag-selector"></span>{{model.name}}({{model.count}})
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <div class="container theme-showcase" role="main">
+
+            <div class="alert alert-danger" role="alert" ng-hide="true">
+                <strong>JavaScriptが無効になっています。</strong>
+                このページは JavaScript に強く依存しています。
+                JavaScriptを有効にしてから再読み込みしてください。
+            </div>
+            <uib-alert
+                ng-repeat="alert in alerts"
+                type="{{alert.type}}"
+                close="closeAlert($index)"
+                dismiss-on-timeout="3000">{{alert.msg}}
+            </uib-alert>
+
+            <!--
+            <div id="picker"></div>
+            <br/>
+            -->
+
+            <div ng-show="is_loading">
+                <div class="jumbotron">
+                    <h1>loading...</h1>
+                </div>
+            </div>
+            <div ng-hide="is_loading">
+
+                <div ng-hide="active_tab">
+                    <div ng-include="'jumbotron.html'" ng-repeat="model in [viewmode?model.event:app]"></div>
+
+                    <div ng-hide="viewmode">
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('event')">イベント作成する</button>
+                    </div>
+                    <div ng-show="viewmode">
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('entry')">参加チーム一覧を見る</button>
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧を見る</button>
+                        <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('tree')">トーナメントツリーを見る</button>
+                    </div>
+                </div>
+
+                <div ng-show="active_tab=='event'">
+                    <div ng-include="'edit.html'" ng-repeat="model in [model.event]"></div>
+                    <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('entry')">参加チームを登録する</button>
+                </div>
+
+                <div ng-show="active_tab=='entry'">
+                    <div ng-hide="selected.entry">
+                        <div ng-include="'filter.html'" ng-repeat="type in ['entry']"></div>
+                        <ul class="list-group">
+                            <li
+                                class="list-group-item list-group-item-success glyphicon glyphicon-plus"
+                                ng-click="addEntry()"
+                                ng-hide="viewmode">
+                                チームの追加
+                            </li>
+                            <li
+                                ng-include="'entries.list.item.html'"
+                                class="list-group-item"
+                                ng-class="{'active': model == selected.entry}"
+                                ng-repeat="model in model.entries | filter:filterEntry track by $index"
+                                ng-click="selectEntry(model)">
+                            </li>
+                        </ul>
+                        <button ng-show="viewmode" type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧を見る</button>
+                        <button ng-show="!viewmode&&2<=(mode.entries||[]).length" type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧の作成する</button>
+                    </div>
+                    <div ng-show="selected.entry && !viewmode">
+                        <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
+                        <button
+                            type="button"
+                            class='btn btn-danger glyphicon glyphicon-trash'
+                            ng-click="removeEntry(selected.entry)"
+                            style="float:right">
+                            チームの削除
+                        </button>
+                        <div ng-include="'edit.html'" ng-repeat="model in [selected.entry]"></div>
+                        <h4>match</h4>
+                        <div ng-include="'matches.list.html'" ng-show="0<selected.entryMatches.length" ng-repeat="model in [selected.entryMatches]"></div>
+                    </div>
+                    <div ng-show="selected.entry && viewmode">
+                        <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
+                        <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.entry]"></div>
+                        <h4>match</h4>
+                        <div ng-include="'matches.list.html'" ng-repeat="model in [selected.entryMatches]"></div>
+                    </div>
+                </div>
+
+                <div ng-show="active_tab=='match'">
+                    <div ng-hide="1 < model.entries.length">
+                        <uib-alert type="info" ng-hide="viewmode">まずは entry から2チーム以上登録してください。</uib-alert>
+                        <uib-alert type="info" ng-show="viewmode">このトーナメントはまだ十分な数のチームが登録されていません。</uib-alert>
+                    </div>
+                    <div ng-show="1 < model.entries.length">
+                        <div ng-show="0 == model.matches.length && !viewmode">
+                            <uib-alert type="info">トーナメントの抽選を行い試合を組み合わせ、試合表とトーナメントツリーを作成します。</uib-alert>
+                            <uib-alert type="warning">
+                                現在の splatournament のバージョンではトーナメントツリー作成後に entry の追加/削除を行うと抽選のやり直しになります。
+                            </uib-alert>
+                            <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="makeMatch()">抽選の実行</button>
+                        </div>
+                        <div ng-show="0 == model.matches.length && viewmode">
+                            <uib-alert type="info">
+                                このトーナメントはまだ試合の組み合わを決める抽選が行われていません。
+                                通常、抽選は参加登録が締め切られてから実施されます。
+                            </uib-alert>
+                        </div>
+                        <div ng-show="0 < model.matches.length && !selected.match">
+                            <div ng-show="0 < unmatches.length" style="margin-bottom:24px;">
+                                <uib-alert type="info">次のチームがトーナメントに組み込まれていません。</uib-alert>
+                                <ul class="list-group">
+									<li class="list-group-item" ng-repeat="model in unmatches track by $index" ng-click="selectEntry(model)">
+										<span ng-include="'entries.list.item.html'" ng-repeat="model in [getEntry(model)]"></span>
+									</li>
+                                </ul>
+                                <uib-alert type="denger" ng-hide="viewmode">
+                                    現在のトーナメントツリーのままで公平にエントリーを追加することができません。
+                                    これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。
+                                    この画面の一番下にあるボタンをクリックしてください。
+                                </uib-alert>
+                                <!--
+                                <uib-alert ng-show="over_bit_level" type="denger">
+                                    現在のトーナメントツリーのままで公平にエントリーを追加することができません。
+                                    これらのエントリーをトーナメントに追加するには一度現在の抽選を全て破棄する必要があります。
+                                    この画面の一番下にあるボタンをクリックしてください。
+                                </uib-alert>
+                                <button ng-hide="over_bit_level" type="button" class='btn btn-primary btn-lg btn-block' ng-click="appendMatch()">
+                                    追加の抽選の実行
+                                </button>
+                                -->
+                            </div>
+                            <div ng-include="'matches.list.html'" ng-repeat="model in [model.matches]"></div>
+                            <button type="button" class='btn btn-danger' style="float:right" ng-click="remakeMatch()" ng-hide="viewmode">
+                                現在の抽選を全て破棄して抽選の再実行
+                            </button>
+                            <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('tree')">トーナメントツリーを見る</button>
+                        </div>
+                        <div ng-show="selected.match && !viewmode">
+                            <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMatch(null)">戻る</button>
+                            <div ng-include="'edit.html'" ng-repeat="model in [selected.match]"></div>
+                            <h4>entry</h4>
+                            <div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [selected.match]"></div>
+                        </div>
+                        <div ng-show="selected.match && viewmode">
+                            <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMatch(null)">戻る</button>
+                            <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.match]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-show="active_tab=='import'">
+                    <textarea class="form-control" rows="10" ng-model="json"></textarea>
+                    <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="import(json)">import</button>
+                </div>
+
+                <div ng-show="active_tab=='export'">
+                    <textarea class="form-control" rows="10">{{toJson(model)}}</textarea>
+                </div>
+
+                <div ng-show="active_tab=='tree'">
+                    <div ng-hide="0 < model.matches.length">
+                        <uib-alert type="info">match で抽選を行ってトーナメント表を作成してください。</uib-alert>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="active_tab=='tree'">
+            <div id="chart"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <ul>
+                <li>splatournament ver {{app.version}}</li>
+                <li>&copy; 2016 <a href="https://twitter.com/wraith13">@wraith13</a></li>
+                <li><a href="https://github.com/wraith13/splatournament">github</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="splatournament.js"></script>
+</body>
+</html>

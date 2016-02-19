@@ -1,0 +1,127 @@
+﻿/* base */
+body,
+table,
+div,
+.node text {
+    font-family: "Yu Gothic UI", "Meiryo UI", "メイリオ", "MS UI Gothic", sans-serif;
+}
+
+/* body */
+body {
+    background-color:#99DDDD;
+}
+.body {
+    background-color:#FFFFFF;
+    padding-bottom:24px;
+    min-height:95vh;
+}
+
+/* tag */
+.tag-default {
+    font-size:xx-small;
+    padding-right:3px;
+}
+.tag-selector {
+    padding-right:8px;
+}
+.input-group ul.right {
+    left:auto;
+    right:0px;
+    min-width:60px;
+}
+
+/* custom design */
+.navbar,
+.big-header,
+.jumbotron {
+    color:#DDFFFF;
+    background-color:#008888;
+}
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-nav > li > a {
+    color:#88DDDD;
+}
+.navbar-inverse .navbar-toggle:focus,
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:focus,
+.navbar-inverse .navbar-nav > .active > a:hover {
+    background-color: #006666;
+}
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form,
+.navbar-inverse .navbar-toggle,
+.navbar-inverse {
+    border-color:#88CCCC;
+}
+.big-header {
+    margin-top:-20px;
+    width:100%;
+    margin-bottom:30px;
+}
+.jumbotron {
+    margin-bottom:0px;
+}
+.jumbotron a,
+.jumbotron a:active,
+.jumbotron a:focus,
+.jumbotron a:hover {
+    color:#CCFFEE;
+    word-break: break-all;
+}
+
+/* ui.bootstrap fix */
+.pull-xs-right {
+    float:right;
+}
+.label-pill {
+    padding-right: 0.6em;
+    padding-left: 0.6em;
+    border-radius: 10rem;
+}
+
+/* chart */
+#chart {
+    text-align: center;
+    /* その他の正しいとされるセンタリングをいくつか試してみたが正常に機能せず */
+    /* その後、他の修正が入ったので正しいとされるセンタリングでよくなっているかもしれないが、正常に機能してるようなのでこのままにしておく。 */
+}
+#chart svg {
+    margin-top: -20px;
+    margin-bottom: -28px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: #FFFFFF;
+}
+
+/* tree */
+.node circle {
+    cursor: pointer;
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+.null circle {
+    display: none;
+}
+path.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+path.winner {
+    stroke: #6d6;
+    stroke-width: 3.0px;
+}
+
+/* footer */
+.footer {
+    color:#008888;
+    padding-top:8px;
+    padding-bottom:8px;
+}
+.footer .separator {
+    margin-left: 16px;
+    margin-right: 16px;
+    color:#DDFFFF;
+}
