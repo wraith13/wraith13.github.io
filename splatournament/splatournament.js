@@ -638,7 +638,7 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
     angular.element($window).on('resize', function () { $scope.update_tree(); });
     $scope.update_tree = function () {
         if ($scope.model.matches && 0 < $scope.model.matches.length) {
-            var document_height = document.documentElement.clientHeight -204;
+            var document_height = document.documentElement.clientHeight -144;
             var document_width = document.documentElement.clientWidth;
 
             var height_count = ($scope.model.entries.length - ($scope.unmatches || []).length);

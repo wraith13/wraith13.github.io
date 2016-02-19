@@ -8,11 +8,12 @@ div,
 
 /* body */
 body {
-    background-color:#EEEEEE;
+    background-color:#99DDDD;
 }
 .body {
     background-color:#FFFFFF;
     padding-bottom:24px;
+    min-height:95vh;
 }
 
 /* tag */
@@ -27,6 +28,46 @@ body {
     left:auto;
     right:0px;
     min-width:60px;
+}
+
+/* custom design */
+.navbar,
+.big-header,
+.jumbotron {
+    color:#DDFFFF;
+    background-color:#008888;
+}
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-nav > li > a {
+    color:#88DDDD;
+}
+.navbar-inverse .navbar-toggle:focus,
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:focus,
+.navbar-inverse .navbar-nav > .active > a:hover {
+    background-color: #006666;
+}
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form,
+.navbar-inverse .navbar-toggle,
+.navbar-inverse {
+    border-color:#88CCCC;
+}
+.big-header {
+    margin-top:-20px;
+    width:100%;
+    margin-bottom:30px;
+}
+.jumbotron {
+    margin-bottom:0px;
+}
+.jumbotron a,
+.jumbotron a:active,
+.jumbotron a:focus,
+.jumbotron a:hover {
+    color:#CCFFEE;
+    word-break: break-all;
 }
 
 /* ui.bootstrap fix */
@@ -74,9 +115,13 @@ path.winner {
 }
 
 /* footer */
-.footer .container ul {
-    margin: 16px;
+.footer {
+    color:#008888;
+    padding-top:8px;
+    padding-bottom:8px;
 }
-.footer .container ul li {
-    list-style-type: none;
+.footer .separator {
+    margin-left: 16px;
+    margin-right: 16px;
+    color:#DDFFFF;
 }

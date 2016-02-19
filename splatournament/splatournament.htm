@@ -170,6 +170,25 @@
             </div>
         </script>
 
+        <div ng-show="is_loading">
+            <div class="big-header">
+                <div class="container">
+                    <div class="jumbotron">
+                        <h1>loading...</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-hide="is_loading||active_tab">
+            <div class="big-header">
+                <div class="container">
+                    <div class="jumbotron">
+                        <div ng-include="'jumbotron.html'" ng-repeat="model in [viewmode?model.event:app]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="container theme-showcase" role="main">
 
             <div class="alert alert-danger" role="alert" ng-hide="true">
@@ -189,16 +208,9 @@
             <br/>
             -->
 
-            <div ng-show="is_loading">
-                <div class="jumbotron">
-                    <h1>loading...</h1>
-                </div>
-            </div>
             <div ng-hide="is_loading">
 
                 <div ng-hide="active_tab">
-                    <div ng-include="'jumbotron.html'" ng-repeat="model in [viewmode?model.event:app]"></div>
-
                     <div ng-hide="viewmode">
                         <button type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('event')">イベント作成する</button>
                     </div>
@@ -341,11 +353,9 @@
 
     <footer class="footer">
         <div class="container">
-            <ul>
-                <li>splatournament ver {{app.version}}</li>
-                <li>&copy; 2016 <a href="https://twitter.com/wraith13">@wraith13</a></li>
-                <li><a href="https://github.com/wraith13/splatournament">github</a></li>
-            </ul>
+            <span>splatournament ver {{app.version}}</li></span><span class="separator">|</span>
+            <span>&copy; 2016 <a href="https://twitter.com/wraith13">@wraith13</a></span><span class="separator">|</span>
+            <span><a href="https://github.com/wraith13/splatournament">github</a></span>
         </div>
     </footer>
 
