@@ -1,0 +1,101 @@
+﻿<!doctype html>
+<html ng-app="colordistribution">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title ng-bind="title">colordistribution</title>
+
+    <!-- angular.js with ui.bootstrap -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-touch.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.17/angular-ui-router.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.min.js" rel="stylesheet"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="colordistribution.css" rel="stylesheet" />
+
+</head>
+<body id="body" ng-controller="colordistribution">
+    <div class="body">
+
+        <div ng-show="is_loading">
+            <div class="big-header">
+                <div class="container">
+                    <div class="jumbotron">
+                        <h1>loading...</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-hide="is_loading||active_tab">
+            <div class="big-header">
+                <div class="container">
+						<h1><span class="glyphicon glyphicon-th"></span>{{app.name}}</h1>
+						<p>{{app.description}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container theme-showcase" role="main">
+
+            <div class="alert alert-danger" role="alert" ng-hide="true">
+                <strong>JavaScriptが無効になっています。</strong>
+                このページは JavaScript に強く依存しています。
+                JavaScriptを有効にしてから再読み込みしてください。
+            </div>
+            <uib-alert
+                ng-repeat="alert in alerts"
+                type="{{alert.type}}"
+                close="closeAlert($index)">{{alert.msg}}
+            </uib-alert>
+
+            <div ng-hide="is_loading">
+				<div class="row">
+					<div class="col-md-9">
+						<h4>expression</h4>
+						<input type="text" class="form-control" ng-model="model.expression" />
+					</div>
+					<div class="col-md-3">
+						<h4>resolution</h4>
+						<input type="text" class="form-control" ng-model="model.resolution" />
+					</div>
+				</div>
+				
+				<h4>build</h4>
+				<button type="button" class='btn btn-primary btn-lg btn-block' ng-click="build()">カラーテーブルを作成する</button>
+				
+				<div ng-show="buildModel.levels && buildModel.levels.length">
+					<h4>result values</h4>
+					{{buildModel.levels.join(",")}}
+				</div>
+            </div>
+        </div>
+		<div ng-show="buildModel.levels && buildModel.levels.length">
+			<table>
+				<tr>
+					<td ng-repeat="s in [0,1,2]">
+						<table ng-repeat="z in buildModel.levels">
+							<tr ng-repeat="y in buildModel.levels">
+								<td ng-repeat="x in buildModel.levels" ng-style="calcStyle(s,x,y,z)">&nbsp;</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <span>colordistribution</li></span><span class="separator">|</span>
+            <span>&copy; 2016 <a href="https://twitter.com/wraith13">@wraith13</a></span><span class="separator">|</span>
+            <span><a href="https://github.com/wraith13/wraith13.github.io/tree/master/colordistribution/">github</a></span>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="colordistribution.js"></script>
+</body>
+</html>
