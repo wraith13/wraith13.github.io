@@ -42,13 +42,13 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand visible-xs" href="#" ng-click="selectTab(null)">{{app.name}}</a>
+                    <a class="navbar-brand visible-xs" href="#" ng-click="selectTab(null)"><span class="glyphicon" ng-class="'glyphicon-'+tabIcon[app.type]"></span>{{app.name}}</a>
                 </div>
                 <nav class="navbar-collapse collapse" uib-collapse="!isCollapsed">
-                    <a href="#" role="button" class="navbar-brand" ng-click="selectTab()" ng-hide="isCollapsed">{{app.name}}</a>
+                    <a href="#" role="button" class="navbar-brand" ng-click="selectTab()" ng-hide="isCollapsed"><span class="glyphicon" ng-class="'glyphicon-'+tabIcon[app.type]"></span>{{app.name}}</a>
                     <ul class="nav navbar-nav" ng-hide="is_loading">
                         <li ng-class="active_tab == tab ? 'active': ''" ng-repeat="tab in tabs track by $index">
-                            <a href="#{{tab}}" ng-click="selectTab(tab)">{{tab}}</a>
+                            <a href="#{{tab}}" ng-click="selectTab(tab)"><span class="glyphicon" ng-class="'glyphicon-'+tabIcon[tab]"></span>{{tab}}</a>
                         </li>
                     </ul>
                 </nav>
@@ -58,17 +58,45 @@
         <script type="text/ng-template" id="jumbotron.html">
             <div class="jumbotron">
                 <span ng-include="'tag.html'"></span>
-                <h1>{{model.name}}</h1>
+                <h1><span class="glyphicon" ng-class="'glyphicon-'+tabIcon[model.type]"></span>{{model.name}}</h1>
                 <p>{{model.description}}</p>
                 <p><a ng-href="{{model.url}}" target="_blank">{{model.url}}</a></p>
                 <div ng-show="model.entries" ng-include="'match.entries.list.html'"></div>
             </div>
         </script>
 
+        <script type="text/ng-template" id="edit.startAt.time.html">
+            <uib-timepicker ng-model="model.startAt" hour-step="1" minute-step="5" show-meridian="false"></uib-timepicker>
+        </script>
+
+        <script type="text/ng-template" id="edit.endAt.time.html">
+            <uib-timepicker ng-model="model.endAt" hour-step="1" minute-step="5" show-meridian="false"></uib-timepicker>
+        </script>
+
         <script type="text/ng-template" id="edit.html">
             <input type="text" class="form-control" ng-model="model.name" placeholder="名前" />
             <input type="text" class="form-control" ng-model="model.description" placeholder="説明" />
             <input type="text" class="form-control" ng-model="model.url" placeholder="URL" />
+            <div  ng-show="model.type=='event' || model.type=='match'">
+                <p class="input-group">
+                    <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd HH:mm" ng-model="model.startAt" is-open="selected.openedStartCalendar" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openCalendar('Start')"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    <span class="input-group-btn">
+                        <button uib-popover-template="'edit.startAt.time.html'" type="button" class="btn btn-default"><i class="glyphicon glyphicon-time"></i></button>
+                    </span>
+                </p>
+                <p class="input-group">
+                    <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd HH:mm" ng-model="model.endAt" is-open="selected.openedEndCalendar" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="openCalendar('End')"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    <span class="input-group-btn">
+                        <button uib-popover-template="'edit.endAt.time.html'" type="button" class="btn btn-default"><i class="glyphicon glyphicon-time"></i></button>
+                    </span>
+                </p>
+            </div>
             <div ng-include="'tag.edit.html'" ng-show="tags[model.type]"></div>
         </script>
 
@@ -100,10 +128,12 @@
                     <span ng-show="searchEntry(entry)">
                         <span ng-class="getMatchResultClass(model,entry)"></span>
                         <span ng-include="'tag.html'" ng-repeat="model in [searchEntry(entry)]"></span>
+                        <span class="glyphicon" ng-class="'glyphicon-'+tabIcon.entry"></span>
                         {{searchEntry(entry).name}}<span ng-hide="searchEntry(entry).name"><i>名称未設定</i></span>
                     </span>
                     <span ng-hide="searchEntry(entry)">
                         <span ng-include="'tag.html'" ng-repeat="model in [getMatch(entry)]"></span>
+                        <span class="glyphicon" ng-class="'glyphicon-'+tabIcon.match"></span>
                         {{getMatch(entry).name}} の勝者
                     </span>
                 </li>
@@ -125,7 +155,7 @@
 		
         <script type="text/ng-template" id="entries.list.item.html">
 			<span ng-include="'tag.html'"></span>
-			<h4 class="list-group-item-heading">{{model.name}}<span ng-hide="model.name"><i>名称未設定</i></span></h4>
+			<h4 class="list-group-item-heading"><span class="glyphicon" ng-class="'glyphicon-'+tabIcon[model.type]"></span>{{model.name}}<span ng-hide="model.name"><i>名称未設定</i></span></h4>
 			<div ng-show="model.entries" ng-include="'match.entries.list.html'" ng-repeat="model in [model]"></div>
 			<p class="list-group-item-text">{{model.description}}</p>
 			<p class="list-group-item-text" ng-show="model.url">
@@ -245,7 +275,7 @@
                             </li>
                         </ul>
                         <button ng-show="viewmode" type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧を見る</button>
-                        <button ng-show="!viewmode&&2<=(mode.entries||[]).length" type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧の作成する</button>
+                        <button ng-show="!viewmode&&2<=(mode.entries||[]).length" type="button" class='btn btn-primary btn-lg btn-block' ng-click="selectTab('match')">試合一覧を作成する</button>
                     </div>
                     <div ng-show="selected.entry && !viewmode">
                         <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectEntry(null)">戻る</button>
@@ -265,6 +295,39 @@
                         <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.entry]"></div>
                         <h4>match</h4>
                         <div ng-include="'matches.list.html'" ng-repeat="model in [selected.entryMatches]"></div>
+                    </div>
+                </div>
+
+                <div ng-show="active_tab=='member'">
+                    <div ng-hide="selected.member">
+                        <div ng-include="'filter.html'" ng-repeat="type in ['member']"></div>
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-success glyphicon glyphicon-plus"
+                                ng-click="addMember()"
+                                ng-hide="viewmode">
+                                メンバーの追加
+                            </li>
+                            <li ng-include="'entries.list.item.html'"
+                                class="list-group-item"
+                                ng-class="{'active': model == selected.member}"
+                                ng-repeat="model in model.members | filter:filterMember track by $index"
+                                ng-click="selectMember(model)">
+                            </li>
+                        </ul>
+                    </div>
+                    <div ng-show="selected.member && !viewmode">
+                        <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMember(null)">戻る</button>
+                        <button type="button"
+                                class='btn btn-danger glyphicon glyphicon-trash'
+                                ng-click="removeMember(selected.member)"
+                                style="float:right">
+                            メンバーの削除
+                        </button>
+                        <div ng-include="'edit.html'" ng-repeat="model in [selected.member]"></div>
+                    </div>
+                    <div ng-show="selected.member && viewmode">
+                        <button type="button" class='btn glyphicon glyphicon-chevron-left' ng-click="selectMember(null)">戻る</button>
+                        <div ng-include="'jumbotron.html'" ng-repeat="model in [selected.member]"></div>
                     </div>
                 </div>
 

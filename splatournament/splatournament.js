@@ -156,6 +156,7 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
     };
 
     $scope.app = {
+        type: "app",
         name: "splatournament",
         description: "このツールは Wii U 用ゲームソフト、『スプラトゥーン』で草の根的に行われる各種トーナメント形式での大会向けのトーナメント管理ツールです。",
         version: "X.XX.XXX"
@@ -178,12 +179,13 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
         $scope.model.event = $scope.model.event || { type: "event" };
         $scope.makeSureId($scope.model.event);
         $scope.repository.entry = $scope.model.entries = $scope.model.entries || [];
+        $scope.repository.member = $scope.model.members = $scope.model.members || [];
         $scope.repository.match = $scope.model.matches = $scope.model.matches || [];
         $scope.initTag();
     };
     $scope.initTag = function () {
         $scope.tags = {};
-        angular.forEach(["entry", "match"], function (type, i) {
+        angular.forEach(["entry", "member", "match"], function (type, i) {
             $scope.tags[type] = [];
             var temp_repository = {};
             angular.forEach($scope.repository[type], function (object, i) {
@@ -208,9 +210,10 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
             $scope.model = data;
             $scope.regulateModel();
             $scope.viewmode = true;
-            $scope.tabs = ["entry", "match", "tree"];
+            $scope.tabs = ["entry", "member", "match", "tree"];
             $scope.selectTab($location.hash());
             $rootScope.title = $scope.app.name = $scope.model.event.name;
+            $scope.app.type = $scope.model.event.type;
             $scope.is_loading = false;
         }).error(function (data, status, headers, config) {
             $scope.addAlert({ type: 'danger', msg: 'インポート中にエラーが発生しました。 '});
@@ -221,7 +224,17 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
     //$scope.change = function () {
     //};
 
-    $scope.mastertabs = ["event", "entry", "match", "import", "export", "tree"];
+    $scope.tabIcon = {
+        "app": "globe",
+        "event": "tower",
+        "entry":"flag",
+        "member":"user",
+        "match":"flash",
+        "import": "cloud-upload",
+        "export":"cloud-download",
+        "tree": "tree-conifer"
+    };
+    $scope.mastertabs = ["event", "entry", "member", "match", "import", "export", "tree"];
     $scope.tabs = $scope.mastertabs;
     $scope.selectTab = function (tab) {
         $scope.selected = {};
@@ -378,6 +391,34 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
     };
     $scope.filterEntry = function (value, index, array) {
         var search = $scope.selected.entrySearch;
+        return (!(search) ||
+            0 == search.length ||
+            0 <= (value.name || "").indexOf(search) ||
+            0 <= (value.description || "").indexOf(search) ||
+            0 <= (value.url || "").indexOf(search)) &&
+            $scope.filterByTag(value);
+    }
+
+    //  member
+    $scope.selectMember = function (member) {
+        $scope.selectObject("member", member);
+
+        $scope.selected.memberMatches = [];
+        if ($scope.selected.member && $scope.model.matches) {
+            var match = $scope.selected.member;
+            while (match = $scope.getNextMatch(match.id)) {
+                $scope.selected.memberMatches.push(match);
+            }
+        }
+    }
+    $scope.addMember = function () {
+        $scope.addObject("member");
+    };
+    $scope.removeMember = function (member) {
+        $scope.removeObject("member", member);
+    };
+    $scope.filterMember = function (value, index, array) {
+        var search = $scope.selected.memberSearch;
         return (!(search) ||
             0 == search.length ||
             0 <= (value.name || "").indexOf(search) ||
@@ -915,6 +956,10 @@ app.controller("splatornament", function ($rootScope, $window, $scope, $http, $l
 
     $scope.clearText = function (object, name) {
         object[name] = "";
+    };
+
+    $scope.openCalendar = function (name) {
+        $scope.selected["opened" +name +"Calendar"] = true;
     };
 
     $scope.addTag = function (model) {

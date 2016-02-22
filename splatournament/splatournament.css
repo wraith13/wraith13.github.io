@@ -16,6 +16,11 @@ body {
     min-height:95vh;
 }
 
+/* tab */
+.navbar .glyphicon {
+    margin-right:8px;
+}
+
 /* tag */
 .tag-default {
     font-size:xx-small;
