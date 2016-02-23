@@ -55,8 +55,12 @@
             <div ng-hide="is_loading">
 				<div class="row">
 					<div class="col-md-9">
-						<h4>expression</h4>
-						<input type="text" class="form-control" ng-model="model.expression" />
+						<h4>R expression</h4>
+						<input type="text" class="form-control" ng-model="model.expression.r" />
+						<h4>G expression</h4>
+						<input type="text" class="form-control" ng-model="model.expression.g" />
+						<h4>B expression</h4>
+						<input type="text" class="form-control" ng-model="model.expression.b" />
 					</div>
 					<div class="col-md-3">
 						<h4>resolution</h4>
@@ -67,19 +71,23 @@
 				<h4>build</h4>
 				<button type="button" class='btn btn-primary btn-lg btn-block' ng-click="build()">カラーテーブルを作成する</button>
 				
-				<div ng-show="buildModel.levels && buildModel.levels.length">
-					<h4>result values</h4>
-					{{buildModel.levels.join(",")}}
+				<div ng-show="builtModel.indexes.length">
+					<h4>r values</h4>
+					{{builtModel.levels.r.join(", ")}}
+					<h4>g values</h4>
+					{{builtModel.levels.g.join(", ")}}
+					<h4>b values</h4>
+					{{builtModel.levels.b.join(", ")}}
 				</div>
             </div>
         </div>
-		<div ng-show="buildModel.levels && buildModel.levels.length">
+		<div ng-show="builtModel.indexes.length">
 			<table>
 				<tr>
 					<td ng-repeat="s in [0,1,2]">
-						<table ng-repeat="z in buildModel.levels">
-							<tr ng-repeat="y in buildModel.levels">
-								<td ng-repeat="x in buildModel.levels" ng-style="calcStyle(s,x,y,z)">&nbsp;</td>
+						<table ng-repeat="z in builtModel.indexes">
+							<tr ng-repeat="y in builtModel.indexes">
+								<td ng-repeat="x in builtModel.indexes" ng-style="calcStyle(s,x,y,z)">&nbsp;</td>
 							</tr>
 						</table>
 					</td>

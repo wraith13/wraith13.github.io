@@ -30,30 +30,45 @@ app.controller("colordistribution", function ($rootScope, $window, $scope, $http
     $rootScope.title = $scope.app.name;
 
 	$scope.model = {
-		expression: ["255*N","255*Math.sin((Math.PI/2) *N)"][1],
+		expression: {
+			r: ["255*N","255*Math.sin((Math.PI/2) *N)"][1],
+			g: ["255*N","255*Math.sin((Math.PI/2) *N)"][1],
+			b: ["255*N","255*Math.sin((Math.PI/2) *N)"][1]
+		},
 		resolution: 4,
 	};
-	$scope.buildModel = {
+	$scope.builtModel = {
 		resolution: $scope.model.resolution,
-		levels: null
-	}
+		levels: {
+			r: [],
+			g: [],
+			b: [],
+		},
+		indexes: []
+	};
 	
 	$scope.build = function() {
 		$scope.clearAlert();
 		try {
-			$scope.buildModel.levels = [];
-			$scope.buildModel.resolution = $scope.model.resolution;
+			$scope.builtModel.levels.r = [];
+			$scope.builtModel.levels.g = [];
+			$scope.builtModel.levels.b = [];
+			$scope.builtModel.indexes = [];
+			$scope.builtModel.resolution = $scope.model.resolution;
 			var i = 0;
 			do {
 				var N = (1 *i) /($scope.model.resolution -1);
-				$scope.buildModel.levels.push(eval($scope.model.expression)|0);
+				$scope.builtModel.levels.r.push(eval($scope.model.expression.r)|0);
+				$scope.builtModel.levels.g.push(eval($scope.model.expression.g)|0);
+				$scope.builtModel.levels.b.push(eval($scope.model.expression.b)|0);
+				$scope.builtModel.indexes.push(i);
 			} while(++i < $scope.model.resolution);
 		} catch(e) {
             $scope.addAlert({ type: 'danger', msg: e.name +": "+ e.message });
 		}
 	};
 	$scope.calcStyle = function(s, x, y, z) {
-		var size_unit = 100 / ($scope.buildModel.resolution *3);
+		var size_unit = 100 / ($scope.builtModel.resolution *3);
 		var toHex = function(i) {
 			var result = i.toString(16).toUpperCase();
 			if (1 == result.length) {
@@ -61,13 +76,15 @@ app.controller("colordistribution", function ($rootScope, $window, $scope, $http
 			}
 			return result;
 		}
-		var table = [[x, y, z], [y, z, x], [z, x, y]][s];
+		var table = [[ x, y, z], [y, z, x], [z, x, y]][s];
 		var result = {
 			"width": size_unit +"vw",
 			"height": size_unit +"vw",
-			"background-color": "#" +toHex(table[0]) +toHex(table[1]) +toHex(table[2]),
+			"background-color": "#"
+				+toHex($scope.builtModel.levels.r[table[0]])
+				+toHex($scope.builtModel.levels.g[table[1]])
+				+toHex($scope.builtModel.levels.b[table[2]])
 		};
 		return result;
 	};
-
 });
