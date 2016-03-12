@@ -3,14 +3,24 @@
     "type": "event",
     "id": "8bdd6820-3491-4d20-83ad-1d4825864597",
     "name": "ステージ原住民対抗マッチ",
-    "description": "これは splatournament のサンプルデータです。",
-    "url": "https://github.com/wraith13/splatournament"
+    "description": "これは sepiatournament のサンプルデータです。",
+	"links": [
+		{
+			"type": "link",
+			"url": "https://github.com/wraith13/sepiatournament"
+		}
+	]
   },
   "entries": [
     {
       "type": "entry",
       "name": "デカライン高架下の住人",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#xe31c347",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#xe31c347"
+		  }
+	  ],
       "description": "自販機あるよ。",
       "id": "842917a0-09b6-4fe6-828e-55be50212a81",
       "tags": [
@@ -20,7 +30,12 @@
     {
       "type": "entry",
       "name": "シオノメ油田経営陣",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#q8efb038",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#q8efb038"
+		  }
+	  ],
       "description": "油売ってないで仕事しろ！！！",
       "id": "444eb935-33a2-4da0-b059-3176492ec9ef",
       "tags": [
@@ -30,7 +45,12 @@
     {
       "type": "entry",
       "name": "Bバスパークキッズ",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#c60eff64",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#c60eff64"
+		  }
+	  ],
       "id": "7cea17b1-01d5-4be0-8296-aa59276673ac",
       "tags": [
         "kids"
@@ -39,7 +59,12 @@
     {
       "type": "entry",
       "name": "ハコフグ倉庫",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#h1c5f562",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#h1c5f562"
+		  }
+	  ],
       "id": "fab3ec09-4e5e-4e69-9483-d452acabdbcd",
       "tags": [
         "biz"
@@ -48,6 +73,12 @@
     {
       "type": "entry",
       "name": "アロワナモール",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#o87d2ab5"
+		  }
+	  ],
       "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#o87d2ab5",
       "id": "11e3748d-5d96-4056-826c-50032a4dd860",
       "tags": [
@@ -57,7 +88,12 @@
     {
       "type": "entry",
       "name": "ホッケふ頭",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#c720b31e",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#c720b31e"
+		  }
+	  ],
       "id": "67e1a820-7912-42b8-a5fc-f5ec09db674d",
       "tags": [
         "biz"
@@ -66,7 +102,12 @@
     {
       "type": "entry",
       "name": "モズク農協",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#q1fc408a",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#q1fc408a"
+		  }
+	  ],
       "description": "草食え！草！！！",
       "id": "ffeead21-c0d1-433f-9c8b-3e9d2e7c6c30",
       "tags": [
@@ -76,7 +117,12 @@
     {
       "type": "entry",
       "name": "ネギトロ炭鉱",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#na19f438",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#na19f438"
+		  }
+	  ],
       "id": "abd8be75-f3cd-4641-8886-eb2bc70cf8c5",
       "tags": [
         "biz"
@@ -85,6 +131,12 @@
     {
       "type": "entry",
       "name": "タチウオパー👑s",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#na19f438"
+		  }
+	  ],
       "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#u6a70b8a",
       "id": "2ad03454-1c6d-4343-abc3-a7e73e18943b",
       "tags": [
@@ -94,7 +146,12 @@
     {
       "type": "entry",
       "name": "モンガラキャンプクラブ",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#ud1ba8b0",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#ud1ba8b0"
+		  }
+	  ],
       "id": "4ef35436-e1b9-42bc-b4f3-e1dd32d1b9d8",
       "tags": [
         "kids",
@@ -104,13 +161,24 @@
     {
       "type": "entry",
       "name": "ヒラメが丘団地",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#l4503f76"
+		  }
+	  ],
       "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#l4503f76",
       "id": "545cb6fd-beaf-4060-8d93-af523e94ce9b"
     },
     {
       "type": "entry",
       "name": "マサバ海峡大橋",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#ob4752e1",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#ob4752e1"
+		  }
+	  ],
       "id": "93b3604a-a22a-4f72-8737-1f36d570d77f",
       "tags": [
         "homeless"
@@ -119,7 +187,12 @@
     {
       "type": "entry",
       "name": "キンメダイ美術館",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#jb053580",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#jb053580"
+		  }
+	  ],
       "id": "e3de3864-f4cb-4aaa-bbd7-4254e5d1285e",
       "tags": [
         "art"
@@ -128,7 +201,12 @@
     {
       "type": "entry",
       "name": "マヒマヒリゾート＆スパ",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#mcf12d53",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#mcf12d53"
+		  }
+	  ],
       "id": "dc759e8c-b058-422d-891d-0f5766293e61",
       "tags": [
         "consumer"
@@ -137,7 +215,12 @@
     {
       "type": "entry",
       "name": "ショッツル鉱山",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#fa0dfe5b",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#fa0dfe5b"
+		  }
+	  ],
       "id": "6756e371-645d-4ac5-8f91-2f9a8610277d",
       "tags": [
         "biz"
@@ -146,7 +229,12 @@
     {
       "type": "entry",
       "name": "アンチョビットレトロゲーマーズ",
-      "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#k82300e4",
+	  "links": [
+		  {
+			  "type": "link",
+			  "url": "http://wikiwiki.jp/splatoon2ch/?%A5%B9%A5%C6%A1%BC%A5%B8#k82300e4"
+		  }
+	  ],
       "description": "ピコピコやろうぜ！",
       "id": "c6d64f00-6b11-4755-87ba-54ae060d9853",
       "tags": [

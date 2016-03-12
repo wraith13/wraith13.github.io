@@ -35,6 +35,34 @@ body {
     min-width:60px;
 }
 
+/* popup */
+.link-edit .popover {
+    max-width:800px;
+    left:0px;
+}
+
+/* side list */
+@media screen and (max-width: 991px) {
+    .hide-on-narrow {
+        display:none;
+    }
+}
+@media screen and (min-width: 992px) {
+    .hide-on-narrow {
+        min-height:60vh;
+        max-height:90vh;
+        overflow-y:auto;
+    }
+    .hide-on-narrow + div {
+        min-height:60vh;
+        max-height:90vh;
+        overflow-y:auto;
+    }
+    .show-on-narrow {
+        display:none;
+    }
+}
+
 /* custom design */
 .navbar,
 .big-header,
@@ -74,6 +102,51 @@ body {
     color:#CCFFEE;
     word-break: break-all;
 }
+.jumbotron .glyphicon {
+    margin-right:0.3em;
+}
+.btn-primary {
+    color: #DDFFFF;
+    background-color: #008888;
+    border-color: #008888;
+}
+.btn-primary:focus,
+.btn-primary.focus {
+    color: #EEFFFF;
+    background-color: #006666;
+    border-color: #006666;
+}
+.btn-primary:hover {
+    color: #EEFFFF;
+    background-color: #006666;
+    border-color: #007777;
+}
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+    color: #FFFFFF;
+    background-color: #004444;
+    border-color: #004444;
+}
+.btn-primary:active:hover,
+.btn-primary.active:hover,
+.open > .dropdown-toggle.btn-primary:hover,
+.btn-primary:active:focus,
+.btn-primary.active:focus,
+.open > .dropdown-toggle.btn-primary:focus,
+.btn-primary:active.focus,
+.btn-primary.active.focus,
+.open > .dropdown-toggle.btn-primary.focus {
+    color: #EEFFFF;
+    background-color: #006666;
+    border-color: #006666;
+}
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+  background-image: none;
+}
+
 
 /* ui.bootstrap fix */
 .pull-xs-right {
