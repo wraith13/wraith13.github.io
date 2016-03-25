@@ -97,27 +97,16 @@
             </p>
         </script>
 
-        <script type="text/ng-template" id="popup.link.edit.html">
-            <div class="input-group" style="min-width:400px;">
+        <script type="text/ng-template" id="link.edit.html">
+			<button type="button" class="btn btn-danger btn-lg pull-right" ng-click="removeLink(model, link)"><i class="glyphicon glyphicon-trash"></i></button>
+            <div class="input-group">
                 <span class="input-group-addon" id="link-title-label">title(optional)</span>
                 <input type="text" class="form-control" ng-model="link.title" placeholder="タイトル" aria-describedby="link-title-label" />
             </div>
-            <div class="input-group" style="min-width:400px;">
+            <div class="input-group">
                 <span class="input-group-addon" id="link-title-label">url</span>
                 <input type="text" class="form-control" ng-model="link.url" placeholder="URL" aria-describedby="link-url-label" />
             </div>
-        </script>
-
-        <script type="text/ng-template" id="link.edit.html">
-            <p class="input-group link-edit">
-                <a ng-href="{{link.url}}" target="_blank"><span class="form-control">{{link.title || link.url || "右の編集ボタンをクリックすると編集できます。"}}</span></a>
-                <span class="input-group-btn">
-                    <button uib-popover-template="'popup.link.edit.html'" type="button" class="btn btn-default"><i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-danger" ng-click="removeLink(model, link)"><i class="glyphicon glyphicon-trash"></i></button>
-                </span>
-            </p>
         </script>
 
         <script type="text/ng-template" id="edit.html">
@@ -127,9 +116,24 @@
             <input type="text" class="form-control" ng-model="model.description" placeholder="説明" />
             <div  ng-show="model.type=='event' || model.type=='match'" ng-include="'time.edit.html'" ></div>
             <div ng-include="'tag.edit.html'" ng-show="tags[model.type]"></div>
+
+            <div ng-show="model.type=='member'">
+                <h4>twitter</h4>
+
+                <div class="input-group">
+                    <span class="input-group-addon" id="twitter-at">@</span>
+                    <input type="text" class="form-control" ng-model="model.twitter" placeholder="twitter"  aria-describedby="twitter-at"/>
+                </div>
+
+
+                <h4>nintendo network id</h4>
+                <input type="text" class="form-control" ng-model="model.nnid" placeholder="nnid" />
+            </div>
+
             <h4>link</h4>
             <div ng-include="'link.edit.html'" ng-repeat="link in (model.links || [])"></div>
-            <button type="button" class='btn btn-default btn-lg btn-block' ng-click="addLink(model)">リンクの追加</button>
+            <button ng-show="!model.links || model.links.length < 10" type="button" class='btn btn-default btn-lg btn-block' ng-click="addLink(model)"><span class="glyphicon glyphicon-plus"></span>リンクの追加</button>
+            <uib-alert ng-hide="!model.links || model.links.length < 10" type="warning">これ以上はリンクを追加できません。</uib-alert>
         </script>
 
         <script type="text/ng-template" id="tag.edit.html">
