@@ -1,0 +1,109 @@
+<html>
+<!-- 🐕 -->
+<title>draw poplygons</title>
+<body style="margin:0px;overflow:hidden;">
+<canvas id="canvas" width="4098" height="4098"></canvas>
+<script>
+var canvas = document.getElementById("canvas");
+try {
+    var context = canvas.getContext("2d");
+    var rect =
+    {
+        "left": 0,
+        "top": 0,
+        "right": window.innerWidth,
+        "bottom": window.innerHeight
+    };
+    var center =
+    {
+        "x": (rect.right -rect.left) /2.0,
+        "y": (rect.bottom -rect.top) /2.0
+    };
+    var baseRadius = Math.min(center.x, center.y);
+    var params = JSON.parse(decodeURI((location.href +"?params=null").split("?params=")[1]));
+    if (params && params.backgroundColor) {
+        canvas.style.backgroundColor = params.backgroundColor;
+    }
+    var baseAngle = 0.0;
+    if (params && params.baseAngle) {
+        baseAngle = (params.baseAngle *(Math.PI *2)) /360.0;
+    }
+    if (params && params.data && params.data.length) {
+        for(var i = 0; i < params.data.length; ++i) {
+            var angles = params.data[i].angles || 3;
+            var radius = params.data[i].radius || baseRadius *1.0;
+            if (params.data[i].fillStyle) {
+                context.fillStyle = params.data[i].fillStyle;
+            }
+            context.beginPath();
+            for(var index = 0; index < angles; ++index) {
+                var x = center.x +(radius *Math.sin(((index/angles)*(Math.PI *2)) +baseAngle));
+                var y = center.y +(radius *Math.cos(((index/angles)*(Math.PI *2)) +baseAngle));
+                if (0 === index) {
+                    context.moveTo(x, y);
+                } else {
+                    context.lineTo(x, y);
+                }
+            }
+            context.closePath();
+            context.fill();
+        }
+    } else {
+        canvas.remove();
+        document.body.innerHTML = "<div style=padding:16px;>"
+            +"<h1>how to use this page</h1>"
+            +"<p>You can open this page with below params by a 'params' JSON argument.</p>"
+            +"<ol>"
+                +"<li>backgroundColor(optional)</li>"
+                +"<li>baseAngle(optional)</li>"
+                +"<li>data(array)"
+                    +"<ol>"
+                        +"<li>angles</li>"
+                        +"<li>radius(optional)</li>"
+                        +"<li>fillStyle</li>"
+                    +"</ol>"
+                +"</li>"
+            +"</ol>"
+            +"<h2>sample links</h2>"
+            +"<ol>"
+            +"<li><A href='?params="
+                +JSON.stringify(
+                    {
+                        "data":[
+                            {
+                                "angles":3,
+                                "fillStyle":"blue"
+                            }
+                        ]
+                    }
+                )
+                +"'>blue triangle</a></li>"
+            +"<li><A href='?params="
+                +JSON.stringify(
+                    {
+                        "backgroundColor": "#d6e685",
+                        "data":[
+                            {
+                                "angles":6,
+                                "radius":300,
+                                "fillStyle":"#1e6823"
+                            },
+                            {
+                                "angles":6,
+                                "radius":276,
+                                "fillStyle":"#FFFFFF"
+                            }
+                        ]
+                    }
+                )
+                +"'>green frame hexagon</a></li>"
+            +"</ol>";
+            +"</div>";
+    }
+} catch(Err) {
+    canvas.remove();
+    document.body.innerText = "🚫 Error : " +Err;
+}
+</script>
+</body>
+</html>
