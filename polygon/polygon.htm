@@ -30,20 +30,24 @@ try {
     }
     if (params && params.data && params.data.length) {
         for(var i = 0; i < params.data.length; ++i) {
-            var angles = params.data[i].angles || 3;
+            var angles = params.data[i].angles || 0;
             var radius = params.data[i].radius || baseRadius *1.0;
             if (params.data[i].fillStyle) {
                 context.fillStyle = params.data[i].fillStyle;
             }
             context.beginPath();
-            for(var index = 0; index < angles; ++index) {
-                var x = center.x +(radius *Math.sin(((index/angles)*(Math.PI *2)) +baseAngle));
-                var y = center.y +(radius *Math.cos(((index/angles)*(Math.PI *2)) +baseAngle));
-                if (0 === index) {
-                    context.moveTo(x, y);
-                } else {
-                    context.lineTo(x, y);
+            if (3 <= angles) {
+                for(var index = 0; index < angles; ++index) {
+                    var x = center.x +(radius *Math.sin(((index/angles)*(Math.PI *2)) +baseAngle));
+                    var y = center.y +(radius *Math.cos(((index/angles)*(Math.PI *2)) +baseAngle));
+                    if (0 === index) {
+                        context.moveTo(x, y);
+                    } else {
+                        context.lineTo(x, y);
+                    }
                 }
+            } else {
+                context.arc(center.x, center.y, radius, 0, Math.PI*2, false);
             }
             context.closePath();
             context.fill();
@@ -67,7 +71,7 @@ try {
             +"<h2>sample links</h2>"
             +"<ol>"
             +"<li><A href='?params="
-                +JSON.stringify(
+                +encodeURI(JSON.stringify(
                     {
                         "data":[
                             {
@@ -76,10 +80,10 @@ try {
                             }
                         ]
                     }
-                )
+                ))
                 +"'>blue triangle</a></li>"
             +"<li><A href='?params="
-                +JSON.stringify(
+                +encodeURI(JSON.stringify(
                     {
                         "backgroundColor": "#d6e685",
                         "data":[
@@ -95,7 +99,7 @@ try {
                             }
                         ]
                     }
-                )
+                ))
                 +"'>green frame hexagon</a></li>"
             +"</ol>";
             +"</div>";
