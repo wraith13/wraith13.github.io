@@ -7,11 +7,11 @@
         body
         {
             margin: auto;
-            padding: 48px 16px;
-            font-size: 14pt;
+            padding: 40px 16px;
             max-width: 960px;
             color: #301818;
             background-color: #FFF8F0;
+            font-size: 14pt;
         }
         a
         {
@@ -21,18 +21,21 @@
         {
             color: #E08080;
         }
-        h1,
+        header,
         footer
         {
             margin: 0px -100vw;
             padding: 0px 100vw;
             position: fixed;
+            white-space: nowrap;
+            opacity: 0.9;
         }
-        h1
+        header
         {
             top: 0px;
             height: 32px;
-            padding-top: 8px;
+            line-height: 32px;
+            padding-top: 4px;
             padding-bottom: 4px;
             color: #FFF8F0;
             background-color: #301818;
@@ -41,10 +44,13 @@
         ul
         {
             margin: 8px;
+            padding: 0px;
+            list-style-position: inside;
         }
         footer
         {
             padding-top: 8px;
+            color: #804040;
             background-color: #FEEEDE;
             height: 32px;
             font-size: 12pt;
@@ -52,7 +58,7 @@
         }
         footer separator
         {
-            color: #FEFEDE;
+            color: #FFC0C0;
             margin-left: 16px;
             margin-right: 16px;
         }
@@ -68,14 +74,16 @@
     --></style>
 </head>
 <body>
-<h1>wraith13.github.io</h1>
+<header>wraith13.github.io</header>
 <ul>
     <li><a href="./colordistribution/colordistribution.htm">colordistribution</a></li>
     <li><a href="./polygon/polygon.htm">polygon</a></li>
     <li><a href="./splatournament/splatournament.htm">splatournament</a></li>
 </ul>
 <footer>
-    <a href="https://twitter.com/wraith13">@wraith13</a>
+    wraith13.github.io
+    <separator>|</separator>
+    &copy; 2017 <a href="https://twitter.com/wraith13">@wraith13</a>
     <separator>|</separator>
     <a href="https://github.com/wraith13/wraith13.github.io">github</a>
 </footer>
