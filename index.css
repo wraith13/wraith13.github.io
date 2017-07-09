@@ -6,6 +6,7 @@ body
     color: #301818;
     background-color: #FFF8F0;
     font-size: 14pt;
+    font-family: "Meiryo UI";
 }
 a
 {
@@ -51,8 +52,21 @@ footer
     font-size: 12pt;
     bottom: 0px;
 }
-footer separator
+footer ul
 {
+    display: block;
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+    overflow-x: scroll;
+}
+footer ul li
+{
+    display: inline;
+}
+footer ul li:not(:first-child)::before
+{
+    content: "|";
     color: #FFC0C0;
     margin-left: 16px;
     margin-right: 16px;
