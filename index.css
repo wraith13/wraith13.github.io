@@ -1,8 +1,56 @@
+/*
+    overview layout
+*/
 body
 {
-    margin: auto;
-    padding: 40px 16px;
+    margin: 0px;
+    padding: 0px;
+    overflow-x: hidden;
+}
+header,
+#body,
+footer
+{
+    width: 100vw;
+    white-space: nowrap;
+}
+.container
+{
+    margin: 0 auto;
+    padding: 0px 16px;
     max-width: 960px;
+}
+header
+{
+    height: 32px;
+    line-height: 32px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+#body
+{
+    margin: -40px auto -40px auto;
+    min-height: 100vh;
+}
+#body > .container
+{
+    padding-top: 48px;
+    padding-bottom: 48px;
+}
+footer
+{
+    margin-top: -40px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    height: 32px;
+    line-height: 32px;
+}
+
+/*
+    global theme
+*/
+body
+{
     color: #301818;
     background-color: #FFF8F0;
     font-size: 14pt;
@@ -16,41 +64,35 @@ a:hover
 {
     color: #E08080;
 }
-header,
-footer
+ul
 {
-    margin: 0px -100vw;
-    padding: 0px 100vw;
-    position: fixed;
-    white-space: nowrap;
+    margin: 0px 8px;
+    padding: 0px;
+    list-style-position: inside;
 }
+
+/*
+    header
+*/
 header
 {
-    top: 0px;
-    height: 32px;
-    line-height: 32px;
-    padding-top: 4px;
-    padding-bottom: 4px;
     color: #FFF8F0;
     background-color: #301818;
     font-size: 18pt;
 }
-ul
-{
-    margin: 8px;
-    padding: 0px;
-    list-style-position: inside;
-}
+
+/*
+    body
+*/
+
+/*
+    footer
+*/
 footer
 {
-    padding-top: 4px;
-    padding-bottom: 4px;
     color: #804040;
     background-color: #FEEEDE;
-    height: 32px;
-    line-height: 32px;
     font-size: 12pt;
-    bottom: 0px;
 }
 footer ul
 {
@@ -58,13 +100,12 @@ footer ul
     margin: 0px;
     padding: 0px;
     list-style-type: none;
-    overflow-x: scroll;
 }
-footer ul li
+footer ul > li
 {
     display: inline;
 }
-footer ul li:not(:first-child)::before
+footer ul > li:not(:first-child)::before
 {
     content: "|";
     color: #FFC0C0;
