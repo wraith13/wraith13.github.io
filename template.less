@@ -104,8 +104,8 @@ footer
             display: inline;
             &:not(:first-child)::before
             {
-                content: "|";
-                color: #FFC0C0;
+                content: @footer-separator-content;
+                color: @footer-separator-color;
                 margin-left: @footer-separator-margin;
                 margin-right: @footer-separator-margin;
             }
