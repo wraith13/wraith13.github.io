@@ -28,22 +28,27 @@ try {
     if (params && params.baseAngle) {
         baseAngle = (params.baseAngle *(Math.PI *2)) /360.0;
     }
-    if (params && params.data && params.data.length) {
-        for(var i = 0; i < params.data.length; ++i) {
-            var angles = params.data[i].angles || 0;
-            var radius = params.data[i].radius || baseRadius *1.0;
-            if (params.data[i].fillStyle) {
-                context.fillStyle = params.data[i].fillStyle;
+    if (params && params.rounds && params.rounds.length) {
+        for(var i = 0; i < params.rounds.length; ++i) {
+            var denominator = params.rounds[i].denominator || 0;
+            if (params.rounds[i].fillStyle) {
+                context.fillStyle = params.rounds[i].fillStyle;
             }
             context.beginPath();
-            if (3 <= angles) {
-                for(var index = 0; index < angles; ++index) {
-                    var x = center.x +(radius *Math.sin(((index/angles)*(Math.PI *2)) +baseAngle));
-                    var y = center.y +(radius *Math.cos(((index/angles)*(Math.PI *2)) +baseAngle));
-                    if (0 === index) {
-                        context.moveTo(x, y);
-                    } else {
-                        context.lineTo(x, y);
+            if (3 <= denominator) {
+                var isFirst = true;
+                for(var index = 0; index < denominator; ++index) {
+                    for(var j = 0; j < params.rounds[i].tracks.length; ++j) {
+                        var radius = params.rounds[i].tracks[j].radius || baseRadius *1.0;
+                        var angleDelta = ((index *1.0) +params.rounds[i].tracks[j].angle) /denominator;
+                        var x = center.x +(radius *Math.sin(((angleDelta)*(Math.PI *2)) +baseAngle));
+                        var y = center.y +(radius *Math.cos(((angleDelta)*(Math.PI *2)) +baseAngle));
+                        if (isFirst) {
+                            isFirst = false;
+                            context.moveTo(x, y);
+                        } else {
+                            context.lineTo(x, y);
+                        }
                     }
                 }
             } else {
@@ -66,8 +71,8 @@ try {
                         +"<li>tracks(array)"
                             +"<ol>"
                                 +"<li>type(first or arc or line)</li>"
-                                +"<li>angles</li>"
-                                +"<li>radius</li>"
+                                +"<li>angle</li>"
+                                +"<li>radius(optional)</li>"
                             +"</ol>"
                         +"</li>"
                         +"<li>fillStyle</li>"
@@ -79,9 +84,17 @@ try {
             +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
-                        "data":[
+                        "rounds":[
                             {
-                                "angles":3,
+                                "denominator":3,
+                                "tracks":[
+                                    {
+                                        "angle":0.0
+                                    },
+                                    {
+                                        "angle":1.0
+                                    }
+                                ],
                                 "fillStyle":"blue"
                             }
                         ]
@@ -92,21 +105,92 @@ try {
                 +encodeURI(JSON.stringify(
                     {
                         "backgroundColor": "#d6e685",
-                        "data":[
+                        "rounds":[
                             {
-                                "angles":6,
-                                "radius":300,
+                                "denominator":6,
+                                "tracks":[
+                                    {
+                                        "angle":0.0,
+                                        "radius":300
+                                    },
+                                    {
+                                        "angle":1.0,
+                                        "radius":300
+                                    }
+                                ],
                                 "fillStyle":"#1e6823"
                             },
                             {
-                                "angles":6,
-                                "radius":276,
+                                "denominator":6,
+                                "tracks":[
+                                    {
+                                        "angle":0.0,
+                                        "radius":276
+                                    },
+                                    {
+                                        "angle":1.0,
+                                        "radius":276
+                                    }
+                                ],
                                 "fillStyle":"#FFFFFF"
                             }
                         ]
                     }
                 ))
                 +"'>green frame hexagon</a></li>"
+                +"<li><A href='?params="
+                +encodeURI(JSON.stringify(
+                    {
+                        "backgroundColor": "#d6e685",
+                        "rounds":[
+                            {
+                                "denominator":10,
+                                "tracks":[
+                                    {
+                                        "angle":0.0,
+                                        "radius":300
+                                    },
+                                    {
+                                        "angle":2.0 /6.0,
+                                        "radius":300
+                                    },
+                                    {
+                                        "angle":3.0 /6.0,
+                                        "radius":250
+                                    },
+                                    {
+                                        "angle":5.0 /6.0,
+                                        "radius":250
+                                    }
+                                ],
+                                "fillStyle":"#1e6823"
+                            },
+                            {
+                                "denominator":10,
+                                "tracks":[
+                                {
+                                        "angle":0.0,
+                                        "radius":276
+                                    },
+                                    {
+                                        "angle":2.0 /6.0,
+                                        "radius":276
+                                    },
+                                    {
+                                        "angle":3.0 /6.0,
+                                        "radius":226
+                                    },
+                                    {
+                                        "angle":5.0 /6.0,
+                                        "radius":226
+                                    }
+                                ],
+                                "fillStyle":"#FFFFFF"
+                            }
+                        ]
+                    }
+                ))
+                +"'>gear</a></li>"
             +"</ol>";
             +"</div>";
     }
