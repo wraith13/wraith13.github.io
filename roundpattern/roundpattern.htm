@@ -52,6 +52,7 @@ try {
                     }
                 }
             } else {
+                var radius = params.rounds[i].tracks[0].radius || baseRadius *1.0;
                 context.arc(center.x, center.y, radius, 0, Math.PI*2, false);
             }
             context.closePath();
@@ -144,10 +145,10 @@ try {
                         "backgroundColor": "#d6e685",
                         "rounds":[
                             {
-                                "denominator":10,
+                                "denominator":12,
                                 "tracks":[
                                     {
-                                        "angle":0.0,
+                                        "angle":0.0 /6.0,
                                         "radius":300
                                     },
                                     {
@@ -166,26 +167,44 @@ try {
                                 "fillStyle":"#1e6823"
                             },
                             {
-                                "denominator":10,
+                                "denominator":12,
                                 "tracks":[
-                                {
-                                        "angle":0.0,
+                                    {
+                                        "angle":0.5 /6.0,
                                         "radius":276
                                     },
                                     {
-                                        "angle":2.0 /6.0,
+                                        "angle":1.5 /6.0,
                                         "radius":276
                                     },
                                     {
-                                        "angle":3.0 /6.0,
+                                        "angle":2.5 /6.0,
                                         "radius":226
                                     },
                                     {
-                                        "angle":5.0 /6.0,
+                                        "angle":5.5 /6.0,
                                         "radius":226
                                     }
                                 ],
                                 "fillStyle":"#FFFFFF"
+                            },
+                            {
+                                "denominator":0,
+                                "tracks":[
+                                    {
+                                        "radius":100
+                                    },
+                                ],
+                                "fillStyle":"#1e6823"
+                            },
+                            {
+                                "denominator":0,
+                                "tracks":[
+                                    {
+                                        "radius":76
+                                    },
+                                ],
+                                "fillStyle":"#d6e685"
                             }
                         ]
                     }
