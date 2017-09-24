@@ -6,6 +6,7 @@
 <script>
 var canvas = document.getElementById("canvas");
 try {
+    var arcBaseAngle = Math.PI /2.0;
     var context = canvas.getContext("2d");
     var rect =
     {
@@ -28,30 +29,40 @@ try {
         for(var i = 0; i < params.rounds.length; ++i) {
             var baseAngle = 0.0;
             if (params.rounds[i].baseAngle) {
-                baseAngle = params.rounds[i].baseAngle *(Math.PI *2);
+                baseAngle = params.rounds[i].baseAngle;
             }
             var denominator = params.rounds[i].denominator || 0;
             if (params.rounds[i].fillStyle) {
                 context.fillStyle = params.rounds[i].fillStyle;
             }
             context.beginPath();
-            if (3 <= denominator) {
+            if (1 < denominator) {
                 var isFirst = true;
                 for(var index = 0; index < denominator; ++index) {
+                    var prevAngle = ((index *1.0) /denominator) +baseAngle;
                     for(var j = 0; j < params.rounds[i].tracks.length; ++j) {
                         var radius = params.rounds[i].tracks[j].radius;
                         if (undefined === radius) {
                             radius = baseRadius *1.0;
                         }
                         var angleDelta = ((index *1.0) +params.rounds[i].tracks[j].angle) /denominator;
-                        var x = center.x +(radius *Math.sin(((angleDelta)*(Math.PI *2)) +baseAngle));
-                        var y = center.y +(radius *Math.cos(((angleDelta)*(Math.PI *2)) +baseAngle));
-                        if (isFirst) {
-                            isFirst = false;
-                            context.moveTo(x, y);
-                        } else {
-                            context.lineTo(x, y);
+                        var currentAngle = (angleDelta +baseAngle)*(Math.PI *2);
+                        if ("arc" == params.rounds[i].tracks[j].type)
+                        {
+                            context.arc(center.x, center.y, radius, arcBaseAngle -prevAngle, arcBaseAngle -currentAngle, true);
                         }
+                        else
+                        {
+                            var x = center.x +(radius *Math.sin(currentAngle));
+                            var y = center.y +(radius *Math.cos(currentAngle));
+                            if (isFirst) {
+                                isFirst = false;
+                                context.moveTo(x, y);
+                            } else {
+                                context.lineTo(x, y);
+                            }
+                        }
+                        prevAngle = currentAngle;
                     }
                 }
             } else {
@@ -216,7 +227,7 @@ try {
                 +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
-                        "backgroundColor": "#EEEE11",
+                        "backgroundColor": "#F8F808",
                         "rounds":[
                             {
                                 "baseAngle":3.0 / 12.0,
@@ -234,13 +245,9 @@ try {
                                     {
                                         "angle":1.0 /2.0,
                                         "radius":0.0
-                                    },
-                                    {
-                                        "angle":2.0 / 2.0,
-                                        "radius":300
                                     }
                                 ],
-                                "fillStyle":"#111111"
+                                "fillStyle":"#080808"
                             },
                             {
                                 "denominator":0,
@@ -249,7 +256,7 @@ try {
                                         "radius":90
                                     },
                                 ],
-                                "fillStyle":"#EEEE11"
+                                "fillStyle":"#F8F808"
                             },
                             {
                                 "denominator":0,
@@ -258,7 +265,7 @@ try {
                                         "radius":60
                                     },
                                 ],
-                                "fillStyle":"#111111"
+                                "fillStyle":"#080808"
                             }
                         ]
                     }
