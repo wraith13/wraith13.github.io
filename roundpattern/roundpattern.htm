@@ -24,12 +24,12 @@ try {
     if (params && params.backgroundColor) {
         canvas.style.backgroundColor = params.backgroundColor;
     }
-    var baseAngle = 0.0;
-    if (params && params.baseAngle) {
-        baseAngle = (params.baseAngle *(Math.PI *2)) /360.0;
-    }
     if (params && params.rounds && params.rounds.length) {
         for(var i = 0; i < params.rounds.length; ++i) {
+            var baseAngle = 0.0;
+            if (params.rounds[i].baseAngle) {
+                baseAngle = params.rounds[i].baseAngle *(Math.PI *2);
+            }
             var denominator = params.rounds[i].denominator || 0;
             if (params.rounds[i].fillStyle) {
                 context.fillStyle = params.rounds[i].fillStyle;
@@ -39,7 +39,10 @@ try {
                 var isFirst = true;
                 for(var index = 0; index < denominator; ++index) {
                     for(var j = 0; j < params.rounds[i].tracks.length; ++j) {
-                        var radius = params.rounds[i].tracks[j].radius || baseRadius *1.0;
+                        var radius = params.rounds[i].tracks[j].radius;
+                        if (undefined === radius) {
+                            radius = baseRadius *1.0;
+                        }
                         var angleDelta = ((index *1.0) +params.rounds[i].tracks[j].angle) /denominator;
                         var x = center.x +(radius *Math.sin(((angleDelta)*(Math.PI *2)) +baseAngle));
                         var y = center.y +(radius *Math.cos(((angleDelta)*(Math.PI *2)) +baseAngle));
@@ -210,6 +213,57 @@ try {
                     }
                 ))
                 +"'>gear</a></li>"
+                +"<li><A href='?params="
+                +encodeURI(JSON.stringify(
+                    {
+                        "backgroundColor": "#EEEE11",
+                        "rounds":[
+                            {
+                                "baseAngle":3.0 / 12.0,
+                                "denominator":3,
+                                "tracks":[
+                                    {
+                                        "angle":0.0 / 2.0,
+                                        "radius":300
+                                    },
+                                    {
+                                        "type": "arc",
+                                        "angle":1.0 /2.0,
+                                        "radius":300
+                                    },
+                                    {
+                                        "angle":1.0 /2.0,
+                                        "radius":0.0
+                                    },
+                                    {
+                                        "angle":2.0 / 2.0,
+                                        "radius":300
+                                    }
+                                ],
+                                "fillStyle":"#111111"
+                            },
+                            {
+                                "denominator":0,
+                                "tracks":[
+                                    {
+                                        "radius":90
+                                    },
+                                ],
+                                "fillStyle":"#EEEE11"
+                            },
+                            {
+                                "denominator":0,
+                                "tracks":[
+                                    {
+                                        "radius":60
+                                    },
+                                ],
+                                "fillStyle":"#111111"
+                            }
+                        ]
+                    }
+                ))
+                +"'>radiation hazard symbol</a></li>"
             +"</ol>";
             +"</div>";
     }
