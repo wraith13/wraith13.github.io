@@ -27,27 +27,29 @@ try {
     }
     if (params && params.rounds && params.rounds.length) {
         for(var i = 0; i < params.rounds.length; ++i) {
+            var round = params.rounds[i];
             var baseAngle = 0.0;
-            if (params.rounds[i].baseAngle) {
-                baseAngle = params.rounds[i].baseAngle;
+            if (round.baseAngle) {
+                baseAngle = round.baseAngle;
             }
-            var denominator = params.rounds[i].denominator || 0;
-            if (params.rounds[i].fillStyle) {
-                context.fillStyle = params.rounds[i].fillStyle;
+            var denominator = round.denominator || 0;
+            if (round.fillStyle) {
+                context.fillStyle = round.fillStyle;
             }
             context.beginPath();
             if (1 < denominator) {
                 var isFirst = true;
                 for(var index = 0; index < denominator; ++index) {
                     var prevAngle = ((index *1.0) /denominator) +baseAngle;
-                    for(var j = 0; j < params.rounds[i].tracks.length; ++j) {
-                        var radius = params.rounds[i].tracks[j].radius;
+                    for(var j = 0; j < round.tracks.length; ++j) {
+                        var track = round.tracks[j];
+                        var radius = track.radius;
                         if (undefined === radius) {
                             radius = baseRadius *1.0;
                         }
-                        var angleDelta = ((index *1.0) +params.rounds[i].tracks[j].angle) /denominator;
+                        var angleDelta = ((index *1.0) +track.angle) /denominator;
                         var currentAngle = (angleDelta +baseAngle)*(Math.PI *2);
-                        if ("arc" == params.rounds[i].tracks[j].type)
+                        if ("arc" == track.type)
                         {
                             context.arc(center.x, center.y, radius, arcBaseAngle -prevAngle, arcBaseAngle -currentAngle, true);
                         }
@@ -66,7 +68,7 @@ try {
                     }
                 }
             } else {
-                var radius = params.rounds[i].tracks[0].radius || baseRadius *1.0;
+                var radius = round.tracks[0].radius || baseRadius *1.0;
                 context.arc(center.x, center.y, radius, 0, Math.PI*2, false);
             }
             context.closePath();
@@ -156,10 +158,11 @@ try {
                 +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
-                        "backgroundColor": "#d6e685",
+                        "backgroundColor": "#FFFFFF",
                         "rounds":[
                             {
-                                "denominator":12,
+                                "baseAngle":3.0 / (13.0 *6.0),
+                                "denominator":13,
                                 "tracks":[
                                     {
                                         "angle":0.0 /6.0,
@@ -178,10 +181,11 @@ try {
                                         "radius":250
                                     }
                                 ],
-                                "fillStyle":"#1e6823"
+                                "fillStyle":"#4488EE"
                             },
                             {
-                                "denominator":12,
+                                "baseAngle":3.0 / (13.0 *6.0),
+                                "denominator":13,
                                 "tracks":[
                                     {
                                         "angle":0.5 /6.0,
@@ -200,7 +204,7 @@ try {
                                         "radius":226
                                     }
                                 ],
-                                "fillStyle":"#FFFFFF"
+                                "fillStyle":"#BBBBDD"
                             },
                             {
                                 "denominator":0,
@@ -209,7 +213,7 @@ try {
                                         "radius":100
                                     },
                                 ],
-                                "fillStyle":"#1e6823"
+                                "fillStyle":"#4488EE"
                             },
                             {
                                 "denominator":0,
@@ -218,7 +222,7 @@ try {
                                         "radius":76
                                     },
                                 ],
-                                "fillStyle":"#d6e685"
+                                "fillStyle":"#FFFFFF"
                             }
                         ]
                     }
