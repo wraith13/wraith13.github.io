@@ -21,7 +21,10 @@ try {
         "y": (rect.bottom -rect.top) /2.0
     };
     var baseRadius = Math.min(center.x, center.y);
-    var params = JSON.parse(decodeURI((location.href +"?params=null").split("?params=")[1]));
+    var params = JSON.parse(unescape((location.href +"?params=null").split("?params=")[1]));
+    if (params && params.title) {
+        document.title = params.title;
+    }
     if (params && params.backgroundColor) {
         canvas.style.backgroundColor = params.backgroundColor;
     }
@@ -80,6 +83,7 @@ try {
             +"<h1>how to use this page</h1>"
             +"<p>You can open this page with below params by a 'params' JSON argument.</p>"
             +"<ol>"
+                +"<li>title(optional)</li>"
                 +"<li>backgroundColor(optional)</li>"
                 +"<li>rounds(array)"
                     +"<ol>"
@@ -101,6 +105,7 @@ try {
             +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
+                        "title": "blue triangle",
                         "rounds":[
                             {
                                 "denominator":3,
@@ -121,6 +126,7 @@ try {
             +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
+                        "title": "green frame hexagon",
                         "backgroundColor": "#d6e685",
                         "rounds":[
                             {
@@ -158,6 +164,7 @@ try {
                 +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
+                        "title": "gear",
                         "backgroundColor": "#FFFFFF",
                         "rounds":[
                             {
@@ -231,6 +238,7 @@ try {
                 +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
+                        "title": "radiation hazard symbol",
                         "backgroundColor": "#F8F808",
                         "rounds":[
                             {
@@ -280,7 +288,7 @@ try {
     }
 } catch(Err) {
     canvas.remove();
-    document.body.innerText = "🚫 Error : " +Err;
+    document.body.innerText = "🚫 Error : " +Err +"\r\n" +location.href;
 }
 </script>
 </body>
