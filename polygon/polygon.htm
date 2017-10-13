@@ -21,6 +21,9 @@ try {
     };
     var baseRadius = Math.min(center.x, center.y);
     var params = JSON.parse(decodeURI((location.href +"?params=null").split("?params=")[1]));
+    if (params && params.title) {
+        document.title = params.title;
+    }
     if (params && params.backgroundColor) {
         canvas.style.backgroundColor = params.backgroundColor;
     }
@@ -58,6 +61,7 @@ try {
             +"<h1>how to use this page</h1>"
             +"<p>You can open this page with below params by a 'params' JSON argument.</p>"
             +"<ol>"
+                +"<li>title(optional)</li>"
                 +"<li>backgroundColor(optional)</li>"
                 +"<li>baseAngle(optional)</li>"
                 +"<li>data(array)"
@@ -73,6 +77,7 @@ try {
             +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
+                        "title": "blue triangle",
                         "data":[
                             {
                                 "angles":3,
@@ -85,6 +90,7 @@ try {
             +"<li><A href='?params="
                 +encodeURI(JSON.stringify(
                     {
+                        "title": "green frame hexagon",
                         "backgroundColor": "#d6e685",
                         "data":[
                             {
