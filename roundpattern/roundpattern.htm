@@ -79,6 +79,173 @@ try {
         }
     } else {
         canvas.remove();
+        var resources = [
+            {
+                "title": "blue triangle",
+                "rounds":[
+                    {
+                        "denominator":3,
+                        "tracks":[
+                            {
+                                "angle":0.0
+                            },
+                            {
+                                "angle":1.0
+                            }
+                        ],
+                        "fillStyle":"blue"
+                    }
+                ]
+            },
+            {
+                "title": "green frame hexagon",
+                "backgroundColor": "#d6e685",
+                "rounds":[
+                    {
+                        "denominator":6,
+                        "tracks":[
+                            {
+                                "angle":0.0,
+                                "radius":300
+                            },
+                            {
+                                "angle":1.0,
+                                "radius":300
+                            }
+                        ],
+                        "fillStyle":"#1e6823"
+                    },
+                    {
+                        "denominator":6,
+                        "tracks":[
+                            {
+                                "angle":0.0,
+                                "radius":276
+                            },
+                            {
+                                "angle":1.0,
+                                "radius":276
+                            }
+                        ],
+                        "fillStyle":"#FFFFFF"
+                    }
+                ]
+            },
+            {
+                "title": "gear",
+                "backgroundColor": "#FFFFFF",
+                "rounds":[
+                    {
+                        "baseAngle":3.0 / (13.0 *6.0),
+                        "denominator":13,
+                        "tracks":[
+                            {
+                                "angle":-0.2 /6.0,
+                                "radius":312
+                            },
+                            {
+                                "angle":2.2 /6.0,
+                                "radius":312
+                            },
+                            {
+                                "angle":3.2 /6.0,
+                                "radius":262
+                            },
+                            {
+                                "angle":4.8 /6.0,
+                                "radius":262
+                            }
+                        ],
+                        "fillStyle":"#4488EE"
+                    },
+                    {
+                        "baseAngle":3.0 / (13.0 *6.0),
+                        "denominator":13,
+                        "tracks":[
+                            {
+                                "angle":0.2 /6.0,
+                                "radius":288
+                            },
+                            {
+                                "angle":1.8 /6.0,
+                                "radius":288
+                            },
+                            {
+                                "angle":2.8 /6.0,
+                                "radius":238
+                            },
+                            {
+                                "angle":5.2 /6.0,
+                                "radius":238
+                            }
+                        ],
+                        "fillStyle":"#BBBBDD"
+                    },
+                    {
+                        "denominator":0,
+                        "tracks":[
+                            {
+                                "radius":100
+                            },
+                        ],
+                        "fillStyle":"#4488EE"
+                    },
+                    {
+                        "denominator":0,
+                        "tracks":[
+                            {
+                                "radius":76
+                            },
+                        ],
+                        "fillStyle":"#FFFFFF"
+                    }
+                ]
+            },
+            {
+                "title": "radiation hazard symbol",
+                "backgroundColor": "#F8F808",
+                "rounds":[
+                    {
+                        "baseAngle":3.0 / 12.0,
+                        "denominator":3,
+                        "tracks":[
+                            {
+                                "angle":0.0 / 2.0,
+                                "radius":300
+                            },
+                            {
+                                "type": "arc",
+                                "angle":1.0 /2.0,
+                                "radius":300
+                            },
+                            {
+                                "angle":1.0 /2.0,
+                                "radius":0.0
+                            }
+                        ],
+                        "fillStyle":"#080808"
+                    },
+                    {
+                        "denominator":0,
+                        "tracks":[
+                            {
+                                "radius":90
+                            },
+                        ],
+                        "fillStyle":"#F8F808"
+                    },
+                    {
+                        "denominator":0,
+                        "tracks":[
+                            {
+                                "radius":60
+                            },
+                        ],
+                        "fillStyle":"#080808"
+                    }
+                ]
+            }
+        ];
         document.body.innerHTML = "<div style=padding:16px;>"
             +"<h1>how to use this page</h1>"
             +"<p>You can open this page with below params by a 'params' JSON argument.</p>"
@@ -101,189 +268,12 @@ try {
                 +"</li>"
             +"</ol>"
             +"<h2>sample links</h2>"
-            +"<ol>"
-            +"<li><A href='?params="
-                +encodeURI(JSON.stringify(
-                    {
-                        "title": "blue triangle",
-                        "rounds":[
-                            {
-                                "denominator":3,
-                                "tracks":[
-                                    {
-                                        "angle":0.0
-                                    },
-                                    {
-                                        "angle":1.0
-                                    }
-                                ],
-                                "fillStyle":"blue"
-                            }
-                        ]
-                    }
-                ))
-                +"'>blue triangle</a></li>"
-            +"<li><A href='?params="
-                +encodeURI(JSON.stringify(
-                    {
-                        "title": "green frame hexagon",
-                        "backgroundColor": "#d6e685",
-                        "rounds":[
-                            {
-                                "denominator":6,
-                                "tracks":[
-                                    {
-                                        "angle":0.0,
-                                        "radius":300
-                                    },
-                                    {
-                                        "angle":1.0,
-                                        "radius":300
-                                    }
-                                ],
-                                "fillStyle":"#1e6823"
-                            },
-                            {
-                                "denominator":6,
-                                "tracks":[
-                                    {
-                                        "angle":0.0,
-                                        "radius":276
-                                    },
-                                    {
-                                        "angle":1.0,
-                                        "radius":276
-                                    }
-                                ],
-                                "fillStyle":"#FFFFFF"
-                            }
-                        ]
-                    }
-                ))
-                +"'>green frame hexagon</a></li>"
-                +"<li><A href='?params="
-                +encodeURI(JSON.stringify(
-                    {
-                        "title": "gear",
-                        "backgroundColor": "#FFFFFF",
-                        "rounds":[
-                            {
-                                "baseAngle":3.0 / (13.0 *6.0),
-                                "denominator":13,
-                                "tracks":[
-                                    {
-                                        "angle":-0.2 /6.0,
-                                        "radius":312
-                                    },
-                                    {
-                                        "angle":2.2 /6.0,
-                                        "radius":312
-                                    },
-                                    {
-                                        "angle":3.2 /6.0,
-                                        "radius":262
-                                    },
-                                    {
-                                        "angle":4.8 /6.0,
-                                        "radius":262
-                                    }
-                                ],
-                                "fillStyle":"#4488EE"
-                            },
-                            {
-                                "baseAngle":3.0 / (13.0 *6.0),
-                                "denominator":13,
-                                "tracks":[
-                                    {
-                                        "angle":0.2 /6.0,
-                                        "radius":288
-                                    },
-                                    {
-                                        "angle":1.8 /6.0,
-                                        "radius":288
-                                    },
-                                    {
-                                        "angle":2.8 /6.0,
-                                        "radius":238
-                                    },
-                                    {
-                                        "angle":5.2 /6.0,
-                                        "radius":238
-                                    }
-                                ],
-                                "fillStyle":"#BBBBDD"
-                            },
-                            {
-                                "denominator":0,
-                                "tracks":[
-                                    {
-                                        "radius":100
-                                    },
-                                ],
-                                "fillStyle":"#4488EE"
-                            },
-                            {
-                                "denominator":0,
-                                "tracks":[
-                                    {
-                                        "radius":76
-                                    },
-                                ],
-                                "fillStyle":"#FFFFFF"
-                            }
-                        ]
-                    }
-                ))
-                +"'>gear</a></li>"
-                +"<li><A href='?params="
-                +encodeURI(JSON.stringify(
-                    {
-                        "title": "radiation hazard symbol",
-                        "backgroundColor": "#F8F808",
-                        "rounds":[
-                            {
-                                "baseAngle":3.0 / 12.0,
-                                "denominator":3,
-                                "tracks":[
-                                    {
-                                        "angle":0.0 / 2.0,
-                                        "radius":300
-                                    },
-                                    {
-                                        "type": "arc",
-                                        "angle":1.0 /2.0,
-                                        "radius":300
-                                    },
-                                    {
-                                        "angle":1.0 /2.0,
-                                        "radius":0.0
-                                    }
-                                ],
-                                "fillStyle":"#080808"
-                            },
-                            {
-                                "denominator":0,
-                                "tracks":[
-                                    {
-                                        "radius":90
-                                    },
-                                ],
-                                "fillStyle":"#F8F808"
-                            },
-                            {
-                                "denominator":0,
-                                "tracks":[
-                                    {
-                                        "radius":60
-                                    },
-                                ],
-                                "fillStyle":"#080808"
-                            }
-                        ]
-                    }
-                ))
-                +"'>radiation hazard symbol</a></li>"
-            +"</ol>";
+                +"<ol>"
+                    +resources.map(function(icon){
+                        const link_base = "?params=";
+                        return "<li><A href='" +link_base +encodeURI(JSON.stringify(icon))+"'>" +icon.title +"</a></li>";
+                    }).join("")
+                +"</ol>";
             +"</div>";
     }
 } catch(Err) {
