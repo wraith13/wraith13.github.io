@@ -2,6 +2,31 @@
 <!-- 🐕 -->
 <title>draw round patterns</title>
 <body style="margin:0px;overflow:hidden;">
+<div id="body" style="padding:16px;">
+    <noscript>Enable JavaScript. This page requires JavaScript.</noscript>
+    <h1>how to use this page</h1>
+    <p>You can open this page with below params by a 'params' JSON argument.</p>
+    <ol>
+        <li>title(optional)</li>
+        <li>backgroundColor(optional)</li>
+        <li>rounds(array)
+            <ol>
+                <li>baseAngle(optional)</li>
+                <li>denominator</li>
+                <li>tracks(array)
+                    <ol>
+                        <li>type(first or arc or line)</li>
+                        <li>angle</li>
+                        <li>radius(optional)</li>
+                    </ol>
+                </li>
+                <li>fillStyle</li>
+            </ol>
+        </li>
+    </ol>
+    <h2>sample links</h2>
+    <ol id="list"></ol>
+</div>
 <canvas id="canvas" width="4098" height="4098"></canvas>
 <script>
 var canvas = document.getElementById("canvas");
@@ -29,6 +54,7 @@ try {
         canvas.style.backgroundColor = params.backgroundColor;
     }
     if (params && params.rounds && params.rounds.length) {
+        document.getElementById("body").remove();
         for(var i = 0; i < params.rounds.length; ++i) {
             var round = params.rounds[i];
             var baseAngle = 0.0;
@@ -246,35 +272,10 @@ try {
                 ]
             }
         ];
-        document.body.innerHTML = "<div style=padding:16px;>"
-            +"<h1>how to use this page</h1>"
-            +"<p>You can open this page with below params by a 'params' JSON argument.</p>"
-            +"<ol>"
-                +"<li>title(optional)</li>"
-                +"<li>backgroundColor(optional)</li>"
-                +"<li>rounds(array)"
-                    +"<ol>"
-                        +"<li>baseAngle(optional)</li>"
-                        +"<li>denominator</li>"
-                        +"<li>tracks(array)"
-                            +"<ol>"
-                                +"<li>type(first or arc or line)</li>"
-                                +"<li>angle</li>"
-                                +"<li>radius(optional)</li>"
-                            +"</ol>"
-                        +"</li>"
-                        +"<li>fillStyle</li>"
-                    +"</ol>"
-                +"</li>"
-            +"</ol>"
-            +"<h2>sample links</h2>"
-                +"<ol>"
-                    +resources.map(function(icon){
-                        const link_base = "?params=";
-                        return "<li><A href='" +link_base +encodeURI(JSON.stringify(icon))+"'>" +icon.title +"</a></li>";
-                    }).join("")
-                +"</ol>";
-            +"</div>";
+        document.getElementById("list").innerHTML = resources.map(function(icon){
+            const link_base = "?params=";
+            return "<li><A href='" +link_base +encodeURI(JSON.stringify(icon))+"'>" +icon.title +"</a></li>";
+        }).join("");
     }
 } catch(Err) {
     canvas.remove();
