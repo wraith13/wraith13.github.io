@@ -32,7 +32,7 @@ header {
   margin: -2.4rem auto -2.4rem auto;
   min-height: 100vh;
 }
-#body .container {
+#body > .container {
   padding-top: 2.9rem;
   padding-bottom: 2.9rem;
 }
@@ -81,25 +81,25 @@ footer {
   background-color: #FEEEDE;
   font-size: 0.8rem;
 }
-footer ul {
+footer > .container > ul {
   display: block;
   margin: 0px;
   padding: 0px;
   list-style-type: none;
 }
-footer ul li {
+footer > .container > ul > li {
   display: inline;
 }
-footer ul li:not(:first-child)::before {
+footer > .container > ul > li:not(:first-child)::before {
   content: "|";
   color: #FFC0C0;
   margin-left: 1rem;
   margin-right: 1rem;
 }
-footer a {
+footer > .container a {
   color: #C06060;
   text-decoration: none;
 }
-footer a:hover {
+footer > .container a:hover {
   text-decoration: underline;
 }
