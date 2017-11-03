@@ -15,7 +15,9 @@ footer {
   width: 100vw;
   white-space: nowrap;
 }
-.container {
+header > .container,
+#body > .container,
+footer > .container {
   margin: 0 auto;
   padding: 0px 1rem;
   max-width: 60rem;
