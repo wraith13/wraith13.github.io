@@ -74,6 +74,49 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		};
 		return result;
 	};
+	$scope.xyzToLength = function(xyz) {
+		return Math.sqrt(Math.pow(xyz.x, 2) +Math.pow(xyz.y, 2) +Math.pow(xyz.z, 2));
+	};
+	$scope.rgbToXyz = function(expression) {
+		return	{x:expression.r, y:expression.g, z:expression.b};
+	};
+	$scope.rgbToHue = function(expression) {
+		var hueXy = {
+			x: Math.sqrt(Math.pow(expression.g, 2) -Math.pow(expression.g /2, 2))
+				-Math.sqrt(Math.pow(expression.b, 2) -Math.pow(expression.b /2, 2)),
+			y: (expression.g /2) +(expression.b /2) -expression.r
+		};
+		return (Math.PI/2 -Math.atan2(hueXy.y, hueXy.x)) /Math.PI;
+	};
+	$scope.rgbToLightness = function(expression) {
+		return	$scope.xyzToLength($scope.rgbToXyz(expression.r)) /
+				$scope.xyzToLength({x:1.0, y:1.0, z:1.0});
+	};
+	$scope.rgbToSaturation = function(expression) {
+		var lightness = $scope.rgbToLightness(expression);
+		var green = {r:1.0, g:0.0, b:0.0};
+		var greenLightness = $scope.rgbToLightness(fullGreen);
+		return $scope.xyzToLength({x:expression.r -lightness, y:expression.g -lightness, z:expression.b -lightness}) / $scope.xyzToLength({x:green.r -greenLightness, y:green.g -greenLightness, z:green.b -greenLightness});
+	};
+	$scope.rgbToHsl = function(expression) {
+		//	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
+		return {
+			h: $scope.rgbToHue(expression),
+			s: $scope.rgbToSaturation(expression),
+			l: $scope.rgbToLightness(expression)
+		}
+	}
+	$scope.hslToRgb = function(expression) {
+		//	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
+		var red = 0.0;
+		var green = 0.0;
+		var blue = 0.0;
+		return {
+			r: red,
+			g: green,
+			b: blue
+		}
+	}
 	$scope.calcLighterStyle = function(expression, i) {
 		var ratio = Math.pow(phi, i);
 		var lighter = function(x, ratio) {
