@@ -23,8 +23,8 @@ footer > .container {
   max-width: 60rem;
 }
 header {
-  height: calc(1.9rem);
-  line-height: calc(1.9rem);
+  height: calc(2.4rem - (0.25rem * 2));
+  line-height: calc(2.4rem - (0.25rem * 2));
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
@@ -38,8 +38,8 @@ header {
 }
 footer {
   margin-top: -2.4rem;
-  height: calc(1.9rem);
-  line-height: calc(1.9rem);
+  height: calc(2.4rem - (0.25rem * 2));
+  line-height: calc(2.4rem - (0.25rem * 2));
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
@@ -103,3 +103,4 @@ footer > .container a {
 footer > .container a:hover {
   text-decoration: underline;
 }
+/*# sourceMappingURL=index.css.map */
