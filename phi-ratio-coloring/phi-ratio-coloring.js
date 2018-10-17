@@ -89,13 +89,13 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		return (Math.PI/2 -Math.atan2(hueXy.y, hueXy.x)) /Math.PI;
 	};
 	$scope.rgbToLightness = function(expression) {
-		return	$scope.xyzToLength($scope.rgbToXyz(expression.r)) /
+		return	$scope.xyzToLength($scope.rgbToXyz(expression)) /
 				$scope.xyzToLength({x:1.0, y:1.0, z:1.0});
 	};
 	$scope.rgbToSaturation = function(expression) {
 		var lightness = $scope.rgbToLightness(expression);
-		var green = {r:1.0, g:0.0, b:0.0};
-		var greenLightness = $scope.rgbToLightness(fullGreen);
+		var green = {r:0.0, g:Math.pow(lightness, 2), b:0.0};
+		var greenLightness = $scope.rgbToLightness(green);
 		return $scope.xyzToLength({x:expression.r -lightness, y:expression.g -lightness, z:expression.b -lightness}) / $scope.xyzToLength({x:green.r -greenLightness, y:green.g -greenLightness, z:green.b -greenLightness});
 	};
 	$scope.rgbToHsl = function(expression) {
