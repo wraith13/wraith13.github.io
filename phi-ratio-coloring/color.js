@@ -3,7 +3,7 @@ var phi = 1.618033988749894848204586834365;
 var rgbForStyle = function (expression) {
     var toHex = function (i) {
         var result = ((255 * i) ^ 0).toString(16).toUpperCase();
-        if (1 == result.length) {
+        if (1 === result.length) {
             result = "0" + result;
         }
         return result;

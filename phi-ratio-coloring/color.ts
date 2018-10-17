@@ -23,7 +23,7 @@ interface Point3d
 const rgbForStyle = function(expression: ColorRgb) {
     const toHex = (i : number) : string => {
         let result = ((255 *i) ^ 0).toString(16).toUpperCase();
-        if (1 == result.length) {
+        if (1 === result.length) {
             result = "0" +result;
         }
         return result;
