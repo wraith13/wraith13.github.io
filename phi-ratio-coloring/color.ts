@@ -3,15 +3,15 @@ let phi = 1.618033988749894848204586834365;
 
 interface ColorRgb
 {
-    r : number;
-    g : number;
-    b : number;
+    r : number; // min:0.0, max:1.0
+    g : number; // min:0.0, max:1.0
+    b : number; // min:0.0, max:1.0
 }
 interface ColorHsl
 {
-    h : number;
-    s : number;
-    l : number;
+    h : number; // min:-Math.PI/2, max:Math.PI/2
+    s : number; // min:0.0, max:rgbToSaturation({r:1.0, g:0.0, b:0.0})
+    l : number; // min:0.0, max:xyzToLength({x:1.0, y:1.0, z:1.0})
 }
 interface Point3d
 {
@@ -43,14 +43,12 @@ const rgbToHue = (expression : ColorRgb) => {
             -Math.sqrt(Math.pow(expression.b, 2) -Math.pow(expression.b /2, 2)),
         y: (expression.g /2) +(expression.b /2) -expression.r
     };
-    return (Math.PI/2 -Math.atan2(hueXy.y, hueXy.x)) /Math.PI;
+    return Math.atan2(hueXy.y, hueXy.x);
 };
-const rgbToLightness = (expression : ColorRgb) : number => xyzToLength(rgbToXyz(expression)) / xyzToLength({x:1.0, y:1.0, z:1.0});
+const rgbToLightness = (expression : ColorRgb) : number => xyzToLength(rgbToXyz(expression));
 const rgbToSaturation = (expression : ColorRgb) : number => {
     const lightness = rgbToLightness(expression);
-    const green = {r:0.0, g:Math.pow(lightness, 2), b:0.0};
-    const greenLightness = rgbToLightness(green);
-    return xyzToLength({x:expression.r -lightness, y:expression.g -lightness, z:expression.b -lightness}) / xyzToLength({x:green.r -greenLightness, y:green.g -greenLightness, z:green.b -greenLightness});
+    return xyzToLength({x:expression.r -lightness, y:expression.g -lightness, z:expression.b -lightness});
 };
 const rgbToHsl = (expression : ColorRgb) : ColorHsl => pass_through =
     //	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
