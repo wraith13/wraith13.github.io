@@ -9,9 +9,9 @@ interface ColorRgb
 }
 interface ColorHsl
 {
-    h : number; // min:-Math.PI/2, max:Math.PI/2
+    h : number; // min:0.0, max:Math.PI
     s : number; // min:0.0, max:rgbToSaturation({r:1.0, g:0.0, b:0.0})
-    l : number; // min:0.0, max:xyzToLength({x:1.0, y:1.0, z:1.0})
+    l : number; // min:0.0, max:1.0
 }
 interface Point3d
 {
@@ -43,9 +43,9 @@ const rgbToHue = (expression : ColorRgb) => {
             -Math.sqrt(Math.pow(expression.b, 2) -Math.pow(expression.b /2, 2)),
         y: (expression.g /2) +(expression.b /2) -expression.r
     };
-    return -Math.atan2(hueXy.y, hueXy.x);
+    return (Math.PI/2) -Math.atan2(hueXy.y, hueXy.x);
 };
-const rgbToLightness = (expression : ColorRgb) : number => xyzToLength(rgbToXyz(expression));
+const rgbToLightness = (expression : ColorRgb) : number => xyzToLength(rgbToXyz(expression)) / xyzToLength({x:1.0, y:1.0, z:1.0});
 const rgbToSaturation = (expression : ColorRgb) : number => {
     const lightness = rgbToLightness(expression);
     return xyzToLength({x:expression.r -lightness, y:expression.g -lightness, z:expression.b -lightness});
@@ -61,9 +61,9 @@ const hslToRgb = (expression : ColorHsl) : ColorRgb => {
     //	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
     let result =
     {
-         r:expression.s *Math.sin(expression.h),
-         g:expression.s *Math.sin(expression.h +(Math.PI /3.0)),
-         b:expression.s *Math.sin(expression.h -(Math.PI /3.0))
+         r:expression.s *Math.cos(expression.h),
+         g:expression.s *Math.cos(expression.h +(Math.PI /3.0)),
+         b:expression.s *Math.cos(expression.h -(Math.PI /3.0))
     };
     const maxLightness = xyzToLength({x:1.0, y:1.0, z:1.0});
     let baseLightness = rgbToLightness(result);
