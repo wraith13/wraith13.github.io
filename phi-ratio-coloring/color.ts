@@ -43,7 +43,7 @@ const rgbToHue = (expression : ColorRgb) => {
             -Math.sqrt(Math.pow(expression.b, 2) -Math.pow(expression.b /2, 2)),
         y: (expression.g /2) +(expression.b /2) -expression.r
     };
-    return Math.atan2(hueXy.y, hueXy.x);
+    return -Math.atan2(hueXy.y, hueXy.x);
 };
 const rgbToLightness = (expression : ColorRgb) : number => xyzToLength(rgbToXyz(expression));
 const rgbToSaturation = (expression : ColorRgb) : number => {
@@ -57,14 +57,18 @@ const rgbToHsl = (expression : ColorRgb) : ColorHsl => pass_through =
         s: rgbToSaturation(expression),
         l: rgbToLightness(expression)
     };
-const hslToRgb = (_expression : ColorHsl) : ColorRgb => {
+const hslToRgb = (expression : ColorHsl) : ColorRgb => {
     //	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
-    const red = 0.0;
-    const green = 0.0;
-    const blue = 0.0;
-    return {
-        r: red,
-        g: green,
-        b: blue
-    }
+    let result =
+    {
+         r:expression.s *Math.sin(expression.h),
+         g:expression.s *Math.sin(expression.h +(Math.PI /3.0)),
+         b:expression.s *Math.sin(expression.h -(Math.PI /3.0))
+    };
+    const maxLightness = xyzToLength({x:1.0, y:1.0, z:1.0});
+    let baseLightness = rgbToLightness(result);
+    result.r += (expression.l -baseLightness) /maxLightness;
+    result.g += (expression.l -baseLightness) /maxLightness;
+    result.b += (expression.l -baseLightness) /maxLightness;
+    return result;
 };

@@ -21,7 +21,7 @@ var rgbToHue = function (expression) {
             - Math.sqrt(Math.pow(expression.b, 2) - Math.pow(expression.b / 2, 2)),
         y: (expression.g / 2) + (expression.b / 2) - expression.r
     };
-    return Math.atan2(hueXy.y, hueXy.x);
+    return -Math.atan2(hueXy.y, hueXy.x);
 };
 var rgbToLightness = function (expression) { return xyzToLength(rgbToXyz(expression)); };
 var rgbToSaturation = function (expression) {
@@ -35,15 +35,18 @@ var rgbToHsl = function (expression) { return pass_through =
         s: rgbToSaturation(expression),
         l: rgbToLightness(expression)
     }; };
-var hslToRgb = function (_expression) {
+var hslToRgb = function (expression) {
     //	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
-    var red = 0.0;
-    var green = 0.0;
-    var blue = 0.0;
-    return {
-        r: red,
-        g: green,
-        b: blue
+    var result = {
+        r: expression.s * Math.sin(expression.h),
+        g: expression.s * Math.sin(expression.h + (Math.PI / 3.0)),
+        b: expression.s * Math.sin(expression.h - (Math.PI / 3.0))
     };
+    var maxLightness = xyzToLength({ x: 1.0, y: 1.0, z: 1.0 });
+    var baseLightness = rgbToLightness(result);
+    result.r += (expression.l - baseLightness) / maxLightness;
+    result.g += (expression.l - baseLightness) / maxLightness;
+    result.b += (expression.l - baseLightness) / maxLightness;
+    return result;
 };
 //# sourceMappingURL=color.js.map
