@@ -45,8 +45,8 @@ const rgbToXyz = (expression : ColorRgb) : Point3d => pass_through = {x:expressi
 const rgbToHue = (expression : ColorRgb) => {
     const hueXy = {
         x: expression.r -((expression.g /2) +(expression.b /2)),
-        y: Math.sqrt(Math.pow(expression.g, 2) -Math.pow(expression.g /2, 2))
-            -Math.sqrt(Math.pow(expression.b, 2) -Math.pow(expression.b /2, 2))
+        y: Math.sqrt(Math.pow(expression.b, 2) -Math.pow(expression.b /2, 2))
+            -Math.sqrt(Math.pow(expression.g, 2) -Math.pow(expression.g /2, 2))
     };
     return Math.atan2(hueXy.y, hueXy.x);
 };
@@ -62,12 +62,12 @@ const rgbToHsl = (expression : ColorRgb) : ColorHsl => pass_through =
     s: rgbToSaturation(expression),
     l: rgbToLightness(expression)
 };
-const hslToRgbElement = (expression : ColorHsl, colorAngle : number) : number => expression.l +expression.s *Math.cos(expression.h +colorAngle);
+const hslToRgbElement = (expression : ColorHsl, colorAngle : number) : number => expression.l +expression.s *Math.cos(expression.h +(Math.PI *2) /3.0 *colorAngle);
 const hslToRgb = (expression : ColorHsl) : ColorRgb => pass_through =
 {
     r:hslToRgbElement(expression, 0.0),
-    g:hslToRgbElement(expression, -((Math.PI *2) /3.0)),
-    b:hslToRgbElement(expression, +((Math.PI *2) /3.0))
+    g:hslToRgbElement(expression, 1.0),
+    b:hslToRgbElement(expression, 2.0)
 };
 const regulateHue = (expression : ColorHsl) : ColorHsl =>
 {
@@ -118,12 +118,20 @@ const clipSaturation = (expression : ColorHsl) : ColorHsl =>
     };
 };
 const regulateHsl = (expression : ColorHsl) : ColorHsl => clipSaturation(clipLightness(regulateHue(expression)));
+const clipRgb = (expression : ColorRgb) : ColorRgb => pass_through =
+{
+    r: Math.max(0.0, Math.min(1.0, expression.r)),
+    g: Math.max(0.0, Math.min(1.0, expression.g)),
+    b: Math.max(0.0, Math.min(1.0, expression.b)),
+};
 
-/*
+//*
 const test = () =>
 {
     console.log("rgbToHsl({r:0.0,g:0.0,b:0.0})", rgbToHsl({r:0.0,g:0.0,b:0.0}));
     console.log("rgbToHsl({r:1.0,g:0.0,b:0.0})", rgbToHsl({r:1.0,g:0.0,b:0.0}));
+    console.log("rgbToHsl({r:0.0,g:1.0,b:0.0})", rgbToHsl({r:0.0,g:1.0,b:0.0}));
+    console.log("rgbToHsl({r:0.0,g:0.0,b:1.0})", rgbToHsl({r:0.0,g:0.0,b:1.0}));
     console.log("rgbToHsl({r:1.0,g:1.0,b:0.0})", rgbToHsl({r:1.0,g:1.0,b:0.0}));
     console.log("rgbToHsl({r:1.0,g:1.0,b:1.0})", rgbToHsl({r:1.0,g:1.0,b:1.0}));
     console.log("rgbToHsl({r:0.5,g:0.5,b:0.5})", rgbToHsl({r:0.5,g:0.5,b:0.5}));
@@ -133,6 +141,8 @@ const test = () =>
     console.log("rgbToHsl({r:0.9,g:0.9,b:0.0})", rgbToHsl({r:0.9,g:0.9,b:0.0}));
     console.log("hslToRgb(rgbToHsl({r:0.0,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({r:0.0,g:0.0,b:0.0})));
     console.log("hslToRgb(rgbToHsl({r:1.0,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({r:1.0,g:0.0,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:0.0,g:1.0,b:0.0}))", hslToRgb(rgbToHsl({r:0.0,g:1.0,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:0.0,g:0.0,b:1.0}))", hslToRgb(rgbToHsl({r:0.0,g:0.0,b:1.0})));
     console.log("hslToRgb(rgbToHsl({r:1.0,g:1.0,b:0.0}))", hslToRgb(rgbToHsl({r:1.0,g:1.0,b:0.0})));
     console.log("hslToRgb(rgbToHsl({r:1.0,g:1.0,b:1.0}))", hslToRgb(rgbToHsl({r:1.0,g:1.0,b:1.0})));
     console.log("hslToRgb(rgbToHsl({r:0.5,g:0.5,b:0.5}))", hslToRgb(rgbToHsl({r:0.5,g:0.5,b:0.5})));
