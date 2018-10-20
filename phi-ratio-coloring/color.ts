@@ -7,12 +7,19 @@ interface ColorRgb
     g : number; // min:0.0, max:1.0
     b : number; // min:0.0, max:1.0
 }
+//	※座標空間的に RGB 色空間立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
 interface ColorHsl
 {
     h : number; // min:-Math.PI, max:Math.PI
     s : number; // min:0.0, max:Math,Pow(calcSaturation({r:1.0, g:0.0, b:0.0}), 2) === 2.0/3.0
     l : number; // min:0.0, max:1.0
 }
+const colorHslHMin = -Math.PI;
+const colorHslHMAx = Math.PI;
+const colorHsSHMin = 0.0;
+const colorHsSHMAx = 2.0 / 3.0;
+const colorHsLHMin = 0.0;
+const colorHsLHMAx = 1.0;
 interface Point3d
 {
     x : number;
@@ -35,7 +42,6 @@ const rgbForStyle = function(expression: ColorRgb) {
 };
 const xyzToLength = (xyz : Point3d) : number => Math.sqrt(Math.pow(xyz.x, 2) +Math.pow(xyz.y, 2) +Math.pow(xyz.z, 2));
 const rgbToXyz = (expression : ColorRgb) : Point3d => pass_through = {x:expression.r, y:expression.g, z:expression.b};
-
 const rgbToHue = (expression : ColorRgb) => {
     const hueXy = {
         x: expression.r -((expression.g /2) +(expression.b /2)),
@@ -51,21 +57,67 @@ const calcSaturation = (expression : ColorRgb) : number => {
 };
 const rgbToSaturation = (expression : ColorRgb) : number => calcSaturation(expression) *calcSaturation({r:1.0, g:0.0, b:0.0});
 const rgbToHsl = (expression : ColorRgb) : ColorHsl => pass_through =
-    //	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
+{
+    h: rgbToHue(expression),
+    s: rgbToSaturation(expression),
+    l: rgbToLightness(expression)
+};
+const hslToRgbElement = (expression : ColorHsl, colorAngle : number) : number => expression.l +expression.s *Math.cos(expression.h +colorAngle);
+const hslToRgb = (expression : ColorHsl) : ColorRgb => pass_through =
+{
+    r:hslToRgbElement(expression, 0.0),
+    g:hslToRgbElement(expression, -((Math.PI *2) /3.0)),
+    b:hslToRgbElement(expression, +((Math.PI *2) /3.0))
+};
+const regulateHue = (expression : ColorHsl) : ColorHsl =>
+{
+    let h = expression.h;
+    while(h < -Math.PI)
     {
-        h: rgbToHue(expression),
-        s: rgbToSaturation(expression),
-        l: rgbToLightness(expression)
-    };
-const hslToRgb = (expression : ColorHsl) : ColorRgb => {
-    //	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
+        h += Math.PI *2;
+    }
+    while(Math.PI < h)
+    {
+        h -= Math.PI *2;
+    }
     return pass_through =
     {
-         r:expression.l +expression.s *Math.cos(expression.h),
-         g:expression.l +expression.s *Math.cos(expression.h -((Math.PI *2) /3.0)),
-         b:expression.l +expression.s *Math.cos(expression.h +((Math.PI *2) /3.0))
+        h: h,
+        s: expression.s,
+        l: expression.l,
     };
 };
+const clipLightness = (expression : ColorHsl) : ColorHsl => pass_through =
+{
+    h: expression.h,
+    s: expression.s,
+    l: Math.max(0.0, Math.min(1.0, expression.l)),
+};
+const clipSaturation = (expression : ColorHsl) : ColorHsl =>
+{
+    const rgb = hslToRgb(expression);
+    const overRate = Math.max
+    (
+        (rgb.r < 0.0) ? (expression.l -rgb.r) / expression.l:
+        (1.0 < rgb.r) ? (rgb.r -expression.l) / (1.0 -expression.l):
+        1.0,
+
+        (rgb.g < 0.0) ? (expression.l -rgb.g) / expression.l:
+        (1.0 < rgb.g) ? (rgb.g -expression.l) / (1.0 -expression.l):
+        1.0,
+
+        (rgb.b < 0.0) ? (expression.l -rgb.b) / expression.l:
+        (1.0 < rgb.b) ? (rgb.b -expression.l) / (1.0 -expression.l):
+        1.0,
+    );
+    return pass_through =
+    {
+        h: expression.h,
+        s: expression.s / overRate,
+        l: expression.l,
+    };
+};
+const regulateHsl = (expression : ColorHsl) : ColorHsl => clipSaturation(clipLightness(regulateHue(expression)));
 
 /*
 const test = () =>
@@ -90,4 +142,4 @@ const test = () =>
     console.log("hslToRgb(rgbToHsl({r:0.9,g:0.9,b:0.0}))", hslToRgb(rgbToHsl({r:0.9,g:0.9,b:0.0})));
 };
 test();
-*/
+//*/

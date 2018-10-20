@@ -1,5 +1,11 @@
 var pass_through;
 var phi = 1.618033988749894848204586834365;
+var colorHslHMin = -Math.PI;
+var colorHslHMAx = Math.PI;
+var colorHsSHMin = 0.0;
+var colorHsSHMAx = 2.0 / 3.0;
+var colorHsLHMin = 0.0;
+var colorHsLHMAx = 1.0;
 var rgbForStyle = function (expression) {
     var toHex = function (i) {
         var result = ((255 * i) ^ 0).toString(16).toUpperCase();
@@ -30,21 +36,57 @@ var calcSaturation = function (expression) {
 };
 var rgbToSaturation = function (expression) { return calcSaturation(expression) * calcSaturation({ r: 1.0, g: 0.0, b: 0.0 }); };
 var rgbToHsl = function (expression) { return pass_through =
-    //	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
     {
         h: rgbToHue(expression),
         s: rgbToSaturation(expression),
         l: rgbToLightness(expression)
     }; };
-var hslToRgb = function (expression) {
-    //	※座標空間敵に RGB 色空間の立方体の座標として捉えるので、本来であれば円筒形あるいは双円錐形の座標となる HLS (および HSV とも)厳密には異なるが、ここでは便宜上 HLS と呼称する。
+var hslToRgbElement = function (expression, colorAngle) { return expression.l + expression.s * Math.cos(expression.h + colorAngle); };
+var hslToRgb = function (expression) { return pass_through =
+    {
+        r: hslToRgbElement(expression, 0.0),
+        g: hslToRgbElement(expression, -((Math.PI * 2) / 3.0)),
+        b: hslToRgbElement(expression, +((Math.PI * 2) / 3.0))
+    }; };
+var regulateHue = function (expression) {
+    var h = expression.h;
+    while (h < -Math.PI) {
+        h += Math.PI * 2;
+    }
+    while (Math.PI < h) {
+        h -= Math.PI * 2;
+    }
     return pass_through =
         {
-            r: expression.l + expression.s * Math.cos(expression.h),
-            g: expression.l + expression.s * Math.cos(expression.h - ((Math.PI * 2) / 3.0)),
-            b: expression.l + expression.s * Math.cos(expression.h + ((Math.PI * 2) / 3.0))
+            h: h,
+            s: expression.s,
+            l: expression.l,
         };
 };
+var clipLightness = function (expression) { return pass_through =
+    {
+        h: expression.h,
+        s: expression.s,
+        l: Math.max(0.0, Math.min(1.0, expression.l)),
+    }; };
+var clipSaturation = function (expression) {
+    var rgb = hslToRgb(expression);
+    var overRate = Math.max((rgb.r < 0.0) ? (expression.l - rgb.r) / expression.l :
+        (1.0 < rgb.r) ? (rgb.r - expression.l) / (1.0 - expression.l) :
+            1.0, (rgb.g < 0.0) ? (expression.l - rgb.g) / expression.l :
+        (1.0 < rgb.g) ? (rgb.g - expression.l) / (1.0 - expression.l) :
+            1.0, (rgb.b < 0.0) ? (expression.l - rgb.b) / expression.l :
+        (1.0 < rgb.b) ? (rgb.b - expression.l) / (1.0 - expression.l) :
+            1.0);
+    return pass_through =
+        {
+            h: expression.h,
+            s: expression.s / overRate,
+            l: expression.l,
+        };
+};
+var regulateHsl = function (expression) { return clipSaturation(clipLightness(regulateHue(expression))); };
+//*
 var test = function () {
     console.log("rgbToHsl({r:0.0,g:0.0,b:0.0})", rgbToHsl({ r: 0.0, g: 0.0, b: 0.0 }));
     console.log("rgbToHsl({r:1.0,g:0.0,b:0.0})", rgbToHsl({ r: 1.0, g: 0.0, b: 0.0 }));
@@ -66,4 +108,5 @@ var test = function () {
     console.log("hslToRgb(rgbToHsl({r:0.9,g:0.9,b:0.0}))", hslToRgb(rgbToHsl({ r: 0.9, g: 0.9, b: 0.0 })));
 };
 test();
+//*/
 //# sourceMappingURL=color.js.map
