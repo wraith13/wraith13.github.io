@@ -84,4 +84,12 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		hsl.h += parseFloat($scope.model.hueStepUnit) *i;
 		return $scope.calcStyleBase(clipRgb(hslToRgb(regulateHsl(hsl))));
 	};
+	$scope.calcStyle = function(expression, l, h) {
+		var hsl = rgbToHsl(clipRgb(expression));
+		hsl.h += parseFloat($scope.model.hueStepUnit) *h;
+		hsl.l = l < 0.0 ?
+			hsl.l / Math.pow(phi, -l):
+			1.0 -((1.0 - hsl.l) / Math.pow(phi, l));
+		return $scope.calcStyleBase(clipRgb(hslToRgb(regulateHsl(hsl))));
+	};
 });
