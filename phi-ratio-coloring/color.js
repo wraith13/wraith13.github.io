@@ -92,30 +92,31 @@ var clipRgb = function (expression) { return pass_through =
         g: Math.max(0.0, Math.min(1.0, expression.g)),
         b: Math.max(0.0, Math.min(1.0, expression.b)),
     }; };
-//*
-var test = function () {
-    console.log("rgbToHsl({r:0.0,g:0.0,b:0.0})", rgbToHsl({ r: 0.0, g: 0.0, b: 0.0 }));
-    console.log("rgbToHsl({r:1.0,g:0.0,b:0.0})", rgbToHsl({ r: 1.0, g: 0.0, b: 0.0 }));
-    console.log("rgbToHsl({r:0.0,g:1.0,b:0.0})", rgbToHsl({ r: 0.0, g: 1.0, b: 0.0 }));
-    console.log("rgbToHsl({r:0.0,g:0.0,b:1.0})", rgbToHsl({ r: 0.0, g: 0.0, b: 1.0 }));
-    console.log("rgbToHsl({r:1.0,g:1.0,b:0.0})", rgbToHsl({ r: 1.0, g: 1.0, b: 0.0 }));
-    console.log("rgbToHsl({r:1.0,g:1.0,b:1.0})", rgbToHsl({ r: 1.0, g: 1.0, b: 1.0 }));
-    console.log("rgbToHsl({r:0.5,g:0.5,b:0.5})", rgbToHsl({ r: 0.5, g: 0.5, b: 0.5 }));
-    console.log("rgbToHsl({r:0.1,g:0.0,b:0.0})", rgbToHsl({ r: 0.1, g: 0.0, b: 0.0 }));
-    console.log("rgbToHsl({r:0.1,g:0.1,b:0.0})", rgbToHsl({ r: 0.1, g: 0.1, b: 0.0 }));
-    console.log("rgbToHsl({r:0.9,g:0.0,b:0.0})", rgbToHsl({ r: 0.9, g: 0.0, b: 0.0 }));
-    console.log("rgbToHsl({r:0.9,g:0.9,b:0.0})", rgbToHsl({ r: 0.9, g: 0.9, b: 0.0 }));
-    console.log("hslToRgb(rgbToHsl({r:0.0,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({ r: 0.0, g: 0.0, b: 0.0 })));
-    console.log("hslToRgb(rgbToHsl({r:1.0,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({ r: 1.0, g: 0.0, b: 0.0 })));
-    console.log("hslToRgb(rgbToHsl({r:0.0,g:1.0,b:0.0}))", hslToRgb(rgbToHsl({ r: 0.0, g: 1.0, b: 0.0 })));
-    console.log("hslToRgb(rgbToHsl({r:0.0,g:0.0,b:1.0}))", hslToRgb(rgbToHsl({ r: 0.0, g: 0.0, b: 1.0 })));
-    console.log("hslToRgb(rgbToHsl({r:1.0,g:1.0,b:0.0}))", hslToRgb(rgbToHsl({ r: 1.0, g: 1.0, b: 0.0 })));
-    console.log("hslToRgb(rgbToHsl({r:1.0,g:1.0,b:1.0}))", hslToRgb(rgbToHsl({ r: 1.0, g: 1.0, b: 1.0 })));
-    console.log("hslToRgb(rgbToHsl({r:0.5,g:0.5,b:0.5}))", hslToRgb(rgbToHsl({ r: 0.5, g: 0.5, b: 0.5 })));
-    console.log("hslToRgb(rgbToHsl({r:0.1,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({ r: 0.1, g: 0.0, b: 0.0 })));
-    console.log("hslToRgb(rgbToHsl({r:0.1,g:0.1,b:0.0}))", hslToRgb(rgbToHsl({ r: 0.1, g: 0.1, b: 0.0 })));
-    console.log("hslToRgb(rgbToHsl({r:0.9,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({ r: 0.9, g: 0.0, b: 0.0 })));
-    console.log("hslToRgb(rgbToHsl({r:0.9,g:0.9,b:0.0}))", hslToRgb(rgbToHsl({ r: 0.9, g: 0.9, b: 0.0 })));
+/*
+const test = () =>
+{
+    console.log("rgbToHsl({r:0.0,g:0.0,b:0.0})", rgbToHsl({r:0.0,g:0.0,b:0.0}));
+    console.log("rgbToHsl({r:1.0,g:0.0,b:0.0})", rgbToHsl({r:1.0,g:0.0,b:0.0}));
+    console.log("rgbToHsl({r:0.0,g:1.0,b:0.0})", rgbToHsl({r:0.0,g:1.0,b:0.0}));
+    console.log("rgbToHsl({r:0.0,g:0.0,b:1.0})", rgbToHsl({r:0.0,g:0.0,b:1.0}));
+    console.log("rgbToHsl({r:1.0,g:1.0,b:0.0})", rgbToHsl({r:1.0,g:1.0,b:0.0}));
+    console.log("rgbToHsl({r:1.0,g:1.0,b:1.0})", rgbToHsl({r:1.0,g:1.0,b:1.0}));
+    console.log("rgbToHsl({r:0.5,g:0.5,b:0.5})", rgbToHsl({r:0.5,g:0.5,b:0.5}));
+    console.log("rgbToHsl({r:0.1,g:0.0,b:0.0})", rgbToHsl({r:0.1,g:0.0,b:0.0}));
+    console.log("rgbToHsl({r:0.1,g:0.1,b:0.0})", rgbToHsl({r:0.1,g:0.1,b:0.0}));
+    console.log("rgbToHsl({r:0.9,g:0.0,b:0.0})", rgbToHsl({r:0.9,g:0.0,b:0.0}));
+    console.log("rgbToHsl({r:0.9,g:0.9,b:0.0})", rgbToHsl({r:0.9,g:0.9,b:0.0}));
+    console.log("hslToRgb(rgbToHsl({r:0.0,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({r:0.0,g:0.0,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:1.0,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({r:1.0,g:0.0,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:0.0,g:1.0,b:0.0}))", hslToRgb(rgbToHsl({r:0.0,g:1.0,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:0.0,g:0.0,b:1.0}))", hslToRgb(rgbToHsl({r:0.0,g:0.0,b:1.0})));
+    console.log("hslToRgb(rgbToHsl({r:1.0,g:1.0,b:0.0}))", hslToRgb(rgbToHsl({r:1.0,g:1.0,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:1.0,g:1.0,b:1.0}))", hslToRgb(rgbToHsl({r:1.0,g:1.0,b:1.0})));
+    console.log("hslToRgb(rgbToHsl({r:0.5,g:0.5,b:0.5}))", hslToRgb(rgbToHsl({r:0.5,g:0.5,b:0.5})));
+    console.log("hslToRgb(rgbToHsl({r:0.1,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({r:0.1,g:0.0,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:0.1,g:0.1,b:0.0}))", hslToRgb(rgbToHsl({r:0.1,g:0.1,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:0.9,g:0.0,b:0.0}))", hslToRgb(rgbToHsl({r:0.9,g:0.0,b:0.0})));
+    console.log("hslToRgb(rgbToHsl({r:0.9,g:0.9,b:0.0}))", hslToRgb(rgbToHsl({r:0.9,g:0.9,b:0.0})));
 };
 test();
 //*/

@@ -36,9 +36,11 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			b: 0.6
 		},
 		resolution: 4,
+		hueStepUnit: Math.PI *2 / phi,
 	};
 	$scope.builtModel = {
 		resolution: $scope.model.resolution,
+		hueStepUnit: $scope.model.hueStepUnit,
 		indexes: []
 	};
 	
@@ -47,6 +49,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		try {
 			$scope.builtModel.indexes = [];
 			$scope.builtModel.resolution = $scope.model.resolution;
+			$scope.builtModel.hueStepUnit = $scope.model.hueStepUnit;
 			var i = 0;
 			do {
 				$scope.builtModel.indexes.push(i);
@@ -55,11 +58,11 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
             $scope.addAlert({ type: 'danger', msg: e.name +": "+ e.message });
 		}
 	};
-	$scope.calcStyleBase = function(r, g, b) {
+	$scope.calcStyleBase = function(expression) {
 		return {
 			"width": "calc(100vw / 3)",
 			"height": "5vh",
-			"background-color": rgbForStyle({r, g, b})
+			"background-color": rgbForStyle(expression)
 		};
 	};
 	$scope.calcLighterStyle = function(expression, i) {
@@ -67,18 +70,18 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		var lighter = function(x, ratio) {
 			return 1.0 -((1.0 - x) / ratio);
 		}
-		return $scope.calcStyleBase(lighter(expression.r, ratio), lighter(expression.g, ratio), lighter(expression.b, ratio));
+		return $scope.calcStyleBase({r:lighter(expression.r, ratio), g:lighter(expression.g, ratio), b:lighter(expression.b, ratio)});
 	};
 	$scope.calcDarkerStyle = function(expression, i) {
 		var ratio = Math.pow(phi, i);
 		var darker = function(x, ratio) {
 			return x / ratio;
 		}
-		return $scope.calcStyleBase(darker(expression.r, ratio), darker(expression.g, ratio), darker(expression.b, ratio));
+		return $scope.calcStyleBase({r:darker(expression.r, ratio), g:darker(expression.g, ratio), b:darker(expression.b, ratio)});
 	};
 	$scope.calcHueStyle = function(expression, i) {
-		var v = Math.sqrt((expression.r *expression.r) +(expression.g *expression.g), (expression.b *expression.b));
-		var angle = phi *i;
-		return $scope.calcStyleBase(expression.r, expression.g, expression.b);
+		var hsl = rgbToHsl(clipRgb(expression));
+		hsl.h += parseFloat($scope.model.hueStepUnit) *i;
+		return $scope.calcStyleBase(clipRgb(hslToRgb(regulateHsl(hsl))));
 	};
 });

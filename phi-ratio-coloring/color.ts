@@ -125,7 +125,7 @@ const clipRgb = (expression : ColorRgb) : ColorRgb => pass_through =
     b: Math.max(0.0, Math.min(1.0, expression.b)),
 };
 
-//*
+/*
 const test = () =>
 {
     console.log("rgbToHsl({r:0.0,g:0.0,b:0.0})", rgbToHsl({r:0.0,g:0.0,b:0.0}));

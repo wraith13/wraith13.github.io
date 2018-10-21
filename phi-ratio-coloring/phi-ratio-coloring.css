@@ -37,11 +37,3 @@ body {
 }
 
 /* application */
-.color-bar {
-    display: block;
-    text-align: center;
-    font-size: 2vw;
-    line-height: 100%;
-    padding: 1vw;
-    background-color: aqua;
-}
