@@ -2,10 +2,10 @@ var pass_through;
 var phi = 1.618033988749894848204586834365;
 var colorHslHMin = -Math.PI;
 var colorHslHMAx = Math.PI;
-var colorHsSHMin = 0.0;
-var colorHsSHMAx = 2.0 / 3.0;
-var colorHsLHMin = 0.0;
-var colorHsLHMAx = 1.0;
+var colorHslSMin = 0.0;
+var colorHslSMAx = 2.0 / 3.0;
+var colorHslLMin = 0.0;
+var colorHslLMAx = 1.0;
 var rgbForStyle = function (expression) {
     var toHex = function (i) {
         var result = ((255 * i) ^ 0).toString(16).toUpperCase();

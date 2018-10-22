@@ -16,10 +16,10 @@ interface ColorHsl
 }
 const colorHslHMin = -Math.PI;
 const colorHslHMAx = Math.PI;
-const colorHsSHMin = 0.0;
-const colorHsSHMAx = 2.0 / 3.0;
-const colorHsLHMin = 0.0;
-const colorHsLHMAx = 1.0;
+const colorHslSMin = 0.0;
+const colorHslSMAx = 2.0 / 3.0;
+const colorHslLMin = 0.0;
+const colorHslLMAx = 1.0;
 interface Point3d
 {
     x : number;
