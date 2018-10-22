@@ -76,13 +76,8 @@
         </div>
 		<div ng-show="builtModel.indexes.length">
 			<table>
-                <tr>
-                    <th>lighter</th>
-                    <th>darker</th>
-                    <th>hue</th>
-                </tr>
-				<tr ng-repeat="i in builtModel.indexes">
-					<td ng-repeat="calcStyle in [calcLighterStyle,calcDarkerStyle,calcHueStyle]"  ng-style="calcStyle(model.expression, i)">&nbsp;</td>
+				<tr ng-repeat="h in builtModel.indexes">
+					<td ng-repeat="l in [-3,-2,-1,0,1,2,3]"  ng-style="calcStyle(model.expression, l, h)">&nbsp;</td>
 				</tr>
 			</table>
         </div>
