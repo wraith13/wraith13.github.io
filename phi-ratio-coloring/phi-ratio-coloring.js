@@ -35,7 +35,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			g: 0.9,
 			b: 0.6
 		},
-		resolution: 4,
+		resolution: 13,
 		hueStepUnit: Math.PI *2 / phi,
 	};
 	$scope.builtModel = {
@@ -92,4 +92,18 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			1.0 -((1.0 - hsl.l) / Math.pow(phi, l));
 		return $scope.calcStyleBase(clipRgb(hslToRgb(regulateHsl(hsl))));
 	};
+	$scope.makeRange = function(min, max, step) {
+		if (undefined === step) {
+			return $scope.makeRange(min, max, 1)
+		} else {
+			var result = [];
+			var i = min;
+			do {
+				result.push(i);
+				i += step;
+			} while(i < max);
+			result.push(max);
+			return result;
+		}
+	}
 });
