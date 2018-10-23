@@ -30,34 +30,18 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
     $rootScope.title = $scope.app.name;
 
 	$scope.model = {
+		cssExpression: "xxxxxx",
 		expression: {
 			r: 0.3,
 			g: 0.9,
 			b: 0.6
 		},
-		resolution: 13,
-		hueStepUnit: Math.PI *2 / phi,
-	};
-	$scope.builtModel = {
-		resolution: $scope.model.resolution,
-		hueStepUnit: $scope.model.hueStepUnit,
-		indexes: []
+		hueResolution: 13,
+		hueStep: "phi ratio",
+		lightnessResolution: 6,
+		lightnessStep: "phi ratio",
 	};
 	
-	$scope.build = function() {
-		$scope.clearAlert();
-		try {
-			$scope.builtModel.indexes = [];
-			$scope.builtModel.resolution = $scope.model.resolution;
-			$scope.builtModel.hueStepUnit = $scope.model.hueStepUnit;
-			var i = 0;
-			do {
-				$scope.builtModel.indexes.push(i);
-			} while(++i < $scope.model.resolution);
-		} catch(e) {
-            $scope.addAlert({ type: 'danger', msg: e.name +": "+ e.message });
-		}
-	};
 	$scope.calcStyleBase = function(expression) {
 		return {
 			"width": "calc(100vw / 3)",
@@ -65,31 +49,28 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			"background-color": rgbForStyle(expression)
 		};
 	};
-	$scope.calcLighterStyle = function(expression, i) {
-		var ratio = Math.pow(phi, i);
-		var lighter = function(x, ratio) {
-			return 1.0 -((1.0 - x) / ratio);
-		}
-		return $scope.calcStyleBase({r:lighter(expression.r, ratio), g:lighter(expression.g, ratio), b:lighter(expression.b, ratio)});
-	};
-	$scope.calcDarkerStyle = function(expression, i) {
-		var ratio = Math.pow(phi, i);
-		var darker = function(x, ratio) {
-			return x / ratio;
-		}
-		return $scope.calcStyleBase({r:darker(expression.r, ratio), g:darker(expression.g, ratio), b:darker(expression.b, ratio)});
-	};
-	$scope.calcHueStyle = function(expression, i) {
-		var hsl = rgbToHsl(clipRgb(expression));
-		hsl.h += parseFloat($scope.model.hueStepUnit) *i;
-		return $scope.calcStyleBase(clipRgb(hslToRgb(regulateHsl(hsl))));
-	};
 	$scope.calcStyle = function(expression, l, h) {
 		var hsl = rgbToHsl(clipRgb(expression));
-		hsl.h += parseFloat($scope.model.hueStepUnit) *h;
-		hsl.l = l < 0.0 ?
+		if ("phi ratio" === $scope.model.hueStep)
+		{
+			hsl.h += Math.PI *2 / phi *h;
+		}
+		else
+		{
+			hsl.h += Math.PI *2 *h /$scope.model.hueResolution;
+		}
+		if ("phi ratio" === $scope.model.lightnessStep)
+		{
+			hsl.l = l < 0.0 ?
 			hsl.l / Math.pow(phi, -l):
 			1.0 -((1.0 - hsl.l) / Math.pow(phi, l));
+		}
+		else
+		{
+			//	lightness を均等割する場合、lightness の初期値はガン無視する
+			var lightnessResolution = parseInt($scope.model.lightnessResolution);
+			hsl.l = (lightnessResolution +l +1.0) / ((lightnessResolution *2.0) +2.0);
+		}
 		return $scope.calcStyleBase(clipRgb(hslToRgb(regulateHsl(hsl))));
 	};
 	$scope.makeRange = function(min, max, step) {

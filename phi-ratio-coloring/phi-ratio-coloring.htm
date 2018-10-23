@@ -54,30 +54,35 @@
 
             <div ng-hide="is_loading">
 				<div class="row">
-					<div class="col-md-9">
+					<div class="col-md-3">
+						<h4>initial RGB value ( CSS style )</h4>
+						<input type="text" class="form-control" ng-model="model.cssExpression" />
 						<h4>initial R value ( 0.0 ～ 1.0 )</h4>
-						<input type="text" class="form-control" ng-model="model.expression.r" />
+						<input type="number" class="form-control" ng-model="model.expression.r" />
 						<h4>initial G value ( 0.0 ～ 1.0 )</h4>
-						<input type="text" class="form-control" ng-model="model.expression.g" />
+						<input type="number" class="form-control" ng-model="model.expression.g" />
 						<h4>initial B value ( 0.0 ～ 1.0 )</h4>
-						<input type="text" class="form-control" ng-model="model.expression.b" />
+						<input type="number" class="form-control" ng-model="model.expression.b" />
 					</div>
 					<div class="col-md-3">
-						<h4>resolution</h4>
-						<input type="text" class="form-control" ng-model="model.resolution" />
-						<h4>hue step unit</h4>
-						<input type="text" class="form-control" ng-model="model.hueStepUnit" />
+						<h4>hue resolution</h4>
+						<input type="number" class="form-control" ng-model="model.hueResolution" />
+						<h4>lightness resolution</h4>
+						<input type="number" class="form-control" ng-model="model.lightnessResolution" />
+					</div>
+					<div class="col-md-3">
+						<h4>hue step</h4>
+                        <select class="form-control" ng-model="model.hueStep" ng-options="item for item in ['phi ratio', 'equal share']"></select>
+                        <h4>lightness step</h4>
+                        <select class="form-control" ng-model="model.lightnessStep" ng-options="item for item in ['phi ratio', 'equal share']"></select>
 					</div>
 				</div>
-				
-				<h4>build</h4>
-				<button type="button" class='btn btn-primary btn-lg btn-block' ng-click="build()">カラーテーブルを作成する</button>
             </div>
         </div>
 		<div>
 			<table>
-				<tr ng-repeat="h in makeRange(0, model.resolution -1)">
-					<td ng-repeat="l in [-4,-3,-2,-1,0,1,2,3,4]"  ng-style="calcStyle(model.expression, l, h)">&nbsp;</td>
+				<tr ng-repeat="h in makeRange(0, model.hueResolution -1)">
+					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle(model.expression, l, h)">&nbsp;</td>
 				</tr>
 			</table>
         </div>
