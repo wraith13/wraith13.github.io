@@ -57,6 +57,18 @@
 					<div class="col-md-3">
 						<h4>initial RGB value ( CSS style )</h4>
 						<input type="text" class="form-control" ng-model="model.cssExpression" />
+					</div>
+					<div class="col-md-3">
+						<h4>combination</h4>
+                        <select class="form-control" ng-model="model.combination" ng-options="item for item in ['hue * lightness', 'hue * saturation', 'saturation * lightness']"></select>
+					</div>
+					<div class="col-md-3">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3">
+						<h4>initial RGB value ( CSS style )</h4>
+						<input type="text" class="form-control" ng-model="model.cssExpression" />
 						<h4>initial R value ( 0.0 ～ 1.0 )</h4>
 						<input type="number" class="form-control" ng-model="model.expression.r" />
 						<h4>initial G value ( 0.0 ～ 1.0 )</h4>
