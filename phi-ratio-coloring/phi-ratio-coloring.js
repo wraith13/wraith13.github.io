@@ -52,27 +52,48 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			"background-color": rgbForStyle(expression)
 		};
 	};
-	$scope.calcStyle = function(expression, l, h) {
+	$scope.calcStyle = function(expression, h, s, l) {
 		var hsl = rgbToHsl(clipRgb(expression));
-		if ("phi ratio" === $scope.model.hueStep)
+		if (undefined !== h)
 		{
-			hsl.h += Math.PI *2 / phi *h;
+			if ("phi ratio" === $scope.model.hueStep)
+			{
+				hsl.h += Math.PI *2 / phi *h;
+			}
+			else
+			{
+				hsl.h += Math.PI *2 *h /$scope.model.hueResolution;
+			}
 		}
-		else
+		if (undefined !== s)
 		{
-			hsl.h += Math.PI *2 *h /$scope.model.hueResolution;
+			if ("phi ratio" === $scope.model.saturationStep)
+			{
+				hsl.s = s < 0.0 ?
+					hsl.s / Math.pow(phi, -s):
+					colorHslSMAx -((colorHslSMAx - hsl.s) / Math.pow(phi, s));
+			}
+			else
+			{
+				//	saturation を均等割する場合、saturation の初期値はガン無視する
+				var saturationResolution = parseInt($scope.model.saturationResolution);
+				hsl.s = ((saturationResolution +s +1.0) / ((saturationResolution *2.0) +2.0)) *colorHslSMAx;
+			}
 		}
-		if ("phi ratio" === $scope.model.lightnessStep)
+		if (undefined !== l)
 		{
-			hsl.l = l < 0.0 ?
-			hsl.l / Math.pow(phi, -l):
-			1.0 -((1.0 - hsl.l) / Math.pow(phi, l));
-		}
-		else
-		{
-			//	lightness を均等割する場合、lightness の初期値はガン無視する
-			var lightnessResolution = parseInt($scope.model.lightnessResolution);
-			hsl.l = (lightnessResolution +l +1.0) / ((lightnessResolution *2.0) +2.0);
+			if ("phi ratio" === $scope.model.lightnessStep)
+			{
+				hsl.l = l < 0.0 ?
+					hsl.l / Math.pow(phi, -l):
+					1.0 -((1.0 - hsl.l) / Math.pow(phi, l));
+			}
+			else
+			{
+				//	lightness を均等割する場合、lightness の初期値はガン無視する
+				var lightnessResolution = parseInt($scope.model.lightnessResolution);
+				hsl.l = (lightnessResolution +l +1.0) / ((lightnessResolution *2.0) +2.0);
+			}
 		}
 		return $scope.calcStyleBase(clipRgb(hslToRgb(regulateHsl(hsl))));
 	};
