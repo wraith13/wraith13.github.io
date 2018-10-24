@@ -36,9 +36,11 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			g: 0.9,
 			b: 0.6
 		},
-		combination: "hue * saturation",
+		combination: "hue * lightness",
 		hueResolution: 13,
 		hueStep: "phi ratio",
+		saturationResolution: 6,
+		saturationStep: "phi ratio",
 		lightnessResolution: 6,
 		lightnessStep: "phi ratio",
 	};

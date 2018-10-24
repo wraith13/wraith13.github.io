@@ -78,15 +78,19 @@
 					</div>
 					<div class="col-md-3">
 						<h4>hue resolution</h4>
-						<input type="number" class="form-control" ng-model="model.hueResolution" />
+						<input type="number" class="form-control" ng-model="model.hueResolution" ng-disabled="'saturation * lightness' === model.combination" />
+						<h4>saturation resolution</h4>
+						<input type="number" class="form-control" ng-model="model.saturationResolution" ng-disabled="'hue * lightness' === model.combination" />
 						<h4>lightness resolution</h4>
-						<input type="number" class="form-control" ng-model="model.lightnessResolution" />
+						<input type="number" class="form-control" ng-model="model.lightnessResolution" ng-disabled="'hue * saturation' === model.combination" />
 					</div>
 					<div class="col-md-3">
 						<h4>hue step</h4>
-                        <select class="form-control" ng-model="model.hueStep" ng-options="item for item in ['phi ratio', 'equal share']"></select>
+                        <select class="form-control" ng-model="model.hueStep" ng-options="item for item in ['phi ratio', 'equal share']" ng-disabled="'saturation * lightness' === model.combination" ></select>
+                        <h4>saturation step</h4>
+                        <select class="form-control" ng-model="model.saturationStep" ng-options="item for item in ['phi ratio', 'equal share']" ng-disabled="'hue * lightness' === model.combination" ></select>
                         <h4>lightness step</h4>
-                        <select class="form-control" ng-model="model.lightnessStep" ng-options="item for item in ['phi ratio', 'equal share']"></select>
+                        <select class="form-control" ng-model="model.lightnessStep" ng-options="item for item in ['phi ratio', 'equal share']" ng-disabled="'hue * saturation' === model.combination" ></select>
 					</div>
 				</div>
             </div>
