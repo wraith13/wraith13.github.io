@@ -56,7 +56,7 @@
 				<div class="row">
 					<div class="col-md-3">
 						<h4>RGB value ( CSS style )</h4>
-						<input type="text" class="form-control" ng-model="model.cssExpression" />
+						<input type="text" class="form-control" ng-model="model.cssExpression" ng-change="changeCss()" />
 					</div>
 					<div class="col-md-3">
 					</div>
@@ -70,19 +70,19 @@
 				<div class="row">
 					<div class="col-md-3">
 						<h4>R value ( 0.0 ～ 1.0 )</h4>
-						<input type="number" class="form-control" ng-model="model.r" />
+						<input type="number" class="form-control" ng-model="model.r" ng-change="changeRgb()"/>
 						<h4>G value ( 0.0 ～ 1.0 )</h4>
-						<input type="number" class="form-control" ng-model="model.g" />
+						<input type="number" class="form-control" ng-model="model.g" ng-change="changeRgb()" />
 						<h4>B value ( 0.0 ～ 1.0 )</h4>
-						<input type="number" class="form-control" ng-model="model.b" />
+						<input type="number" class="form-control" ng-model="model.b" ng-change="changeRgb()" />
 					</div>
 					<div class="col-md-3">
 						<h4>h value ( -Math.PI ～ Math.PI )</h4>
-						<input type="number" class="form-control" ng-model="model.h" />
+						<input type="number" class="form-control" ng-model="model.h" ng-change="changeHsl()" />
 						<h4>s value ( 0.0 ～ 2.0/3.0 )</h4>
-						<input type="number" class="form-control" ng-model="model.s" />
+						<input type="number" class="form-control" ng-model="model.s" ng-change="changeHsl()" />
 						<h4>l value ( 0.0 ～ 1.0 )</h4>
-						<input type="number" class="form-control" ng-model="model.l" />
+						<input type="number" class="form-control" ng-model="model.l" ng-change="changeHsl()" />
 					</div>
 					<div class="col-md-3">
 						<h4>hue resolution</h4>

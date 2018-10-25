@@ -45,6 +45,21 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		lightnessResolution: 6,
 		lightnessStep: "phi ratio",
 	};
+
+	$scope.changeCss = function() {
+	};
+	$scope.changeRgb = function() {
+		var hsl = rgbToHsl(clipRgb({r:$scope.model.r, g:$scope.model.g, b:$scope.model.b}));
+		$scope.model.h = hsl.h;
+		$scope.model.s = hsl.s;
+		$scope.model.l = hsl.l;
+	};
+	$scope.changeHsl = function() {
+		var rgb = hslToRgb(regulateHsl({h:$scope.model.h, s:$scope.model.s, l:$scope.model.l}));
+		$scope.model.r = rgb.r;
+		$scope.model.g = rgb.g;
+		$scope.model.b = rgb.b;
+	};
 	
 	$scope.calcStyleBase = function(expression) {
 		return {
