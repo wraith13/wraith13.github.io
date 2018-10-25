@@ -31,11 +31,12 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 
 	$scope.model = {
 		cssExpression: "xxxxxx",
-		expression: {
-			r: 0.3,
-			g: 0.9,
-			b: 0.6
-		},
+		r: 0.3,
+		g: 0.9,
+		b: 0.6,
+		h: 0.0,
+		s: 0.0,
+		l: 0.0,
 		combination: "hue * lightness",
 		hueResolution: 13,
 		hueStep: "phi ratio",
