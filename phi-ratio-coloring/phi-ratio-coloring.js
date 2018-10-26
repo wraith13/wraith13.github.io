@@ -11,6 +11,9 @@ app.config(["$locationProvider", function ($locationProvider) {
 
 app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $http, $location, $filter) {
 
+	$scope.init = function() {
+		$scope.changeRgb();
+	};
     $scope.alerts = [];
     $scope.clearAlert = function () {
 		$scope.alerts = [];
