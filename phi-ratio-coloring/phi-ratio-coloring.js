@@ -33,7 +33,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
     $rootScope.title = $scope.app.name;
 
 	$scope.model = {
-		cssExpression: "xxxxxx",
+		colorCode: "#xxxxxx",
 		r: 0.3,
 		g: 0.9,
 		b: 0.6,
@@ -49,15 +49,30 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		lightnessStep: "phi ratio",
 	};
 
-	$scope.changeCss = function() {
+	$scope.changeCode = function() {
+		$scope.updateRgbFromCode();
+		$scope.updateHslFromRgb();
 	};
 	$scope.changeRgb = function() {
+		$scope.updateCodeFromRgb();
+		$scope.updateHslFromRgb();
+	};
+	$scope.changeHsl = function() {
+		$scope.updateRgbFromHsl();
+		$scope.updateCodeFromRgb();
+	};
+	$scope.updateCodeFromRgb  = function() {
+		$scope.model.colorCode = rgbForStyle(clipRgb({r:$scope.model.r, g:$scope.model.g, b:$scope.model.b}));
+	};
+	$scope.updateRgbFromCode  = function() {
+	};
+	$scope.updateHslFromRgb  = function() {
 		var hsl = rgbToHsl(clipRgb({r:$scope.model.r, g:$scope.model.g, b:$scope.model.b}));
 		$scope.model.h = hsl.h;
 		$scope.model.s = hsl.s;
 		$scope.model.l = hsl.l;
 	};
-	$scope.changeHsl = function() {
+	$scope.updateRgbFromHsl  = function() {
 		var rgb = hslToRgb(regulateHsl({h:$scope.model.h, s:$scope.model.s, l:$scope.model.l}));
 		$scope.model.r = rgb.r;
 		$scope.model.g = rgb.g;
