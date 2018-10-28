@@ -19,6 +19,25 @@ var rgbForStyle = function (expression) {
         + toHex(expression.g)
         + toHex(expression.b);
 };
+var rgbFromStyle = function (style) {
+    var r = 0.0;
+    var g = 0.0;
+    var b = 0.0;
+    while ("#" === style.substr(0, 1)) {
+        style = style.substr(1);
+    }
+    if (3 === style.length) {
+        r = (parseInt(style.substr(0, 1), 16) * 0x11) / 255.0;
+        g = (parseInt(style.substr(1, 1), 16) * 0x11) / 255.0;
+        b = (parseInt(style.substr(2, 1), 16) * 0x11) / 255.0;
+    }
+    if (6 === style.length) {
+        r = parseInt(style.substr(0, 2), 16) / 255.0;
+        g = parseInt(style.substr(2, 2), 16) / 255.0;
+        b = parseInt(style.substr(4, 2), 16) / 255.0;
+    }
+    return { r: r, g: g, b: b };
+};
 var xyzToLength = function (xyz) { return Math.sqrt(Math.pow(xyz.x, 2) + Math.pow(xyz.y, 2) + Math.pow(xyz.z, 2)); };
 var rgbToXyz = function (expression) { return pass_through = { x: expression.r, y: expression.g, z: expression.b }; };
 var rgbToHue = function (expression) {

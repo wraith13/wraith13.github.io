@@ -26,7 +26,8 @@ interface Point3d
     y : number;
     z : number;
 }
-const rgbForStyle = function(expression: ColorRgb) {
+const rgbForStyle = function(expression: ColorRgb)
+{
     const toHex = (i : number) : string => {
         let result = ((255 *i) ^ 0).toString(16).toUpperCase();
         if (1 === result.length) {
@@ -39,6 +40,29 @@ const rgbForStyle = function(expression: ColorRgb) {
             +toHex(expression.g)
             +toHex(expression.b)
     ;
+};
+const rgbFromStyle = function(style : string) : ColorRgb
+{
+    let r = 0.0;
+    let g = 0.0;
+    let b = 0.0;
+    while("#" === style.substr(0,1))
+    {
+        style = style.substr(1);
+    }
+    if (3 === style.length)
+    {
+        r = (parseInt(style.substr(0,1), 16) *0x11) /255.0;
+        g = (parseInt(style.substr(1,1), 16) *0x11) /255.0;
+        b = (parseInt(style.substr(2,1), 16) *0x11) /255.0;
+    }
+    if (6 === style.length)
+    {
+        r = parseInt(style.substr(0,2), 16) /255.0;
+        g = parseInt(style.substr(2,2), 16) /255.0;
+        b = parseInt(style.substr(4,2), 16) /255.0;
+    }
+    return {r, g, b};
 };
 const xyzToLength = (xyz : Point3d) : number => Math.sqrt(Math.pow(xyz.x, 2) +Math.pow(xyz.y, 2) +Math.pow(xyz.z, 2));
 const rgbToXyz = (expression : ColorRgb) : Point3d => pass_through = {x:expression.r, y:expression.g, z:expression.b};
