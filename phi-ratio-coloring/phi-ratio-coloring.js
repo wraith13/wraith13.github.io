@@ -65,6 +65,10 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		$scope.model.colorCode = rgbForStyle(clipRgb({r:$scope.model.r, g:$scope.model.g, b:$scope.model.b}));
 	};
 	$scope.updateRgbFromCode  = function() {
+		var rgb = rgbFromStyle($scope.model.colorCode);
+		$scope.model.r = rgb.r;
+		$scope.model.g = rgb.g;
+		$scope.model.b = rgb.b;
 	};
 	$scope.updateHslFromRgb  = function() {
 		var hsl = rgbToHsl(clipRgb({r:$scope.model.r, g:$scope.model.g, b:$scope.model.b}));
