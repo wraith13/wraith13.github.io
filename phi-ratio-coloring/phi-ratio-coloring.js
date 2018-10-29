@@ -34,9 +34,9 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 
 	$scope.model = {
 		colorCode: "#xxxxxx",
-		r: 0.3,
-		g: 0.9,
-		b: 0.6,
+		r: 30,
+		g: 90,
+		b: 60,
 		h: 0.0,
 		s: 0.0,
 		l: 0.0,
@@ -61,26 +61,33 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		$scope.updateRgbFromHsl();
 		$scope.updateCodeFromRgb();
 	};
-	$scope.updateCodeFromRgb  = function() {
-		$scope.model.colorCode = rgbForStyle(clipRgb({r:$scope.model.r, g:$scope.model.g, b:$scope.model.b}));
+	$scope.getRgb  = function() {
+		return clipRgb({r:$scope.model.r /255.0, g:$scope.model.g /255.0, b:$scope.model.b /255.0});
 	};
-	$scope.updateRgbFromCode  = function() {
-		var rgb = rgbFromStyle($scope.model.colorCode);
-		$scope.model.r = rgb.r;
-		$scope.model.g = rgb.g;
-		$scope.model.b = rgb.b;
+	$scope.setRgb = function(rgb) {
+		$scope.model.r = ((rgb.r *255) ^ 0);
+		$scope.model.g = ((rgb.g *255) ^ 0);
+		$scope.model.b = ((rgb.b *255) ^ 0);
+	}
+	$scope.getHsl  = function() {
+		return regulateHsl({h:$scope.model.h, s:$scope.model.s, l:$scope.model.l});
 	};
-	$scope.updateHslFromRgb  = function() {
-		var hsl = rgbToHsl(clipRgb({r:$scope.model.r, g:$scope.model.g, b:$scope.model.b}));
+	$scope.setHsl = function(hsl) {
 		$scope.model.h = hsl.h;
 		$scope.model.s = hsl.s;
 		$scope.model.l = hsl.l;
+	}
+	$scope.updateCodeFromRgb  = function() {
+		$scope.model.colorCode = rgbForStyle($scope.getRgb());
+	};
+	$scope.updateRgbFromCode  = function() {
+		$scope.setRgb(rgbFromStyle($scope.model.colorCode));
+	};
+	$scope.updateHslFromRgb  = function() {
+		$scope.setHsl(rgbToHsl($scope.getRgb()));
 	};
 	$scope.updateRgbFromHsl  = function() {
-		var rgb = hslToRgb(regulateHsl({h:$scope.model.h, s:$scope.model.s, l:$scope.model.l}));
-		$scope.model.r = rgb.r;
-		$scope.model.g = rgb.g;
-		$scope.model.b = rgb.b;
+		$scope.setRgb(hslToRgb($scope.getHsl()));
 	};
 	
 	$scope.calcStyleBase = function(expression) {
@@ -91,7 +98,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		};
 	};
 	$scope.calcStyle = function(expression, h, s, l) {
-		var hsl = rgbToHsl(clipRgb(expression));
+		var hsl = $scope.getHsl();
 		if (undefined !== h)
 		{
 			if ("phi ratio" === $scope.model.hueStep)
