@@ -49,18 +49,6 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		lightnessStep: "phi ratio",
 	};
 
-	$scope.changeCode = function() {
-		$scope.updateRgbFromCode();
-		$scope.updateHslFromRgb();
-	};
-	$scope.changeRgb = function() {
-		$scope.updateCodeFromRgb();
-		$scope.updateHslFromRgb();
-	};
-	$scope.changeHsl = function() {
-		$scope.updateRgbFromHsl();
-		$scope.updateCodeFromRgb();
-	};
 	$scope.getRgb  = function() {
 		return clipRgb({r:$scope.model.r /255.0, g:$scope.model.g /255.0, b:$scope.model.b /255.0});
 	};
@@ -77,6 +65,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		$scope.model.s = hsl.s;
 		$scope.model.l = hsl.l;
 	}
+
 	$scope.updateCodeFromRgb  = function() {
 		$scope.model.colorCode = rgbForStyle($scope.getRgb());
 	};
@@ -89,15 +78,21 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 	$scope.updateRgbFromHsl  = function() {
 		$scope.setRgb(hslToRgb($scope.getHsl()));
 	};
-	
-	$scope.calcStyleBase = function(expression) {
-		return {
-			"width": "calc(100vw / 3)",
-			"height": "5vh",
-			"background-color": rgbForStyle(expression)
-		};
+
+	$scope.changeCode = function() {
+		$scope.updateRgbFromCode();
+		$scope.updateHslFromRgb();
 	};
-	$scope.calcStyle = function(expression, h, s, l) {
+	$scope.changeRgb = function() {
+		$scope.updateCodeFromRgb();
+		$scope.updateHslFromRgb();
+	};
+	$scope.changeHsl = function() {
+		$scope.updateRgbFromHsl();
+		$scope.updateCodeFromRgb();
+	};
+	
+	$scope.calcHsl = function(h, s, l) {
 		var hsl = $scope.getHsl();
 		if (undefined !== h)
 		{
@@ -140,7 +135,17 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 				hsl.l = (lightnessResolution +l +1.0) / ((lightnessResolution *2.0) +2.0);
 			}
 		}
-		return $scope.calcStyleBase(clipRgb(hslToRgb(regulateHsl(hsl))));
+		return regulateHsl(hsl);
+	};
+	$scope.calcStyleBase = function(expression) {
+		return {
+			"width": "calc(100vw / 3)",
+			"height": "5vh",
+			"background-color": rgbForStyle(expression)
+		};
+	};
+	$scope.calcStyle = function(h, s, l) {
+		return $scope.calcStyleBase(clipRgb(hslToRgb($scope.calcHsl(h, s, l))));
 	};
 	$scope.makeRange = function(min, max, step) {
 		if (undefined === step) {

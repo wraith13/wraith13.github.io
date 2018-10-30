@@ -107,17 +107,17 @@
 		<div>
 			<table ng-show="'saturation * lightness' === model.combination">
 				<tr ng-repeat="s in makeRange(-model.saturationResolution, model.saturationResolution)">
-					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle({r:model.r, g:model.g, b:model.b}, undefined, s, l)">&nbsp;</td>
+					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle(undefined, s, l)">&nbsp;</td>
 				</tr>
 			</table>
 			<table ng-show="'hue * lightness' === model.combination">
 				<tr ng-repeat="h in makeRange(0, model.hueResolution -1)">
-					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle({r:model.r, g:model.g, b:model.b}, h, undefined, l)">&nbsp;</td>
+					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle(h, undefined, l)">&nbsp;</td>
 				</tr>
 			</table>
 			<table ng-show="'hue * saturation' === model.combination">
 				<tr ng-repeat="h in makeRange(0, model.hueResolution -1)">
-					<td ng-repeat="s in makeRange(-model.saturationResolution, model.saturationResolution)"  ng-style="calcStyle({r:model.r, g:model.g, b:model.b}, h, s, undefined)">&nbsp;</td>
+					<td ng-repeat="s in makeRange(-model.saturationResolution, model.saturationResolution)"  ng-style="calcStyle(h, s, undefined)">&nbsp;</td>
 				</tr>
 			</table>
         </div>
