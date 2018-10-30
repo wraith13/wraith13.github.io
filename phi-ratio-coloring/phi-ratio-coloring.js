@@ -141,11 +141,15 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		return {
 			"width": "calc(100vw / 3)",
 			"height": "5vh",
-			"background-color": rgbForStyle(expression)
+			"color": expression.l <= 0.5 ? "#FFFFFF": "#000000",
+			"background-color": rgbForStyle(clipRgb(hslToRgb(expression)))
 		};
 	};
 	$scope.calcStyle = function(h, s, l) {
-		return $scope.calcStyleBase(clipRgb(hslToRgb($scope.calcHsl(h, s, l))));
+		return $scope.calcStyleBase($scope.calcHsl(h, s, l));
+	};
+	$scope.calcCode = function(h, s, l) {
+		return rgbForStyle(clipRgb(hslToRgb($scope.calcHsl(h, s, l))));
 	};
 	$scope.makeRange = function(min, max, step) {
 		if (undefined === step) {

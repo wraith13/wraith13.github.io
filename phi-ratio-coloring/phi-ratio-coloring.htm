@@ -17,6 +17,12 @@
 
     <link href="phi-ratio-coloring.css" rel="stylesheet" />
 
+    <style>
+        table.color td
+        {
+            text-align: center;
+        }
+    </style>
 </head>
 <body id="body" ng-controller="phi-ratio-coloring" ng-init="init()">
     <div class="body">
@@ -105,19 +111,19 @@
             </div>
         </div>
 		<div>
-			<table ng-show="'saturation * lightness' === model.combination">
+			<table ng-show="'saturation * lightness' === model.combination" class="color">
 				<tr ng-repeat="s in makeRange(-model.saturationResolution, model.saturationResolution)">
-					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle(undefined, s, l)">&nbsp;</td>
+					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle(undefined, s, l)">{{calcCode(undefined, s, l)}}</td>
 				</tr>
 			</table>
-			<table ng-show="'hue * lightness' === model.combination">
+			<table ng-show="'hue * lightness' === model.combination" class="color">
 				<tr ng-repeat="h in makeRange(0, model.hueResolution -1)">
-					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle(h, undefined, l)">&nbsp;</td>
+					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle(h, undefined, l)">{{calcCode(h, undefined, l)}}</td>
 				</tr>
 			</table>
-			<table ng-show="'hue * saturation' === model.combination">
+			<table ng-show="'hue * saturation' === model.combination" class="color">
 				<tr ng-repeat="h in makeRange(0, model.hueResolution -1)">
-					<td ng-repeat="s in makeRange(-model.saturationResolution, model.saturationResolution)"  ng-style="calcStyle(h, s, undefined)">&nbsp;</td>
+					<td ng-repeat="s in makeRange(-model.saturationResolution, model.saturationResolution)"  ng-style="calcStyle(h, s, undefined)">{{calcCode(h, s, undefined)}}</td>
 				</tr>
 			</table>
         </div>
