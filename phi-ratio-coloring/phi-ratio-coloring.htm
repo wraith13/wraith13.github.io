@@ -107,7 +107,22 @@
                         <h4>lightness step</h4>
                         <select class="form-control" ng-model="model.lightnessStep" ng-options="item for item in ['phi ratio', 'equal share']" ng-disabled="'hue * saturation' === model.combination" ></select>
 					</div>
+                </div>
+				<div class="row">
+					<div class="col-md-3">
+						<h4>Code text color</h4>
+                        <select class="form-control" ng-model="model.textColor" ng-options="item for item in ['auto', 'white', 'black', 'none']" ></select>
+					</div>
+					<div class="col-md-3">
+                        <h4>Separator color</h4>
+                        <select class="form-control" ng-model="model.separatorColor" ng-options="item for item in ['white', 'black', 'none']" ></select>
+					</div>
+					<div class="col-md-3">
+                        <h4>Show style</h4>
+                        <select class="form-control" ng-model="model.showStyle" ng-options="item for item in ['default', 'full screen']" ></select>
+					</div>
 				</div>
+
             </div>
         </div>
 		<div>

@@ -47,6 +47,9 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		saturationStep: "phi ratio",
 		lightnessResolution: 6,
 		lightnessStep: "phi ratio",
+		textColor: "auto",
+		separatorColor: "none",
+		showStyle: "default"
 	};
 
 	$scope.getRgb  = function() {
@@ -137,11 +140,22 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		}
 		return regulateHsl(hsl);
 	};
+	$scope.getTextColor = function(expression) {
+		switch($scope.model.textColor)
+		{
+		case "auto":
+			return expression.l <= 0.5 ? "#FFFFFF": "#000000";
+		case "none":
+			return "rgba(0,0,0,0)"
+		default:
+			return $scope.model.textColor;
+		}
+	};
 	$scope.calcStyleBase = function(expression) {
 		return {
 			"width": "calc(100vw / 3)",
 			"height": "5vh",
-			"color": expression.l <= 0.5 ? "#FFFFFF": "#000000",
+			"color": $scope.getTextColor(expression),
 			"background-color": rgbForStyle(clipRgb(hslToRgb(expression)))
 		};
 	};
@@ -149,7 +163,9 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		return $scope.calcStyleBase($scope.calcHsl(h, s, l));
 	};
 	$scope.calcCode = function(h, s, l) {
-		return rgbForStyle(clipRgb(hslToRgb($scope.calcHsl(h, s, l))));
+		return "none" === $scope.model.textColor ?
+			"":
+			rgbForStyle(clipRgb(hslToRgb($scope.calcHsl(h, s, l))));
 	};
 	$scope.makeRange = function(min, max, step) {
 		if (undefined === step) {
