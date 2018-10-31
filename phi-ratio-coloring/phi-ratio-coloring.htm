@@ -18,9 +18,14 @@
     <link href="phi-ratio-coloring.css" rel="stylesheet" />
 
     <style>
+        table.color
+        {
+            width: 100%;
+        }
         table.color td
         {
             text-align: center;
+            height: 4em;
         }
     </style>
 </head>
@@ -84,7 +89,7 @@
 						<input type="number" class="form-control" ng-model="model.b" ng-change="changeRgb()" />
 					</div>
 					<div class="col-md-3">
-						<h4>h value ( -Math.PI ～ Math.PI )</h4>
+						<h4>h value ( -π ～ π )</h4>
 						<input type="number" class="form-control" ng-model="model.h" ng-change="changeHsl()" />
 						<h4>s value ( 0.0 ～ 2.0/3.0 )</h4>
 						<input type="number" class="form-control" ng-model="model.s" ng-change="changeHsl()" />

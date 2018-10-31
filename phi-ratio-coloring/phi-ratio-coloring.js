@@ -151,12 +151,20 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			return $scope.model.textColor;
 		}
 	};
+	$scope.getBorder = function() {
+		switch($scope.model.separatorColor)
+		{
+		case "none":
+			return "none"
+		default:
+			return "3px solid " +$scope.model.separatorColor;
+		}
+	};
 	$scope.calcStyleBase = function(expression) {
 		return {
-			"width": "calc(100vw / 3)",
-			"height": "5vh",
 			"color": $scope.getTextColor(expression),
-			"background-color": rgbForStyle(clipRgb(hslToRgb(expression)))
+			"background-color": rgbForStyle(clipRgb(hslToRgb(expression))),
+			"border": $scope.getBorder()
 		};
 	};
 	$scope.calcStyle = function(h, s, l) {
