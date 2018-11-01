@@ -96,6 +96,9 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		$scope.updateRgbFromHsl();
 		$scope.updateCodeFromRgb();
 	};
+	$scope.changeShowStyle = function() {
+		console.log($scope.model.showStyle);
+	};
 	
 	$scope.calcHsl = function(h, s, l) {
 		var hsl = $scope.getHsl();
