@@ -46,6 +46,12 @@
                 <div class="container">
 						<h1><span class="glyphicon glyphicon-th"></span>{{app.name}}</h1>
 						<p>{{app.description}}</p>
+                        <dl>
+                            <dt>π</dt>
+                            <dd>{{app.pi}}</dd>
+                            <dt>φ</dt>
+                            <dd>{{app.phi}}</dd>
+                        </dl>
                 </div>
             </div>
         </div>
@@ -66,7 +72,7 @@
             <div ng-hide="is_loading">
 				<div class="row">
 					<div class="col-md-3">
-						<h4>Color code</h4>
+						<h4>color code</h4>
 						<input type="text" class="form-control" ng-model="model.colorCode" ng-change="changeCode()" />
 					</div>
                     <div class="col-md-3" style="padding-top:1.5em;">
@@ -89,11 +95,11 @@
 						<input type="number" class="form-control" ng-model="model.b" ng-change="changeRgb()" />
 					</div>
 					<div class="col-md-3">
-						<h4>h value ( -π ～ π )</h4>
+						<h4>H value ( -π ～ π )</h4>
 						<input type="number" class="form-control" ng-model="model.h" ng-change="changeHsl()" />
-						<h4>s value ( 0.0 ～ 2.0/3.0 )</h4>
+						<h4>S value ( 0.0 ～ 2.0/3.0 )</h4>
 						<input type="number" class="form-control" ng-model="model.s" ng-change="changeHsl()" />
-						<h4>l value ( 0.0 ～ 1.0 )</h4>
+						<h4>L value ( 0.0 ～ 1.0 )</h4>
 						<input type="number" class="form-control" ng-model="model.l" ng-change="changeHsl()" />
 					</div>
 					<div class="col-md-3">
@@ -115,15 +121,15 @@
                 </div>
 				<div class="row">
 					<div class="col-md-3">
-						<h4>Code text color</h4>
+						<h4>code text color</h4>
                         <select class="form-control" ng-model="model.textColor" ng-options="item for item in ['auto', 'white', 'black', 'none']" ></select>
 					</div>
 					<div class="col-md-3">
-                        <h4>Separator color</h4>
+                        <h4>separator color</h4>
                         <select class="form-control" ng-model="model.separatorColor" ng-options="item for item in ['white', 'black', 'none']" ></select>
 					</div>
 					<div class="col-md-3">
-                        <h4>Show style</h4>
+                        <h4>show style</h4>
                         <select class="form-control" ng-model="model.showStyle" ng-options="item for item in ['default', 'full screen']" ></select>
 					</div>
 				</div>

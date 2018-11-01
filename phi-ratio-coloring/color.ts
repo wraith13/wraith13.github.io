@@ -1,5 +1,5 @@
 let pass_through;
-let phi = 1.618033988749894848204586834365;
+let phi = 1.618033988749895;
 
 interface ColorRgb
 {

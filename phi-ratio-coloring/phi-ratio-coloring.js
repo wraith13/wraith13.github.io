@@ -28,7 +28,9 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
     $scope.app = {
         type: "app",
         name: "phi ratio coloring",
-        description: "黄金比を利用したカラーテーブルを作成します。",
+		description: "黄金比を利用したカラーテーブルを作成します。",
+		pi: Math.PI,
+		phi: phi,
     };
     $rootScope.title = $scope.app.name;
 
@@ -119,7 +121,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			else
 			{
 				//	saturation を均等割する場合、saturation の初期値はガン無視する
-				var saturationResolution = parseInt($scope.model.saturationResolution);
+				var saturationResolution = Math.abs(parseInt($scope.model.saturationResolution));
 				hsl.s = ((saturationResolution +s +1.0) / ((saturationResolution *2.0) +2.0)) *colorHslSMAx;
 			}
 		}
@@ -134,7 +136,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			else
 			{
 				//	lightness を均等割する場合、lightness の初期値はガン無視する
-				var lightnessResolution = parseInt($scope.model.lightnessResolution);
+				var lightnessResolution = Math.abs(parseInt($scope.model.lightnessResolution));
 				hsl.l = (lightnessResolution +l +1.0) / ((lightnessResolution *2.0) +2.0);
 			}
 		}
@@ -157,7 +159,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		case "none":
 			return "none"
 		default:
-			return "3px solid " +$scope.model.separatorColor;
+			return "4px solid " +$scope.model.separatorColor;
 		}
 	};
 	$scope.calcStyleBase = function(expression) {
@@ -181,10 +183,23 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		} else {
 			var result = [];
 			var i = min;
-			do {
-				result.push(i);
-				i += step;
-			} while(i < max);
+			if (min !== max)
+			{
+				if (min <= max)
+				{
+					do {
+						result.push(i);
+						i += step;
+					} while(i < max);
+				}
+				else
+				{
+					do {
+						result.push(i);
+						i -= step;
+					} while(max < i);
+				}
+			}
 			result.push(max);
 			return result;
 		}
