@@ -32,10 +32,33 @@
         {
             width: 100%;
         }
+        body:not(.full-screen) table.color
+        {
+            margin-top: 2em;
+        }
         table.color td
         {
             text-align: center;
             height: 4em;
+            overflow: hidden;
+        }
+        body.full-screen .body
+        {
+            padding: 0px;
+        }
+        body.full-screen .big-header,
+        body.full-screen .footer,
+        body.full-screen .container
+        {
+            display: none;
+        }
+        body.full-screen table.color
+        {
+            height: 100vh;
+        }
+        body.full-screen table.color td
+        {
+            height: initial;
         }
     </style>
 </head>
@@ -146,7 +169,7 @@
 
             </div>
         </div>
-		<div>
+		<div ng-click="clickColorTable()">
 			<table ng-show="'saturation * lightness' === model.combination" class="color">
 				<tr ng-repeat="s in makeRange(-model.saturationResolution, model.saturationResolution)">
 					<td ng-repeat="l in makeRange(-model.lightnessResolution, model.lightnessResolution)"  ng-style="calcStyle(undefined, s, l)">{{calcCode(undefined, s, l)}}</td>

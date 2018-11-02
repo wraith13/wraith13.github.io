@@ -13,6 +13,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 
 	$scope.init = function() {
 		$scope.changeRgb();
+		$scope.changeShowStyle();
 	};
     $scope.alerts = [];
     $scope.clearAlert = function () {
@@ -35,6 +36,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
     $rootScope.title = $scope.app.name;
 
 	$scope.model = {
+		colorSource: "rbb",
 		colorCode: "#xxxxxx",
 		r: 30,
 		g: 90,
@@ -85,19 +87,29 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 	};
 
 	$scope.changeCode = function() {
+		$scope.model.colorSource = "code";
 		$scope.updateRgbFromCode();
 		$scope.updateHslFromRgb();
 	};
 	$scope.changeRgb = function() {
+		$scope.model.colorSource = "rbg";
 		$scope.updateCodeFromRgb();
 		$scope.updateHslFromRgb();
 	};
 	$scope.changeHsl = function() {
+		$scope.model.colorSource = "hsl";
 		$scope.updateRgbFromHsl();
 		$scope.updateCodeFromRgb();
 	};
 	$scope.changeShowStyle = function() {
-		console.log($scope.model.showStyle);
+		document.body.classList.toggle("full-screen", "full screen" === $scope.model.showStyle);
+	};
+	$scope.clickColorTable = function() {
+		if ("full screen" === $scope.model.showStyle)
+		{
+			$scope.model.showStyle = "default";
+			$scope.changeShowStyle();
+		}
 	};
 	
 	$scope.calcHsl = function(h, s, l) {
