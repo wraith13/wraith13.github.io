@@ -12,8 +12,49 @@ app.config(["$locationProvider", function ($locationProvider) {
 app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $http, $location, $filter) {
 
 	$scope.init = function() {
-		$scope.changeRgb();
-		$scope.changeShowStyle();
+		var model = $location.search();
+		setTimeout
+		(
+			function()
+			{
+				if (model && model.colorSource)
+				{
+					$scope.model.colorSource = $scope.model.colorSource;
+					$scope.model.colorCode = model.colorCode;
+					$scope.model.r = parseInt(model.r);
+					$scope.model.g = parseInt(model.g);
+					$scope.model.b = parseInt(model.b);
+					$scope.model.h = parseFloat(model.h);
+					$scope.model.s = parseFloat(model.s);
+					$scope.model.l = parseFloat(model.l);
+					$scope.model.combination = model.combination;
+					$scope.model.hueResolution = parseInt(model.hueResolution);
+					$scope.model.hueStep = model.hueStep;
+					$scope.model.saturationResolution = parseInt(model.saturationResolution);
+					$scope.model.saturationStep = model.saturationStep;
+					$scope.model.lightnessResolution = parseInt(model.lightnessResolution);
+					$scope.model.lightnessStep = model.lightnessStep;
+					$scope.model.textColor = model.textColor;
+					$scope.model.separatorColor = model.separatorColor;
+					$scope.model.showStyle = model.showStyle;
+					$scope.$apply();
+				}
+				switch($scope.model.colorSource)
+				{
+				case "code":
+					$scope.changeCode();
+					break;
+				case "rgb":
+					$scope.changeRgb();
+					break;
+				case "hsl":
+					$scope.changeHsl();
+					break;
+				}
+				$scope.changeShowStyle();
+			},
+			0
+		)
 	};
     $scope.alerts = [];
     $scope.clearAlert = function () {
@@ -36,7 +77,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
     $rootScope.title = $scope.app.name;
 
 	$scope.model = {
-		colorSource: "rbb",
+		colorSource: "rgb",
 		colorCode: "#xxxxxx",
 		r: 30,
 		g: 90,
@@ -71,7 +112,11 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		$scope.model.h = hsl.h;
 		$scope.model.s = hsl.s;
 		$scope.model.l = hsl.l;
-	}
+	};
+
+	$scope.updateUrl = function() {
+		$location.search($scope.model);
+	};
 
 	$scope.updateCodeFromRgb  = function() {
 		$scope.model.colorCode = rgbForStyle($scope.getRgb());

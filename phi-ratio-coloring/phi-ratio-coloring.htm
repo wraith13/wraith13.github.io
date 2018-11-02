@@ -31,6 +31,7 @@
         table.color
         {
             width: 100%;
+            font-family: 'Courier New', Courier, monospace
         }
         body:not(.full-screen) table.color
         {
@@ -165,8 +166,8 @@
                         <h4>show style</h4>
                         <select class="form-control" ng-model="model.showStyle" ng-options="item for item in ['default', 'full screen']" ng-change="changeShowStyle()" ></select>
 					</div>
-				</div>
-
+                </div>
+                {{updateUrl() || ""}}
             </div>
         </div>
 		<div ng-click="clickColorTable()">
