@@ -37,7 +37,6 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 					$scope.model.textColor = model.textColor;
 					$scope.model.separatorColor = model.separatorColor;
 					$scope.model.showStyle = model.showStyle;
-					$scope.$apply();
 				}
 				switch($scope.model.colorSource)
 				{
@@ -51,6 +50,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 					$scope.changeHsl();
 					break;
 				}
+				$scope.$apply();
 				$scope.changeShowStyle();
 			},
 			0
@@ -77,14 +77,14 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
     $rootScope.title = $scope.app.name;
 
 	$scope.model = {
-		colorSource: "rgb",
+		colorSource: "hsl",
 		colorCode: "#xxxxxx",
-		r: 30,
-		g: 90,
-		b: 60,
-		h: 0.0,
-		s: 0.0,
-		l: 0.0,
+		r: 0,
+		g: 0,
+		b: 0,
+		h: 2.399963229728654,
+		s: 0.254644007500070,
+		l: 0.381966011250105,
 		combination: "hue * lightness",
 		hueResolution: 13,
 		hueStep: "phi ratio",
