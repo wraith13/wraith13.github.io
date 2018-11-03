@@ -69,8 +69,8 @@ const rgbToXyz = (expression : ColorRgb) : Point3d => pass_through = {x:expressi
 const rgbToHue = (expression : ColorRgb) => {
     const hueXy = {
         x: expression.r -((expression.g /2) +(expression.b /2)),
-        y: Math.sqrt(Math.pow(expression.b, 2) -Math.pow(expression.b /2, 2))
-            -Math.sqrt(Math.pow(expression.g, 2) -Math.pow(expression.g /2, 2))
+        y: Math.sqrt(Math.pow(expression.g, 2) -Math.pow(expression.g /2, 2))
+            -Math.sqrt(Math.pow(expression.b, 2) -Math.pow(expression.b /2, 2))
     };
     return Math.atan2(hueXy.y, hueXy.x);
 };
@@ -86,7 +86,7 @@ const rgbToHsl = (expression : ColorRgb) : ColorHsl => pass_through =
     s: rgbToSaturation(expression),
     l: rgbToLightness(expression)
 };
-const hslToRgbElement = (expression : ColorHsl, colorAngle : number) : number => expression.l +expression.s *Math.cos(expression.h +(Math.PI *2) /3.0 *colorAngle);
+const hslToRgbElement = (expression : ColorHsl, colorAngle : number) : number => expression.l +expression.s *Math.cos(expression.h -(Math.PI *2) /3.0 *colorAngle);
 const hslToRgb = (expression : ColorHsl) : ColorRgb => pass_through =
 {
     r:hslToRgbElement(expression, 0.0),

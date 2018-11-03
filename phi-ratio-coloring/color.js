@@ -1,5 +1,5 @@
 var pass_through;
-var phi = 1.618033988749894848204586834365;
+var phi = 1.618033988749895;
 var colorHslHMin = -Math.PI;
 var colorHslHMAx = Math.PI;
 var colorHslSMin = 0.0;
@@ -43,8 +43,8 @@ var rgbToXyz = function (expression) { return pass_through = { x: expression.r, 
 var rgbToHue = function (expression) {
     var hueXy = {
         x: expression.r - ((expression.g / 2) + (expression.b / 2)),
-        y: Math.sqrt(Math.pow(expression.b, 2) - Math.pow(expression.b / 2, 2))
-            - Math.sqrt(Math.pow(expression.g, 2) - Math.pow(expression.g / 2, 2))
+        y: Math.sqrt(Math.pow(expression.g, 2) - Math.pow(expression.g / 2, 2))
+            - Math.sqrt(Math.pow(expression.b, 2) - Math.pow(expression.b / 2, 2))
     };
     return Math.atan2(hueXy.y, hueXy.x);
 };
@@ -60,7 +60,7 @@ var rgbToHsl = function (expression) { return pass_through =
         s: rgbToSaturation(expression),
         l: rgbToLightness(expression)
     }; };
-var hslToRgbElement = function (expression, colorAngle) { return expression.l + expression.s * Math.cos(expression.h + (Math.PI * 2) / 3.0 * colorAngle); };
+var hslToRgbElement = function (expression, colorAngle) { return expression.l + expression.s * Math.cos(expression.h - (Math.PI * 2) / 3.0 * colorAngle); };
 var hslToRgb = function (expression) { return pass_through =
     {
         r: hslToRgbElement(expression, 0.0),
