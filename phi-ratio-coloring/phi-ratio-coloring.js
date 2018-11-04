@@ -50,7 +50,6 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 					$scope.changeHsl();
 					break;
 				}
-				$scope.$apply();
 				$scope.changeShowStyle();
 			},
 			0
@@ -148,6 +147,9 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 	};
 	$scope.changeShowStyle = function() {
 		document.body.classList.toggle("full-screen", "full screen" === $scope.model.showStyle);
+		setTimeout(function(){
+			$scope.$apply();
+		}, 0);
 	};
 	$scope.clickColorTable = function() {
 		if ("full screen" === $scope.model.showStyle)
@@ -264,4 +266,8 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			return result;
 		}
 	}
+	$scope.setFullScreen = function() {
+		$scope.model.showStyle='full screen';
+		$scope.changeShowStyle();
+	};
 });

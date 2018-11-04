@@ -57,6 +57,7 @@
         body.full-screen table.color
         {
             height: 100vh;
+            cursor: pointer;
         }
         body.full-screen table.color td
         {
@@ -164,8 +165,8 @@
                         <select class="form-control" ng-model="model.separatorColor" ng-options="item for item in ['white', 'black', 'none']" ></select>
 					</div>
 					<div class="col-md-3">
-                        <h4>show style</h4>
-                        <select class="form-control" ng-model="model.showStyle" ng-options="item for item in ['default', 'full screen']" ng-change="changeShowStyle()" ></select>
+                        <h4>&nbsp;</h4>
+                        <button class="form-control btn-primary" ng-click="setFullScreen()">full screen</button>
 					</div>
 					<div class="col-md-3">
                         <h4>&nbsp;</h4>
