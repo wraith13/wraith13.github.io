@@ -206,7 +206,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		switch($scope.model.textColor)
 		{
 		case "auto":
-			return expression.l <= 0.5 ? "#FFFFFF": "#000000";
+			return rgbToLuma(hslToRgb(expression)) < 0.5 ? "#FFFFFF": "#000000";
 		case "none":
 			return "rgba(0,0,0,0)"
 		default:

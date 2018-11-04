@@ -6,6 +6,9 @@ var colorHslSMin = 0.0;
 var colorHslSMAx = 2.0 / 3.0;
 var colorHslLMin = 0.0;
 var colorHslLMAx = 1.0;
+var rLumaRate = 0.299;
+var gLumaRate = 0.587;
+var bLumaRate = 0.114;
 var rgbForStyle = function (expression) {
     var toHex = function (i) {
         var result = ((255 * i) ^ 0).toString(16).toUpperCase();
@@ -48,6 +51,7 @@ var rgbToHue = function (expression) {
     };
     return Math.atan2(hueXy.y, hueXy.x);
 };
+var rgbToLuma = function (expression) { return (expression.r * rLumaRate) + (expression.g * gLumaRate) + (expression.b * bLumaRate); };
 var rgbToLightness = function (expression) { return (expression.r + expression.g + expression.b) / 3.0; };
 var calcSaturation = function (expression) {
     var lightness = rgbToLightness(expression);

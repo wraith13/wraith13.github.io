@@ -20,6 +20,10 @@ const colorHslSMin = 0.0;
 const colorHslSMAx = 2.0 / 3.0;
 const colorHslLMin = 0.0;
 const colorHslLMAx = 1.0;
+const rLumaRate = 0.299;
+const gLumaRate = 0.587;
+const bLumaRate = 0.114;
+
 interface Point3d
 {
     x : number;
@@ -74,6 +78,7 @@ const rgbToHue = (expression : ColorRgb) => {
     };
     return Math.atan2(hueXy.y, hueXy.x);
 };
+const rgbToLuma = (expression : ColorRgb) : number => (expression.r *rLumaRate) +(expression.g *gLumaRate) +(expression.b *bLumaRate);
 const rgbToLightness = (expression : ColorRgb) : number => (expression.r +expression.g +expression.b) /3.0;
 const calcSaturation = (expression : ColorRgb) : number => {
     const lightness = rgbToLightness(expression);
