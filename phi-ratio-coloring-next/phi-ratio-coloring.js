@@ -28,6 +28,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 					$scope.model.s = parseFloat(model.s);
 					$scope.model.l = parseFloat(model.l);
 					$scope.model.combination = model.combination;
+					$scope.model.luma = model.luma || "default";
 					$scope.model.hueResolution = parseInt(model.hueResolution);
 					$scope.model.hueStep = model.hueStep;
 					$scope.model.saturationResolution = parseInt(model.saturationResolution);
@@ -68,7 +69,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 
     $scope.app = {
         type: "app",
-        name: "phi ratio coloring",
+        name: "phi ratio coloring next",
 		description: "黄金比を利用したカラーテーブルを作成します。",
 		pi: Math.PI,
 		phi: phi,
@@ -85,6 +86,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		s: 0.254644007500070,
 		l: 0.381966011250105,
 		combination: "hue * lightness",
+		luma: "default",
 		hueResolution: 13,
 		hueStep: "phi ratio",
 		saturationResolution: 6,
@@ -202,7 +204,13 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 				hsl.l = (lightnessResolution +l +1.0) / ((lightnessResolution *2.0) +2.0);
 			}
 		}
-		return regulateHsl(hsl);
+		if ('align' === $scope.model.luma)
+		{
+			var baseLuuma = rgbToLuma(hslToRgb({h:$scope.model.h, s:$scope.model.s, l:hsl.l}));
+			var luuma = rgbToLuma(hslToRgb(hsl));
+			hsl.l += baseLuuma -luuma;
+		}
+		return hsl;
 	};
 	$scope.getTextColor = function(expression) {
 		switch($scope.model.textColor)
