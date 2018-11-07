@@ -210,7 +210,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 			var luuma = rgbToLuma(hslToRgb(hsl));
 			hsl.l += baseLuuma -luuma;
 		}
-		return hsl;
+		return regulateHsl(hsl);
 	};
 	$scope.getTextColor = function(expression) {
 		switch($scope.model.textColor)
