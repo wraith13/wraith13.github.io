@@ -28,6 +28,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 					$scope.model.s = parseFloat(model.s);
 					$scope.model.l = parseFloat(model.l);
 					$scope.model.combination = model.combination;
+					$scope.model.luma = model.luma || "default";
 					$scope.model.hueResolution = parseInt(model.hueResolution);
 					$scope.model.hueStep = model.hueStep;
 					$scope.model.saturationResolution = parseInt(model.saturationResolution);
@@ -85,6 +86,7 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 		s: 0.254644007500070,
 		l: 0.381966011250105,
 		combination: "hue * lightness",
+		luma: "default",
 		hueResolution: 13,
 		hueStep: "phi ratio",
 		saturationResolution: 6,
@@ -201,6 +203,12 @@ app.controller("phi-ratio-coloring", function ($rootScope, $window, $scope, $htt
 				var lightnessResolution = Math.abs(parseInt($scope.model.lightnessResolution));
 				hsl.l = (lightnessResolution +l +1.0) / ((lightnessResolution *2.0) +2.0);
 			}
+		}
+		if ('align' === $scope.model.luma)
+		{
+			var baseLuuma = rgbToLuma(hslToRgb({h:$scope.model.h, s:$scope.model.s, l:hsl.l}));
+			var luuma = rgbToLuma(hslToRgb(hsl));
+			hsl.l += baseLuuma -luuma;
 		}
 		return regulateHsl(hsl);
 	};
