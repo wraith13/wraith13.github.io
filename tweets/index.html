@@ -15,35 +15,73 @@ The license of this file is Boost Software License, Version 1.0. ( Http://www.bo
 @import url(https://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
 body, input, textarea, button
 {
-    font-size: 1vw;
+    font-size: 1.2em;
 }
 body
 {
     margin: 0px;
     padding: 0px;
-    background-color: #888;
+    background-color: #cce;
+}
+h1,
+#form button
+{
+    color:#ddf;
+    background-color:#55c;
 }
 h1
 {
     font-family: 'Noto Sans Japanese', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro';
     font-weight: normal;
     text-align: center;
-    background-color: #ccc;
+    margin: 0px;
 }
 body > *
 {
     margin-left: auto;
     margin-right: auto;
 }
+#form,
+#form input,
+#form textarea,
+#form button
+{
+    width:70vw;
+    min-width:480px;
+    max-width:100vw;
+}
+#form
+{
+    margin-top:1em;
+}
+#form input,
+#form textarea,
+#form button
+{
+    margin-bottom:1em;
+    border-radius:0.2em;
+    border-style:solid;
+    border-color:#666;
+}
+#form textarea
+{
+    height:60vh;
+    min-height:200px;
+}
+#form button
+{
+    border-radius:0.3em;
+    font-size:1.5em;
+}
 </style>
 </head>
 <body>
-<div style="width:50vw;min-width:480px;max-width:1024px;">
+<div id="form">
     title:<br>
-    <input id="title" type="text" style="width:50vw;min-width:480px;max-width:1024px;" value="Simple Tweets List"><br>
+    <input id="title" type="text" value="Simple Tweets List"><br>
     tweet id list:<br>
-    <textarea id="tweets" style="width:50vw;min-width:480px;max-width:1024px;height:60vh;min-height:300px;" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea><br>
-    <button style="width:50vw;min-width:480px;max-width:1024px;" onclick='location.href=location.href+"?title="+encodeURIComponent(document.getElementById("title").value)+"&"+document.getElementById("tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return i !== i.replace(/\d/g,"")})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
+    <textarea id="tweets" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea><br>
+    <button onclick='location.href=location.href+"?title="+encodeURIComponent(document.getElementById("title").value)+"&"+document.getElementById("tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return i !== i.replace(/\d/g,"")})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
 </div>
 </body>
 <script>
