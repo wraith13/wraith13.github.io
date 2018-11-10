@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta charset="utf-8">
+<!--
+The license of this file is Boost Software License, Version 1.0. ( Http://www.boost.org/LICENSE_1_0.txt ).
+このファイルのライセンスは Boost Software License, Version 1.0. ( http://www.boost.org/LICENSE_1_0.txt ) とします。
+-->
+<title>Simple Tweets List</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@wraith13">
+<meta name="twitter:title" content="writing" id="twitter-card-title">
+<meta name="twitter:description" content="simple tweets list">
+<style>
+@import url(https://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
+body, input, textarea, button
+{
+    font-size: 1vw;
+}
+body
+{
+    margin: 0px;
+    padding: 0px;
+    background-color: #888;
+}
+h1
+{
+    font-family: 'Noto Sans Japanese', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro';
+    font-weight: normal;
+    text-align: center;
+    background-color: #ccc;
+}
+body > *
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+</head>
+<body>
+<div style="width:50vw;min-width:480px;max-width:1024px;">
+    title:<br>
+    <input id="title" type="text" style="width:50vw;min-width:480px;max-width:1024px;" value="Simple Tweets List"><br>
+    tweet id list:<br>
+    <textarea id="tweets" style="width:50vw;min-width:480px;max-width:1024px;height:60vh;min-height:300px;" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea><br>
+    <button style="width:50vw;min-width:480px;max-width:1024px;" onclick='location.href=location.href+"?title="+encodeURIComponent(document.getElementById("title").value)+"&"+document.getElementById("tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return i !== i.replace(/\d/g,"")})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
+</div>
+</body>
+<script>
+var basicUrlArgs = (location.href.split("#")[0] +"?")
+    .split("?")[1]
+    .split("&")
+    .filter(function(i) { return 0 < i.length; });
+if (0 < basicUrlArgs.length)
+{
+    var urlArgs = { title: "Simple Tweets List" };
+    basicUrlArgs
+        .filter(function(i) { return 0 < i.indexOf("="); })
+        .forEach(
+            function(i)
+            {
+                var index = i.indexOf("=");
+                urlArgs[i.substr(0, index)] = decodeURIComponent(i.substr(index +1));
+            }
+        );
+    var tweets = basicUrlArgs
+        .filter(function(i) { return i.indexOf("=") < 0; })
+        .map(function(i) { return decodeURIComponent(i);})
+        .join(",")
+        .split(",")
+        .filter(function(i) { return 0 < i.length; });
+    console.log(JSON.stringify(urlArgs));
+    document.title = urlArgs.title;
+    document.body.innerHTML = "<h1>" +urlArgs.title +"</h1>\r\n" +tweets.map(function(i) {
+        return '<blockquote class="twitter-tweet" data-conversation="none"><a href="https://twitter.com/_/status/' +i +'"></a></blockquote>';
+    }).join("\r\n");
+}
+</script>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</html>
