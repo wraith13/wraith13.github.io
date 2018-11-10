@@ -81,7 +81,7 @@ body > *
     <input id="title" type="text" value="Simple Tweets List"><br>
     tweet id list:<br>
     <textarea id="tweets" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea><br>
-    <button onclick='location.href=location.href+"?title="+encodeURIComponent(document.getElementById("title").value)+"&"+document.getElementById("tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return i !== i.replace(/\d/g,"")})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
+    <button onclick='location.href=location.href+"?title="+encodeURIComponent(document.getElementById("title").value)+"&"+document.getElementById("tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return 0 < i.length && 0 == i.replace(/\d/g,"").length;})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
 </div>
 </body>
 <script>
