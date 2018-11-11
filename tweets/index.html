@@ -24,9 +24,14 @@ body
     background-color: #667;
 }
 h1,
+#form label,
 #form button
 {
     color:#fff;
+}
+h1,
+#form button
+{
     background-color:#224;
 }
 h1
@@ -42,13 +47,25 @@ body > *
     margin-right: auto;
 }
 #form,
+#form label,
 #form input,
 #form textarea,
 #form button
 {
-    width:70vw;
-    min-width:480px;
-    max-width:100vw;
+    display: block;
+    width:calc(100vw - 1rem);
+    max-width:calc(100vw - 1rem);
+}
+@media (min-width: 640px)
+{
+    #form,
+    #form input,
+    #form textarea,
+    #form button
+    {
+        width:80vw;
+        min-width:640px;
+    }
 }
 #form
 {
@@ -77,10 +94,10 @@ body > *
 </head>
 <body>
 <div id="form">
-    title:<br>
-    <input id="title" type="text" value="Simple Tweets List"><br>
-    tweet id list:<br>
-    <textarea id="tweets" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea><br>
+    <label for="title">title:</label>
+    <input id="title" type="text" value="Simple Tweets List">
+    <label for="tweets">tweet id list:</label>
+    <textarea id="tweets" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea>
     <button onclick='location.href=location.href+"?title="+encodeURIComponent(document.getElementById("title").value)+"&"+document.getElementById("tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return 0 < i.length && 0 == i.replace(/\d/g,"").length;})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
 </div>
 </body>
