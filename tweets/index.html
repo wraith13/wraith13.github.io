@@ -59,12 +59,13 @@ body > *
 @media (min-width: 640px)
 {
     #form,
+    #form label,
     #form input,
     #form textarea,
     #form button
     {
         width:80vw;
-        min-width:640px;
+        min-width:calc(640px - 1rem);
     }
 }
 #form
@@ -82,8 +83,8 @@ body > *
 }
 #form textarea
 {
-    height:60vh;
-    min-height:200px;
+    height:calc(100vh - 13em);
+    min-height:10em;
 }
 #form button
 {
@@ -93,6 +94,7 @@ body > *
 </style>
 </head>
 <body>
+<h1>Simple Tweets List</h1>
 <div id="form">
     <label for="title">title:</label>
     <input id="title" type="text" value="Simple Tweets List">
