@@ -29,6 +29,8 @@ body.show-mode #form
 {
     display: none;
 }
+body.edit-mode #new,
+body.edit-mode #edit,
 body.edit-mode #tweets
 {
     display: none;
@@ -39,6 +41,8 @@ h1,
 {
     color:#fff;
 }
+
+
 h1,
 #form button
 {
@@ -122,6 +126,13 @@ a.btn
     background-image: none;
     border: 1px solid transparent;
     border-radius: 4px;
+    text-decoration-line: none;
+}
+.btn-default
+{
+    color: #333;
+    background-color: #cce;
+    border-color: #ccc;
 }
 .btn-dark
 {
@@ -145,7 +156,9 @@ a.btn
 <h1 id="title">Simple Tweets List</h1>
 <div style="text-align:right;padding:4px;">
     <a id="readme" href="?title=tweets%20README&1061235150443307009,1061236041397395457" target="_blank" class="btn btn-info" role="button">README</a>
-    <a id="github" href="https://github.com/wraith13/wraith13.github.io/blob/master/tweets/index.html" target="_blank" class="btn btn-dark" role="button" style="color:#fff;background-color:#343a40;border-color:#343a40;margin-left:0.5em;">GitHub</a>
+    <a id="github" href="https://github.com/wraith13/wraith13.github.io/blob/master/tweets/index.html" target="_blank" class="btn btn-dark" role="button">GitHub</a>
+    <a id="edit" href="#" class="btn btn-default" role="button" onclick="document.body.className='edit-mode';return false;">edit</a>
+    <a id="new" href="?" target="_blank" class="btn btn-default" role="button">new</a>
 </div>
 <div id="form">
     <label for="source-title">title:</label>
@@ -187,11 +200,11 @@ if (0 < basicUrlArgs.length)
         return '<blockquote class="twitter-tweet" data-conversation="none"><a href="https://twitter.com/_/status/' +i +'"></a></blockquote>';
     }).join("\r\n");
     document.getElementById("source-tweets").value = tweets.join("\r\n");
-    document.body.classList.add("show-mode");
+    document.body.className = "show-mode";
 }
 else
 {
-    document.body.classList.add("edit-mode");
+    document.body.className = "edit-mode";
 }
 </script>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
