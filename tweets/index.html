@@ -23,6 +23,16 @@ body
     padding: 0px;
     background-color: #667;
 }
+body.show-mode #readme,
+body.show-mode #github,
+body.show-mode #form
+{
+    display: none;
+}
+body.edit-mode #tweets
+{
+    display: none;
+}
 h1,
 #form label,
 #form button
@@ -83,7 +93,7 @@ body > *
 }
 #form textarea
 {
-    height:calc(100vh - 13em);
+    height:calc(100vh - 15em);
     min-height:10em;
 }
 #form button
@@ -91,17 +101,60 @@ body > *
     border-radius:0.3em;
     font-size:1.5em;
 }
+a.btn
+{
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.btn-dark
+{
+    color: #fff;
+    background-color: #343a40;
+    border-color: #343a40;
+}
+.btn-info
+{
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+#tweets
+{
+    max-width: 500px;
+}
 </style>
 </head>
 <body>
-<h1>Simple Tweets List</h1>
-<div id="form">
-    <label for="title">title:</label>
-    <input id="title" type="text" value="Simple Tweets List">
-    <label for="tweets">tweet id list:</label>
-    <textarea id="tweets" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea>
-    <button onclick='location.href=location.href+"?title="+encodeURIComponent(document.getElementById("title").value)+"&"+document.getElementById("tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return 0 < i.length && 0 == i.replace(/\d/g,"").length;})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
+<h1 id="title">Simple Tweets List</h1>
+<div style="text-align:right;padding:4px;">
+    <a id="readme" href="?title=tweets%20README&1061235150443307009,1061236041397395457" target="_blank" class="btn btn-info" role="button">README</a>
+    <a id="github" href="https://github.com/wraith13/wraith13.github.io/blob/master/tweets/index.html" target="_blank" class="btn btn-dark" role="button" style="color:#fff;background-color:#343a40;border-color:#343a40;margin-left:0.5em;">GitHub</a>
 </div>
+<div id="form">
+    <label for="source-title">title:</label>
+    <input id="source-title" type="text" value="Simple Tweets List">
+    <label for="source-tweets">tweet id list:</label>
+    <textarea id="source-tweets" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea>
+    <button onclick='location.href=location.href+"?title="+encodeURIComponent(document.getElementById("source-title").value)+"&"+document.getElementById("source-tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return 0 < i.length && 0 == i.replace(/\d/g,"").length;})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
+</div>
+<div id="tweets"></div>
 </body>
 <script>
 var basicUrlArgs = (location.href.split("#")[0] +"?")
@@ -128,9 +181,17 @@ if (0 < basicUrlArgs.length)
         .filter(function(i) { return 0 < i.length; });
     console.log(JSON.stringify(urlArgs));
     document.title = urlArgs.title;
-    document.body.innerHTML = "<h1>" +urlArgs.title +"</h1>\r\n" +tweets.map(function(i) {
+    document.getElementById("title").innerText = urlArgs.title;
+    document.getElementById("source-title").value = urlArgs.title;
+    document.getElementById("tweets").innerHTML = tweets.map(function(i) {
         return '<blockquote class="twitter-tweet" data-conversation="none"><a href="https://twitter.com/_/status/' +i +'"></a></blockquote>';
     }).join("\r\n");
+    document.getElementById("source-tweets").value = tweets.join("\r\n");
+    document.body.classList.add("show-mode");
+}
+else
+{
+    document.body.classList.add("edit-mode");
 }
 </script>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
