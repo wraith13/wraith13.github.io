@@ -35,13 +35,23 @@ body.edit-mode #tweets
 {
     display: none;
 }
+body:not(.twitter-error) #twitter-error
+{
+    display: none;
+}
+#twitter-error
+{
+    color:#AA3322;
+    background-color:#442211;
+    font-size: 1.5em;
+    padding: 0.5rem 1.0rem;
+}
 h1,
 #form label,
 #form button
 {
     color:#fff;
 }
-
 
 h1,
 #form button
@@ -150,9 +160,29 @@ a.btn
 {
     max-width: 500px;
 }
+body.twitter-error #tweets
+{
+    max-width: 600px;
+}
+#tweets > blockquote > a
+{
+    color:#224;
+}
+#tweets > blockquote > a:visited
+{
+    color:#442211;
+}
+#tweets > blockquote > a:active
+{
+    color:#AA3322;
+}
 </style>
 </head>
 <body>
+<div id="twitter-error">
+Twitter の JavaScript の読み込み中にエラーが発生しました。コンテンツブロッキングを解除するとこの問題が解消されることがあります。<br>
+An error occurred while loading JavaScript from Twitter. Unlocking content blocking may fix this problem.
+</div>
 <h1 id="title">Simple Tweets List</h1>
 <div style="text-align:right;padding:4px;">
     <a id="readme" href="?title=tweets%20README&1061235150443307009,1061236041397395457" target="_blank" class="btn btn-info" role="button">README</a>
@@ -198,7 +228,7 @@ if (0 < basicUrlArgs.length)
     document.getElementById("title").innerText = urlArgs.title;
     document.getElementById("source-title").value = urlArgs.title;
     document.getElementById("tweets").innerHTML = tweets.map(function(i) {
-        return '<blockquote class="twitter-tweet" data-conversation="none"><a href="https://twitter.com/_/status/' +i +'"></a></blockquote>';
+        return '<blockquote class="twitter-tweet" data-conversation="none"><a href="https://twitter.com/_/status/' +i +'">https://twitter.com/_/status/' +i +'</a></blockquote>';
     }).join("\r\n");
     document.getElementById("source-tweets").value = tweets.join("\r\n");
     document.body.className = "show-mode";
@@ -208,5 +238,5 @@ else
     document.body.className = "edit-mode";
 }
 </script>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8" onerror="document.body.classList.add('twitter-error')"></script>
 </html>
