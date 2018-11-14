@@ -196,11 +196,25 @@ An error occurred while loading JavaScript from Twitter. Unlocking content block
     <input id="source-title" type="text" value="Simple Tweets List">
     <label for="source-tweets">tweet id list:</label>
     <textarea id="source-tweets" placeholder="ツイートのURLあるいはIDを改行、スペース、カンマのいずれかで区切って入力してください。"></textarea>
-    <button onclick='location.href=(location.href+"?").split("?")[0]+"?title="+encodeURIComponent(document.getElementById("source-title").value)+"&"+document.getElementById("source-tweets").value.split(/[\s,]/).map(function(i){return i.split("/").filter(function(i){return 0 < i.length && 0 == i.replace(/\d/g,"").length;})[0];}).filter(function(i){return undefined !== i && 0 < i.length}).map(function(i){return encodeURIComponent(i);}).join(",");'>make!</button>
+    <button onclick='make()'>make!</button>
 </div>
 <div id="tweets"></div>
 </body>
 <script>
+function make()
+{
+    location.href = (location.href+"?").split("?")[0]
+        +"?"
+        +("Simple Tweets List" === document.getElementById("source-title").value ? "":"title="+encodeURIComponent(document.getElementById("source-title").value)+"&")
+        +document.getElementById("source-tweets")
+            .value
+            .split(/[\s,]/)
+            .map(function(i){return i.split("/").filter(function(i){return 0 < i.length && 0 == i.replace(/\d/g,"").length;})[0];})
+            .filter(function(i){return undefined !== i && 0 < i.length})
+            .map(function(i){return encodeURIComponent(i);})
+            .join(",");
+}
+
 var basicUrlArgs = (location.href.split("#")[0] +"?")
     .split("?")[1]
     .split("&")
