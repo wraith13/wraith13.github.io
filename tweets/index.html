@@ -31,6 +31,7 @@ body.show-mode #form
 }
 body.edit-mode #new,
 body.edit-mode #edit,
+body.edit-mode #tweet,
 body.edit-mode #tweets
 {
     display: none;
@@ -70,6 +71,17 @@ body > *
     margin-left: auto;
     margin-right: auto;
 }
+
+#toolbar
+{
+    text-align: right;
+    padding: 4px;
+}
+body.show-mode #toolbar
+{
+    padding-right: 86px;
+}
+
 #form,
 #form label,
 #form input,
@@ -118,9 +130,9 @@ body > *
 a.btn
 {
     display: inline-block;
-    padding: 6px 12px;
+    padding: 5px 12px 3px 12px;
     margin-bottom: 0;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 400;
     line-height: 1.42857143;
     text-align: center;
@@ -184,12 +196,12 @@ Twitter の JavaScript の読み込み中にエラーが発生しました。コ
 An error occurred while loading JavaScript from Twitter. Unlocking content blocking may fix this problem.
 </div>
 <h1 id="title">Simple Tweets List</h1>
-<div style="text-align:right;padding:4px;">
+<div id="toolbar">
     <a id="readme" href="?title=tweets%20README&1061235150443307009,1061236041397395457" target="_blank" class="btn btn-info" role="button">README</a>
     <a id="github" href="https://github.com/wraith13/wraith13.github.io/blob/master/tweets/index.html" target="_blank" class="btn btn-dark" role="button">GitHub</a>
-    <a id="edit" href="#" class="btn btn-default" role="button" onclick="location.href='http://twitter.com/?status='+encodeURIComponent('【'+document.title+'】 '+location.href +' ');return false;">tweet</a>
-    <a id="edit" href="#" class="btn btn-default" role="button" onclick="document.body.className='edit-mode';return false;">edit</a>
     <a id="new" href="?" target="_blank" class="btn btn-default" role="button">new</a>
+    <a id="edit" href="#" class="btn btn-default" role="button" onclick="document.body.className='edit-mode';return false;">edit</a>
+    <span id="tweet" style="position:absolute;margin-left:6px;"><a href="#" class="btn btn-default twitter-share-button" data-size="large" role="button" onclick="location.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('【'+document.title+'】 '+location.href +' ');return false;">tweet</a></span>
 </div>
 <div id="form">
     <label for="source-title">title:</label>
