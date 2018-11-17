@@ -11,6 +11,9 @@ The license of this file is Boost Software License, Version 1.0. ( Http://www.bo
 <meta name="twitter:site" content="@wraith13">
 <meta name="twitter:title" content="tweets" id="twitter-card-title">
 <meta name="twitter:description" content="simple tweets list">
+<meta name="twitter:image" content="https://wraith13.github.io/tweets/octicon-comment-discussion.png" id="twitter-card-image">
+<link rel="shortcut icon" type="image/x-icon"  href="octicon-comment-discussion.png" />
+<link rel="apple-touch-icon" href="octicon-comment-discussion.png" />
 <style>
 @import url(https://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
 body, input, textarea, button
@@ -65,6 +68,18 @@ h1
     font-weight: normal;
     text-align: center;
     margin: 0px;
+}
+h1 img
+{
+    margin-top: 0.05em;
+    width: 1.5em;
+    height: 1.5em;
+    margin-bottom: -0.1em;
+    margin-right: 0.1em;
+}
+h1 span
+{
+    vertical-align: top;
 }
 body > *
 {
@@ -170,6 +185,7 @@ a.btn
 }
 #tweets
 {
+    margin-top: -0.5em;
     max-width: 500px;
 }
 body.twitter-error #tweets
@@ -195,10 +211,10 @@ body.twitter-error #tweets
 Twitter の JavaScript の読み込み中にエラーが発生しました。コンテンツブロッキングを解除するとこの問題が解消されることがあります。<br>
 An error occurred while loading JavaScript from Twitter. Unlocking content blocking may fix this problem.
 </div>
-<h1 id="title">Simple Tweets List</h1>
+<h1><img src="octicon-comment-discussion.png"><span id="title">Simple Tweets List</span></h1>
 <div id="toolbar">
     <a id="readme" href="?title=tweets%20README&1061235150443307009,1061236041397395457" target="_blank" class="btn btn-info" role="button">README</a>
-    <a id="github" href="https://github.com/wraith13/wraith13.github.io/blob/master/tweets/index.html" target="_blank" class="btn btn-dark" role="button">GitHub</a>
+    <a id="github" href="https://github.com/wraith13/wraith13.github.io/blob/master/tweets/" target="_blank" class="btn btn-dark" role="button">GitHub</a>
     <a id="new" href="?" target="_blank" class="btn btn-default" role="button">new</a>
     <a id="edit" href="#" class="btn btn-default" role="button" onclick="document.body.className='edit-mode';return false;">edit</a>
     <a id="search" href="#" class="btn btn-default" role="button" onclick="location.href='https://twitter.com/search?q='+encodeURIComponent(location.href);return false;">search</a>
