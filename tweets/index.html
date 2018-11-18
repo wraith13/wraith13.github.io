@@ -217,7 +217,7 @@ An error occurred while loading JavaScript from Twitter. Unlocking content block
     <a id="github" href="https://github.com/wraith13/wraith13.github.io/blob/master/tweets/" target="_blank" class="btn btn-dark" role="button">GitHub</a>
     <a id="new" href="?" target="_blank" class="btn btn-default" role="button">new</a>
     <a id="edit" href="#" class="btn btn-default" role="button" onclick="document.body.className='edit-mode';return false;">edit</a>
-    <a id="search" href="#" class="btn btn-default" role="button" onclick="location.href='https://twitter.com/search?q='+encodeURIComponent(location.href);return false;">search</a>
+    <a id="search" href="#" class="btn btn-default" role="button" onclick="doSearch();">search</a>
     <span id="tweet" style="position:absolute;margin-left:6px;"><a href="#" class="btn btn-default twitter-share-button" data-size="large" role="button" onclick="location.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('【'+document.title+'】 '+location.href +' ');return false;">tweet</a></span>
 </div>
 <div id="form">
@@ -230,6 +230,11 @@ An error occurred while loading JavaScript from Twitter. Unlocking content block
 <div id="tweets"></div>
 </body>
 <script>
+function doSearch()
+{
+    location.href='https://twitter.com/search?q='+encodeURIComponent((location.href +'?').split('?')[0].substr(location.href. indexOf("//") +2));
+    return false;
+}
 function make()
 {
     location.href = (location.href+"?").split("?")[0]
