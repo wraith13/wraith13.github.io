@@ -31,6 +31,7 @@
 <script>
 var canvas = document.getElementById("canvas");
 try {
+    const phi = 1.618033988749895;
     var arcBaseAngle = Math.PI /2.0;
     var context = canvas.getContext("2d");
     var rect =
@@ -65,10 +66,10 @@ try {
             if (round.fillStyle) {
                 context.fillStyle = round.fillStyle;
             }
-            context.beginPath();
-            if (1 < denominator) {
+            if (1 <= denominator) {
                 var isFirst = true;
                 for(var index = 0; index < denominator; ++index) {
+                    context.beginPath();
                     var prevAngle = ((index *1.0) /denominator) +baseAngle;
                     for(var j = 0; j < round.tracks.length; ++j) {
                         var track = round.tracks[j];
@@ -95,13 +96,16 @@ try {
                         }
                         prevAngle = currentAngle;
                     }
+                    context.closePath();
+                    context.fill();
                 }
             } else {
+                context.beginPath();
                 var radius = round.tracks[0].radius || baseRadius *1.0;
                 context.arc(center.x, center.y, radius, 0, Math.PI*2, false);
+                context.closePath();
+                context.fill();
             }
-            context.closePath();
-            context.fill();
         }
     } else {
         canvas.remove();
@@ -112,11 +116,17 @@ try {
                     {
                         "denominator":3,
                         "tracks":[
-                            {
-                                "angle":0.0
+                        {
+                                "angle":0.0,
+                                "radius":0
                             },
                             {
-                                "angle":1.0
+                                "angle":0.0,
+                                "radius":300
+                            },
+                            {
+                                "angle":1.0,
+                                "radius":300
                             }
                         ],
                         "fillStyle":"blue"
@@ -132,11 +142,19 @@ try {
                         "tracks":[
                             {
                                 "angle":0.0,
+                                "radius":276
+                            },
+                            {
+                                "angle":0.0,
                                 "radius":300
                             },
                             {
                                 "angle":1.0,
                                 "radius":300
+                            },
+                            {
+                                "angle":1.0,
+                                "radius":276
                             }
                         ],
                         "fillStyle":"#1e6823"
@@ -144,6 +162,10 @@ try {
                     {
                         "denominator":6,
                         "tracks":[
+                            {
+                                "angle":0.0,
+                                "radius":0
+                            },
                             {
                                 "angle":0.0,
                                 "radius":276
@@ -166,39 +188,19 @@ try {
                         "tracks":[
                             {
                                 "angle":0.0,
+                                "radius":276
+                            },
+                            {
+                                "angle":0.0,
                                 "radius":300
                             },
                             {
                                 "angle":1.0,
                                 "radius":300
-                            }
-                        ],
-                        "fillStyle":"#8844FF"
-                    },
-                    {
-                        "denominator":6,
-                        "tracks":[
-                            {
-                                "angle":0.0,
-                                "radius":276
                             },
                             {
                                 "angle":1.0,
                                 "radius":276
-                            }
-                        ],
-                        "fillStyle":"#FFFFFF"
-                    },
-                    {
-                        "denominator":6,
-                        "tracks":[
-                            {
-                                "angle":0.0,
-                                "radius":242.705
-                            },
-                            {
-                                "angle":1.0,
-                                "radius":242.705
                             }
                         ],
                         "fillStyle":"#8844FF"
@@ -211,22 +213,16 @@ try {
                                 "radius":218.705
                             },
                             {
-                                "angle":1.0,
-                                "radius":218.705
-                            }
-                        ],
-                        "fillStyle":"#FFFFFF"
-                    },
-                    {
-                        "denominator":6,
-                        "tracks":[
-                            {
                                 "angle":0.0,
-                                "radius":185.41
+                                "radius":242.705
                             },
                             {
                                 "angle":1.0,
-                                "radius":185.41
+                                "radius":242.705
+                            },
+                            {
+                                "angle":1.0,
+                                "radius":218.705
                             }
                         ],
                         "fillStyle":"#8844FF"
@@ -239,11 +235,19 @@ try {
                                 "radius":161.41
                             },
                             {
+                                "angle":0.0,
+                                "radius":185.41
+                            },
+                            {
+                                "angle":1.0,
+                                "radius":185.41
+                            },
+                            {
                                 "angle":1.0,
                                 "radius":161.41
                             }
                         ],
-                        "fillStyle":"#FFFFFF"
+                        "fillStyle":"#8844FF"
                     }
                 ]
             },
@@ -353,28 +357,22 @@ try {
                         "tracks":[
                             {
                                 "angle":0.0,
+                                "radius":276
+                            },
+                            {
+                                "angle":0.0,
                                 "radius":300
                             },
                             {
                                 "angle":1.0,
                                 "radius":300
+                            },
+                            {
+                                "angle":1.0,
+                                "radius":276
                             }
                         ],
                         "fillStyle":"#111144"
-                    },
-                    {
-                        "denominator":6,
-                        "tracks":[
-                            {
-                                "angle":0.0,
-                                "radius":276
-                            },
-                            {
-                                "angle":1.0,
-                                "radius":276
-                            }
-                        ],
-                        "fillStyle":"#FFFFFF"
                     },
                     {
                         "denominator":0,
@@ -397,6 +395,10 @@ try {
                         "tracks":[
                             {
                                 "angle":-0.2 /6.0,
+                                "radius":0
+                            },
+                            {
+                                "angle":-0.2 /6.0,
                                 "radius":312
                             },
                             {
@@ -410,6 +412,10 @@ try {
                             {
                                 "angle":4.8 /6.0,
                                 "radius":262
+                            },
+                            {
+                                "angle":1.0 -0.2 /6.0,
+                                "radius":312
                             }
                         ],
                         "fillStyle":"#4488EE"
@@ -418,6 +424,14 @@ try {
                         "baseAngle":3.0 / (13.0 *6.0),
                         "denominator":13,
                         "tracks":[
+                            {
+                                "angle":5.2 /6.0 -1.0,
+                                "radius":0
+                            },
+                            {
+                                "angle":5.2 /6.0 -1.0,
+                                "radius":238
+                            },
                             {
                                 "angle":0.2 /6.0,
                                 "radius":288
