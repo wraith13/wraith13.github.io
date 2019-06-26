@@ -8,18 +8,17 @@
     <script type="text/javascript" src="https://wraith13.github.io/evil-commonjs/index.js"></script>
     <script>
     //  see https://github.com/wraith13/evil-commonjs
-    module.readyToCapture();
+    window.module.sequentialLoad
+    ([
+        { path: "./node_modules/object-assign/index.js", mapping: ["object-assign"], },
+        { path: "./node_modules/@primer/octicons/build/data.json", mapping: ["./build/data.json"], },
+        { path: "./node_modules/@primer/octicons/index.js", mapping: ["@primer/octicons"], },
+        { path: "./node_modules/typed-octicons/library/index.js", mapping: ["typed-octicons"], },
+        { path: "./minamo.js/index.js", mapping: ["./minamo.js"], },
+        { path: "./index.js", mapping: ["catalog"], },
+    ])
+    .then(() => require("catalog").test.start());
     </script>
-    <script type="text/javascript" src="./minamo.js/index.js"></script>
-    <script>
-    module.capture("./minamo.js/index.js", ["./minamo.js"]);
-    module.readyToCapture();
-    </script>
-    <script type="text/javascript" src="index.js"></script>
-    <script>
-    module.capture("index.js");
-    </script>
-
     <style>
     *
     {
@@ -46,72 +45,36 @@
         margin: 0.1em;
         padding: 0.7em 1.0em 0.5em 1.0em;
         border-radius: 0.5em;
-        float: right;
         text-decoration: none;
         line-height: 100%;
+        position: absolute;
+        right: 0.5em;
     }
     a.github:hover
     {
         text-decoration: underline;
     }
-    table
+    ul
     {
-        background-color: lightgray;
-        border-spacing: 2px;
+        list-style: none;
+        padding: 0px;
+        display: flex;
+        flex-wrap: wrap;
     }
-    table th
+    ul > li
     {
-        padding: 4px;
-        background-color: #DDDDFF;
+        height: 48px;
+        width: 240px;
+        display: flex;
+        align-items: center;
+        word-break: keep-all;
     }
-    table td
+    svg
     {
-        padding: 4px;
-    }
-    table tr:not(.error) td
-    {
-        background-color: white;
-    }
-    table tr.error td
-    {
-        background-color: #FFCCCC;
-    }
-    table tr:nth-child(2n+1):not(.error) td
-    {
-        background-color: #EEEEEE;
-    }
-    table.summary
-    {
-        font-size : 1.2em;
-    }
-    table.summary td
-    {
-        width: 4.5em;
-        text-align: right;
-    }
-    table.details th:nth-child(1),
-    table.details td:nth-child(1)
-    {
-        width: 3em;
-    }
-    table.details th:nth-child(2),
-    table.details td:nth-child(2)
-    {
-        width: 3em;
-    }
-    table.details th:nth-child(3),
-    table.details td:nth-child(3)
-    {
-        width: 45%;
-        word-break: break-all;
-    }
-    table.details th:nth-child(4),
-    table.details td:nth-child(4)
-    {
-        width: 55%;
-        word-break: break-all;
+        padding: 16px;
+        height: 32px;
     }
     </style>
 </head>
-<body onload="test.start()"></body>
+<body></body>
 </html>
