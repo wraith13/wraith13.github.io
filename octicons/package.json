@@ -1,0 +1,22 @@
+{
+  "name": "octicons-catalog",
+  "version": "1.0.0",
+  "description": "Octicons Catalog",
+  "main": "phi-ratio-coloring.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wraith13/wraith13.github.io.git"
+  },
+  "author": "wraith13",
+  "license": "BSL-1.0",
+  "bugs": {
+    "url": "https://github.com/wraith13/wraith13.github.io/issues"
+  },
+  "homepage": "https://wraith13.github.io/octicons/",
+  "dependencies": {
+    "typed-octicons": "^9.1.0"
+  }
+}
