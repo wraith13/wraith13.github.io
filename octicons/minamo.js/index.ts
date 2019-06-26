@@ -709,12 +709,21 @@ export module minamo
                 let tag = arg.name.replace(/HTML(.*)Element/, "$1".toLowerCase());
                 switch(tag)
                 {
-                    case "anchor":
-                        tag = "a";
-                        break;
-                    case "heading":
-                        tag = `h${level}`;
-                        break;
+                case "anchor":
+                    tag = "a";
+                    break;
+                case "heading":
+                    tag = `h${level}`;
+                    break;
+                case "dlist":
+                    tag = "dl";
+                    break;
+                case "olist":
+                    tag = "ol";
+                    break;
+                case "ulist":
+                    tag = "ol";
+                    break;
                 }
                 return arg2 => set(document.createElement(tag), arg2);
             }
