@@ -74,7 +74,12 @@ var test;
                     tag: "p",
                     children: [
                         //"description...",
-                        { tag: "a", className: "github", href: "https://github.com/wraith13/wraith13.github.io/tree/master/octicons", children: "GitHub", },
+                        {
+                            tag: "a",
+                            className: "github",
+                            href: "https://github.com/wraith13/wraith13.github.io/tree/master/octicons",
+                            children: makeOcticonSVG(typed_octicons_1.default["logo-github"]),
+                        },
                     ],
                 },
                 {
