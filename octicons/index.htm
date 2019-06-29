@@ -81,6 +81,8 @@
         padding: 0px;
         display: flex;
         flex-wrap: wrap;
+        margin-left: -1rem;
+        margin-right: -1rem;
     }
     ul > li
     {
@@ -89,6 +91,147 @@
         display: flex;
         align-items: center;
         word-break: keep-all;
+        padding-left: 16px;
+    }
+    @media (min-width: 4800px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 20) - 16px);
+        }
+    }
+    @media (min-width: 4560px) and (max-width: 4800px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 19) - 16px);
+        }
+    }
+    @media (min-width: 4320px) and (max-width: 4560px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 18) - 16px);
+        }
+    }
+    @media (min-width: 4080px) and (max-width: 4320px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 17) - 16px);
+        }
+    }
+    @media (min-width: 3840px) and (max-width: 4080px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 16) - 16px);
+        }
+    }
+    @media (min-width: 3600px) and (max-width: 3840px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 15) - 16px);
+        }
+    }
+    @media (min-width: 3360px) and (max-width: 3600px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 14) - 16px);
+        }
+    }
+    @media (min-width: 3120px) and (max-width: 3360px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 13) - 16px);
+        }
+    }
+    @media (min-width: 2880px) and (max-width: 3120px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 12) - 16px);
+        }
+    }
+    @media (min-width: 2640px) and (max-width: 2880px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 11) - 16px);
+        }
+    }
+    @media (min-width: 2400px) and (max-width: 2640px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 10) - 16px);
+        }
+    }
+    @media (min-width: 2160px) and (max-width: 2400px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 9) - 16px);
+        }
+    }
+    @media (min-width: 1920px) and (max-width: 2160px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 8) - 16px);
+        }
+    }
+    @media (min-width: 1680px) and (max-width: 1920px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 7) - 16px);
+        }
+    }
+    @media (min-width: 1440px) and (max-width: 1680px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 6) - 16px);
+        }
+    }
+    @media (min-width: 1200px) and (max-width: 1440px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 5) - 16px);
+        }
+    }
+    @media (min-width: 960px) and (max-width: 1200px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 4) - 16px);
+        }
+    }
+    @media (min-width: 720px) and (max-width: 960px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 3) - 16px);
+        }
+    }
+    @media (min-width: 480px) and (max-width: 720px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 2) - 16px);
+        }
+    }
+    @media (max-width: 480px)
+    {
+        ul > li
+        {
+            width: calc(((100% - 1px) / 1) - 16px);
+        }
     }
     ul > li:hover
     {
@@ -105,7 +248,7 @@
     }
     svg
     {
-        padding: 16px;
+        padding-right: 16px;
         height: 32px;
         min-width: 32px;
     }
