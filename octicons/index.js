@@ -67,7 +67,18 @@ var test;
         ];
     };
     test.start = function () { return __awaiter(_this, void 0, void 0, function () {
+        var filter;
         return __generator(this, function (_a) {
+            filter = minamo_js_1.minamo.dom.make(HTMLInputElement)({
+                className: "filter",
+                placeholder: "filter",
+                oninput: function () {
+                    var value = filter.value.trim().toLowerCase();
+                    Array.from(document.getElementsByTagName("li")).forEach(function (i) { return i.style.display = 0 <= i.innerText.indexOf(value) ?
+                        "flex" :
+                        "none"; });
+                }
+            });
             minamo_js_1.minamo.dom.appendChildren(document.body, [
                 makeHeading("h1", document.title),
                 {
@@ -80,6 +91,7 @@ var test;
                             href: "https://github.com/wraith13/wraith13.github.io/tree/master/octicons",
                             children: makeOcticonSVG(typed_octicons_1.default["logo-github"]),
                         },
+                        filter,
                     ],
                 },
                 {

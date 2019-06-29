@@ -34,6 +34,24 @@ export module test
     ];
     export const start = async (): Promise<void> =>
     {
+        const filter = minamo.dom.make(HTMLInputElement)
+        (
+            {
+                className: "filter",
+                placeholder: "filter",
+                oninput: () =>
+                {
+                    const value = filter.value.trim().toLowerCase();
+                    Array.from(document.getElementsByTagName("li")).forEach
+                    (
+                        i => i.style.display = 0 <= i.innerText.indexOf(value) ?
+                            "flex":
+                            "none"
+                    );
+                }
+            }
+        );
+
         minamo.dom.appendChildren
         (
             document.body,
@@ -50,6 +68,7 @@ export module test
                             href: "https://github.com/wraith13/wraith13.github.io/tree/master/octicons",
                             children: makeOcticonSVG(octicons["logo-github"]),
                         },
+                        filter,
                     ],
                 },
                 {
