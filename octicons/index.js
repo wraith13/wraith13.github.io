@@ -67,7 +67,7 @@ var test;
         ];
     };
     test.start = function () { return __awaiter(_this, void 0, void 0, function () {
-        var filter;
+        var filter, toast, copy;
         return __generator(this, function (_a) {
             filter = minamo_js_1.minamo.dom.make(HTMLInputElement)({
                 className: "filter",
@@ -79,6 +79,18 @@ var test;
                         "none"; });
                 }
             });
+            toast = function (_text) {
+            };
+            copy = function (text) {
+                var pre = minamo_js_1.minamo.dom.make(HTMLPreElement)({
+                    children: text,
+                });
+                document.body.appendChild(pre);
+                document.getSelection().selectAllChildren(pre);
+                document.execCommand("copy");
+                document.body.removeChild(pre);
+                toast("Copied \"" + text + "\" to the clipboard.");
+            };
             minamo_js_1.minamo.dom.appendChildren(document.body, [
                 makeHeading("h1", document.title),
                 {
@@ -102,6 +114,7 @@ var test;
                         return ({
                             tag: "li",
                             children: renderOction(i),
+                            onclick: function () { return copy(i); },
                         });
                     }),
                 },

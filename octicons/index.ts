@@ -51,6 +51,22 @@ export module test
                 }
             }
         );
+        const toast = (_text: string) =>
+        {
+
+        };
+        const copy = (text: string) =>
+        {
+            const pre = minamo.dom.make(HTMLPreElement)
+            ({
+                children: text,
+            });
+            document.body.appendChild(pre);
+            document.getSelection().selectAllChildren(pre);
+            document.execCommand("copy");
+            document.body.removeChild(pre);
+            toast(`Copied "${text}" to the clipboard.`);
+        };
 
         minamo.dom.appendChildren
         (
@@ -81,6 +97,7 @@ export module test
                             ({
                                 tag: "li",
                                 children: renderOction(<keyof typeof octicons>i),
+                                onclick: () => copy(i),
                             })
                         ),
                 },
