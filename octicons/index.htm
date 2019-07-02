@@ -253,6 +253,54 @@
         height: 32px;
         min-width: 32px;
     }
+    .toast
+    {
+        background-color: #DDEEFF;
+        text-align: center;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 0.5em;
+        height: 1.2em;
+        line-height: 120%;
+    }
+    .toast:not(.slide-out)
+    {
+        animation-duration: 0.2s;
+        animation-name: slide-in;
+    }
+    .toast.slide-out
+    {
+        animation-duration: 0.5s;
+        animation-name: slide-out;
+    }
+    @keyframes slide-in
+    {
+        from
+        {
+            height: 0em;
+            bottom: -1.2em;
+        }
+        to
+        {
+            height: 1.2em;
+            bottom: 0em;
+        }
+    }
+    @keyframes slide-out
+    {
+        from
+        {
+            height: 1.2em;
+            bottom: 0em;
+        }
+        to
+        {
+            height: 0em;
+            bottom: -1.2em;
+        }
+    }
     </style>
 </head>
 <body></body>

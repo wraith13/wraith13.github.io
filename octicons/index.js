@@ -93,8 +93,8 @@ var test;
                             return [4 /*yield*/, minamo_js_1.minamo.core.timeout(3000)];
                         case 1:
                             _a.sent();
-                            message.classList.add("fade-out");
-                            return [4 /*yield*/, minamo_js_1.minamo.core.timeout(1000)];
+                            message.classList.add("slide-out");
+                            return [4 /*yield*/, minamo_js_1.minamo.core.timeout(500)];
                         case 2:
                             _a.sent();
                             document.body.removeChild(message);

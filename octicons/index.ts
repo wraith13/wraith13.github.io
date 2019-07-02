@@ -60,8 +60,8 @@ export module test
                 children: text,
             });
             await minamo.core.timeout(3000);
-            message.classList.add("fade-out");
-            await minamo.core.timeout(1000);
+            message.classList.add("slide-out");
+            await minamo.core.timeout(500);
             document.body.removeChild(message);
         };
         const copy = (text: string) =>
