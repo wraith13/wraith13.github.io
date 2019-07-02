@@ -68,6 +68,7 @@ var test;
     };
     test.start = function () { return __awaiter(_this, void 0, void 0, function () {
         var filter, toast, copy;
+        var _this = this;
         return __generator(this, function (_a) {
             filter = minamo_js_1.minamo.dom.make(HTMLInputElement)({
                 className: "filter",
@@ -79,8 +80,28 @@ var test;
                         "none"; });
                 }
             });
-            toast = function (_text) {
-            };
+            toast = function (text) { return __awaiter(_this, void 0, void 0, function () {
+                var message;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            message = minamo_js_1.minamo.dom.make(HTMLDivElement)({
+                                parent: document.body,
+                                className: "toast",
+                                children: text,
+                            });
+                            return [4 /*yield*/, minamo_js_1.minamo.core.timeout(3000)];
+                        case 1:
+                            _a.sent();
+                            message.classList.add("fade-out");
+                            return [4 /*yield*/, minamo_js_1.minamo.core.timeout(1000)];
+                        case 2:
+                            _a.sent();
+                            document.body.removeChild(message);
+                            return [2 /*return*/];
+                    }
+                });
+            }); };
             copy = function (text) {
                 var pre = minamo_js_1.minamo.dom.make(HTMLPreElement)({
                     children: text,

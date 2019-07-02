@@ -51,9 +51,18 @@ export module test
                 }
             }
         );
-        const toast = (_text: string) =>
+        const toast = async (text: string) =>
         {
-
+            const message = minamo.dom.make(HTMLDivElement)
+            ({
+                parent: document.body,
+                className: "toast",
+                children: text,
+            });
+            await minamo.core.timeout(3000);
+            message.classList.add("fade-out");
+            await minamo.core.timeout(1000);
+            document.body.removeChild(message);
         };
         const copy = (text: string) =>
         {
