@@ -140,19 +140,6 @@ var test;
                     }),
                 },
             ]);
-            setTimeout(function () {
-                var hashRaw = minamo_js_1.minamo.core.separate(location.href, "#").tail;
-                if (hashRaw) {
-                    var hash_1 = decodeURIComponent(hashRaw);
-                    var target = Array.from(document.body.children).filter(function (i) { return i.textContent === hash_1; })[0];
-                    if (target) {
-                        document.body.scrollTop = target.offsetTop;
-                    }
-                    else {
-                        console.error("Not found hash " + hash_1);
-                    }
-                }
-            }, 0);
             return [2 /*return*/];
         });
     }); };

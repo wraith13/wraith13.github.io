@@ -76,7 +76,6 @@ export module test
             document.body.removeChild(pre);
             toast(`Copied "${text}" to the clipboard.`);
         };
-
         minamo.dom.appendChildren
         (
             document.body,
@@ -111,27 +110,6 @@ export module test
                         ),
                 },
             ]
-        );
-        setTimeout
-        (
-            ()=>
-            {
-                const hashRaw = minamo.core.separate(location.href, "#").tail;
-                if (hashRaw)
-                {
-                    const hash = decodeURIComponent(hashRaw);
-                    const target = <HTMLElement>Array.from(document.body.children).filter(i => i.textContent === hash)[0];
-                    if (target)
-                    {
-                        document.body.scrollTop = target.offsetTop;
-                    }
-                    else
-                    {
-                        console.error(`Not found hash ${hash}`);
-                    }
-                }
-            },
-            0
         );
     };
 }
