@@ -1,7 +1,7 @@
 import { minamo } from "./minamo.js";
 import octicons, { Octicon } from "typed-octicons";
 
-export module test
+export module catalog
 {
     const makeHeading = (tag: string, text: string) =>
     (

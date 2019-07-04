@@ -37,8 +37,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var minamo_js_1 = require("./minamo.js");
 var typed_octicons_1 = require("typed-octicons");
-var test;
-(function (test) {
+var catalog;
+(function (catalog) {
     var _this = this;
     var makeHeading = function (tag, text) {
         return ({
@@ -66,7 +66,7 @@ var test;
             },
         ];
     };
-    test.start = function () { return __awaiter(_this, void 0, void 0, function () {
+    catalog.start = function () { return __awaiter(_this, void 0, void 0, function () {
         var filter, toast, copy;
         var _this = this;
         return __generator(this, function (_a) {
@@ -143,5 +143,5 @@ var test;
             return [2 /*return*/];
         });
     }); };
-})(test = exports.test || (exports.test = {}));
+})(catalog = exports.catalog || (exports.catalog = {}));
 //# sourceMappingURL=index.js.map
