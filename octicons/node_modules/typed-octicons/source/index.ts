@@ -16,8 +16,8 @@ export interface Options
 export interface Octicon
 {
     name: string;
-    figma: Figma,
-    keywords: string[],
+    figma: Figma;
+    keywords: string[];
     width: number;
     height: number;
     path: string;

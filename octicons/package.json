@@ -17,6 +17,6 @@
   },
   "homepage": "https://wraith13.github.io/octicons/",
   "dependencies": {
-    "typed-octicons": "^9.2.0"
+    "typed-octicons": "^9.2.1"
   }
 }
