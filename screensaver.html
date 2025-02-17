@@ -1,0 +1,577 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>flounder.style.js screen saver</title>
+<meta name="theme-color" content="rgb(1,4,9)">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,viewport-fit=contain">
+<style>
+body
+{
+    margin: 0px;
+    padding: 0px;
+    background-color: rgb(230,237,243);
+}
+div
+{
+    content-visibility: auto;
+}
+button
+{
+    background-color: transparent;
+    border-style: none;
+    border-width: 0px;
+    cursor: pointer;
+}
+#screen-header
+{
+    margin: 0px;
+    padding: 0px;
+    color: rgb(230,237,243);
+    background-color: rgb(1,4,9, 0.8);
+    position: fixed;
+    width: 100%;
+    z-index: 900;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    transition: margin-top 500ms;
+}
+#screen-header a
+{
+    color: rgb(230, 237, 243);
+}
+#screen-header .segment
+{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    padding: 0.75rem 1.00rem;
+    overflow-x: hidden;
+    transform: skewX(150deg);
+    text-decoration: none !important;
+    min-width: 2.25rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-weight: 400;
+    font-size: 1.0rem;
+    line-height: 100%;
+}
+#screen-header .segment:first-child
+{
+    padding-left: 1.75rem;
+    margin-left: -0.75rem;
+}
+#screen-header .segment + .segment
+{
+    margin-left: 0rem;
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: rgb(230,237,243) !important;
+}
+#screen-header .segment > *
+{
+    transform: skewX(-150deg);
+}
+@media (hover: hover)
+{
+    #screen-header a.segment:hover
+    {
+        background-color: rgb(70,80,90);
+    }
+}
+#screen-body
+{
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#screen-body .canvas
+{
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    z-index: -100;
+}
+#screen-body button
+{
+    background-color: rgba(1,4, 9, 0.6);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    transition: opacity 1000ms;
+}
+#screen-body button svg
+{
+    width: 8rem;
+    height: 8rem;
+    color: rgba(230, 237, 243, 0.7);
+    fill: rgba(230, 237, 243, 0.7);
+}
+@media (hover: hover)
+{
+    #screen-body button:hover
+    {
+        background-color: rgba(1,4, 9, 0.8);
+    }
+    #screen-body button:hover svg
+    {
+        color: rgba(230, 237, 243, 0.9);
+        fill: rgba(230, 237, 243, 0.9);
+    }
+}
+#screen-body .option-panel
+{
+    margin-top: 1rem;
+    color: rgb(230, 237, 243);
+    background-color: rgba(1,4, 9, 0.6);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    padding-right: 1.0rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 1000ms;
+}
+#screen-body #fps
+{
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: rgb(230, 237, 243);
+    background-color: rgba(1,4, 9, 0.6);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1.0rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 1000ms;
+    font-family: Courier;
+    text-align: right;
+    white-space: pre;
+}
+#screen-body #fps:empty
+{
+    display: none;
+}
+#screen-body .option-panel input
+{
+    margin: 0.5rem;
+    padding: 0px;
+}
+body.immersive #screen-header
+{
+    margin-top: -2.5rem;
+}
+body.immersive:not(.mousemove) #screen-body
+{
+    cursor: none;
+}
+body.immersive.mousemove #screen-body
+{
+    cursor: pointer;
+}
+body.immersive:not(.mousemove) #screen-body button
+{
+    opacity: 0;
+    cursor: none;
+}
+body.immersive #screen-body button svg:first-child
+{
+    display: none;
+}
+body:not(.immersive) #screen-body button svg:last-child
+{
+    display: none;
+}
+body.immersive #screen-body .option-panel
+{
+    opacity: 0;
+    pointer-events: none;
+}
+body:not(.immersive) #screen-body #fps
+{
+    display: none;
+}
+</style>
+</head>
+<body>
+<h1 id="screen-header"><a class="segment" href="https://github.com/"><span>GitHub</span></a><a class="segment" href="https://github.com/wraith13"><span>wraith13</span></a><a class="segment" href="https://wraith13.github.io/"><span>wraith13.github.io</span></a><div class="segment"><span>screen saver</span></div></h1>
+<div id="screen-body">
+    <button id="play-button">
+        <svg width="100%" height="100%" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+            <g transform="matrix(1,0,0,1,-20.52,-0.152764)">
+                <path d="M277.128,192.306L277.129,192C277.294,169.198 295.857,150.737 318.698,150.737C326.626,150.737 334.038,152.961 340.345,156.819L893.467,476.149L893.46,476.161C906.034,483.312 914.523,496.833 914.523,512.321C914.523,529.423 904.173,544.126 889.4,550.504L340.335,867.492C339.741,867.855 339.138,868.203 338.526,868.537L336.016,869.985L335.929,869.834C330.678,872.232 324.842,873.568 318.697,873.568C295.755,873.568 277.128,854.942 277.128,832L277.128,192.306Z"/>
+            </g>
+        </svg>
+        <svg width="100%" height="100%" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+            <g transform="matrix(1.17021,0,0,1.125,-75.5745,-64)">
+                <path d="M444,291.176L444,732.824C444,752.238 428.847,768 410.183,768L289.817,768C271.153,768 256,752.238 256,732.824L256,291.176C256,271.762 271.153,256 289.817,256L410.183,256C428.847,256 444,271.762 444,291.176ZM748.218,291.176L748.218,732.824C748.218,752.238 733.065,768 714.401,768L594.035,768C575.371,768 560.218,752.238 560.218,732.824L560.218,291.176C560.218,271.762 575.371,256 594.035,256L714.401,256C733.065,256 748.218,271.762 748.218,291.176Z"/>
+            </g>
+        </svg>
+    </button>
+    <label class="option-panel" for="with-fullscreen"><input id="with-fullscreen" type="checkbox">FullScreen</label>
+    <label class="option-panel" for="show-fps"><input id="show-fps" type="checkbox">Show FPS</label>
+    <div id="fps"></div>
+    <div class="canvas"></div>
+</div>
+<script src="https://wraith13.github.io/evil-commonjs/index.js"></script>
+<script>
+window.module.sequentialLoad
+([
+    { path:"https://wraith13.github.io/evil-timer.js/index.js", mapping:["evil-timer.js"] },
+    { path:"https://wraith13.github.io/flounder.style.js/index.js", mapping:["flounder.style.js"] },
+]).then
+(
+    map =>
+    {
+        const { FlounderStyle } = require("flounder.style.js");
+        const valueToString = (value) => undefined === value ? "undefined": JSON.stringify(value);
+        const stringify = (value) =>
+        {
+            if (null !== value && undefined !== value)
+            {
+                if (Array.isArray(value))
+                {
+                    return "[ " +value.map(i => stringify(i)).join(", ") +" ]";
+                }
+                if ("object" === typeof value)
+                {
+                    var result = [];
+                    Object.keys(value).forEach
+                    (
+                        key =>
+                        {
+                            var v = value[key];
+                            if (undefined !== v)
+                            {
+                                result.push(`${key}:${stringify(v)}`);
+                            }
+                        }
+                    )
+                    return "{ " +result.join(", ") +" }";
+                }
+            }
+            if ("number" === typeof value)
+            {
+                return value.toLocaleString("en-US", { maximumFractionDigits: 4, });
+            }
+            return valueToString(value);
+        };
+        const makeRandomInteger = (size) => Math.floor(Math.random() *size);
+        const randomSelect = (list) => list[makeRandomInteger(list.length)];
+        const makeRandomSpotArguments = (type, foregroundColor, backgroundColor, intervalSize) =>
+        ({
+            type,
+            layoutAngle: randomSelect([ "regular", "alternative", ]),
+            foregroundColor,
+            backgroundColor,
+            intervalSize,
+            depth: 0.0,
+            maxPatternSize: randomSelect([ undefined, intervalSize /4, ]),
+            reverseRate: randomSelect([ undefined, 0.0, ]),
+        });
+        const makeRandomTrispotArguments = (foregroundColor, backgroundColor, intervalSize) =>
+            makeRandomSpotArguments("trispot", foregroundColor, backgroundColor, intervalSize);
+        const makeRandomTetraspotArguments = (foregroundColor, backgroundColor, intervalSize) =>
+            makeRandomSpotArguments("tetraspot", foregroundColor, backgroundColor, intervalSize);
+        const makeRandomLineArguments = (type, foregroundColor, backgroundColor, intervalSize) =>
+        ({
+            type,
+            layoutAngle: Math.random(),
+            foregroundColor,
+            backgroundColor,
+            intervalSize,
+            depth: 0.0,
+            maxPatternSize: randomSelect([ undefined, intervalSize /(2 +makeRandomInteger(9)), ]),
+            reverseRate: randomSelect([ undefined, 0.0, ]),
+            anglePerDepth: randomSelect([ undefined, "auto", "-auto", 1,0, -1.0, ]),
+        });
+        const makeRandomStripeArguments = (foregroundColor, backgroundColor, intervalSize) =>
+            makeRandomLineArguments("stripe", foregroundColor, backgroundColor, intervalSize);
+        const makeRandomDilineArguments = (foregroundColor, backgroundColor, intervalSize) =>
+            makeRandomLineArguments("diline", foregroundColor, backgroundColor, intervalSize);
+        const makeRandomTrilineArguments = (foregroundColor, backgroundColor, intervalSize) =>
+            makeRandomLineArguments("triline", foregroundColor, backgroundColor, intervalSize);
+        const makeRandomArguments = (foregroundColor, backgroundColor) => randomSelect
+            ([
+                makeRandomTrispotArguments,
+                makeRandomTetraspotArguments,
+                makeRandomStripeArguments,
+                makeRandomDilineArguments,
+                makeRandomTrilineArguments,
+            ])
+            (foregroundColor, backgroundColor, 64 +Math.max(makeRandomInteger(256), makeRandomInteger(256)));
+        const screenBody = document.getElementById("screen-body");
+        const canvasList = document.getElementsByClassName("canvas");
+        const withFullscreen = document.getElementById("with-fullscreen");
+        const showFPS = document.getElementById("show-fps");
+        const fullscreenEnabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+        if ( ! fullscreenEnabled)
+        {
+            withFullscreen.parentElement.style.setProperty("display", "none");
+        }
+        const phi = 1.618033988749895;
+        let startAt = 0;
+        let offsetAt = -1;
+        let color = { r: 1.0, g: 0.0, b: 0.0 };
+        const nextColor = ({ r, g, b}) =>
+        {
+            const lowThreshold = 0.001;
+            const highThreshold = 1.0 -lowThreshold;
+            const makeUnit = (slice) => (1.0 /slice) +lowThreshold;
+            if (b <= lowThreshold && lowThreshold < r && g <= highThreshold)
+            {
+                g += makeUnit(5);
+            }
+            else
+            if (b <= lowThreshold && lowThreshold < r && highThreshold < g)
+            {
+                r -= makeUnit(3);
+            }
+            else
+            if (r <= lowThreshold && lowThreshold < g && b <= highThreshold)
+            {
+                b += makeUnit(2);
+            }
+            else
+            if (r <= lowThreshold && lowThreshold < g && highThreshold < b)
+            {
+                g -= makeUnit(5);
+            }
+            else
+            if (g <= lowThreshold && lowThreshold < b && r <= highThreshold)
+            {
+                r += makeUnit(3);
+            }
+            else
+            if (g <= lowThreshold && lowThreshold < b && highThreshold < r)
+            {
+                b -= makeUnit(2);
+            }
+            r = Math.max(0.0, Math.min(1.0, r));
+            g = Math.max(0.0, Math.min(1.0, g));
+            b = Math.max(0.0, Math.min(1.0, b));
+            return { r, g, b, };
+        };
+        const makeColor = ({ r, g, b}) => `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
+        canvasList[0].style.setProperty("background-color", makeColor(color));
+        let arguments;
+        let offsetCoefficient;
+        let direction;
+        let rotate;
+        const span = 5000;
+        const fpsCalcUnit = 5;
+        let frameTimings = [];
+        let fpsHistory = [];
+        const resetFps = () =>
+        {
+            frameTimings = [];
+            fpsHistory = [];
+        };
+        const makeFpsText = (fps) =>
+            `${fps.toLocaleString("en-US", { useGrouping: false, maximumFractionDigits: 2, minimumFractionDigits: 2, })} fps`;
+        const getFpsText = (now) =>
+        {
+            let result = "";
+            if (fpsCalcUnit <= frameTimings.length)
+            {
+                const first = frameTimings.shift();
+                const fps = (fpsCalcUnit *1000.0) /(now -first);
+                const current =
+                {
+                    fps,
+                    now,
+                    text: makeFpsText(fps),
+                };
+                const expiredAt = now -1000;
+                while(0 < fpsHistory.length && fpsHistory[0].now < expiredAt)
+                {
+                    fpsHistory.shift();
+                }
+                fpsHistory.push(current);
+                let currentMaxFps = current;
+                let currentMinFps = current;
+                fpsHistory.forEach
+                (
+                    i =>
+                    {
+                        if (currentMaxFps.fps < i.fps)
+                        {
+                            currentMaxFps = i;
+                        }
+                        if (i.fps < currentMinFps.fps)
+                        {
+                            currentMinFps = i;
+                        }
+                    }
+                );
+                result = currentMaxFps.text +" (max)\n" + current.text + " (now)\n" +currentMinFps.text +" (min)";
+            }
+            frameTimings.push(now);
+            return result;
+        };
+        const animation = (now) =>
+        {
+            if (document.body.classList.contains("immersive"))
+            {
+                if (undefined === arguments || startAt +span <= now)
+                {
+                    startAt = now;
+                    const backgroundColor = makeColor(color);
+                    color = nextColor(color);
+                    const foregroundColor = makeColor(color);
+                    arguments = makeRandomArguments(foregroundColor, backgroundColor);
+                    offsetCoefficient = undefined;
+                    direction = undefined;
+                    console.log(stringify(arguments));
+                }
+                else
+                {
+                    arguments.depth = (now -startAt) /span;
+                }
+                if (0 == (arguments.anglePerDepth ?? 0) && undefined === arguments.maxPatternSize)
+                {
+                    if (undefined === offsetCoefficient || undefined === direction)
+                    {
+                        offsetCoefficient = FlounderStyle.calculateOffsetCoefficient(arguments);
+                        direction = randomSelect(offsetCoefficient.directions);
+                        rotate = 1 +makeRandomInteger(4);
+                    }
+                    const step = (rotate *arguments.depth) %1.0;
+                    arguments.offsetX = offsetCoefficient.intervalSize * direction.x *step;
+                    arguments.offsetY = offsetCoefficient.intervalSize * direction.y *step;
+                }
+                FlounderStyle.setStyle(canvasList[0], arguments);
+                if (showFPS.checked)
+                {
+                    document.getElementById("fps").innerText = getFpsText(now);
+                }
+                window.requestAnimationFrame(animation);
+            }
+            else
+            {
+                if (undefined !== arguments)
+                {
+                    offsetAt = now -startAt;
+                    document.getElementById("fps").innerText = "";
+                }
+            }
+        };
+        const pause = () =>
+        {
+            document.body.classList.toggle("immersive", false);
+            if (document.fullscreenElement || document.webkitFullscreenElement)
+            {
+                if (document.exitFullscreen)
+                {
+                    document.exitFullscreen();
+                }
+                else
+                if (document.webkitCancelFullScreen)
+                {
+                    document.webkitCancelFullScreen();
+                }
+            }
+        };
+        class ToggleClassForWhileTimer
+        {
+            constructor()
+            {
+                this.timer = undefined;
+            }
+            start(element, token, span)
+            {
+                if (undefined !== this.timer)
+                {
+                    clearTimeout(this.timer);
+                }
+                element.classList.toggle(token, true);
+                this.timer = setTimeout
+                (
+                    () =>
+                    {
+                        this.timer = undefined;
+                        element.classList.toggle(token, false);
+                    },
+                    span
+                );
+            }
+        }
+        screenBody.addEventListener
+        (
+            "click",
+            event =>
+            {
+                event.stopPropagation();
+                if (event.target === event.currentTarget)
+                {
+                    pause();
+                }
+            }
+        );
+        const mousemoveTimer = new ToggleClassForWhileTimer();
+        screenBody.addEventListener
+        (
+            "mousemove",
+            () => mousemoveTimer.start(document.body, "mousemove", 1000)
+        )
+        document.getElementById("play-button").addEventListener
+        (
+            "click",
+            event =>
+            {
+                if ( ! document.body.classList.contains("immersive"))
+                {
+                    event.stopPropagation();
+                    document.body.classList.toggle("immersive", true);
+                    document.body.classList.toggle("mousemove", false);
+                    if (fullscreenEnabled && withFullscreen.checked)
+                    {
+                        if (document.body.requestFullscreen)
+                        {
+                            document.body.requestFullscreen();
+                        }
+                        else
+                        if (document.body.webkitRequestFullscreen)
+                        {
+                            document.body.webkitRequestFullscreen();
+                        }
+                    }
+                    window.requestAnimationFrame
+                    (
+                        now =>
+                        {
+                            if (undefined !== arguments)
+                            {
+                                startAt = now -offsetAt;
+                            }
+                            resetFps();
+                            animation(now);
+                        }
+                    );
+                }
+                else
+                {
+                    pause();
+                }
+            }
+        );
+    }
+);
+</script>
+</body>
+</html>
