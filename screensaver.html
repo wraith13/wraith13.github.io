@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>flounder.style.js screen saver</title>
+<title>screen saver</title>
 <meta name="theme-color" content="rgb(1,4,9)">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,viewport-fit=contain">
 <style>
@@ -314,7 +314,7 @@ window.module.sequentialLoad
                 makeRandomDilineArguments,
                 makeRandomTrilineArguments,
             ])
-            (foregroundColor, backgroundColor, 64 +Math.max(makeRandomInteger(256), makeRandomInteger(256)));
+            (foregroundColor, backgroundColor, 64 +Math.max(makeRandomInteger(1024), makeRandomInteger(1024)));
         const screenBody = document.getElementById("screen-body");
         const canvasList = document.getElementsByClassName("canvas");
         const withFullscreen = document.getElementById("with-fullscreen");
@@ -373,7 +373,7 @@ window.module.sequentialLoad
         let offsetCoefficient;
         let direction;
         let rotate;
-        const span = 5000;
+        let span;
         const fpsCalcUnit = 5;
         let frameTimings = [];
         let fpsHistory = [];
@@ -431,6 +431,7 @@ window.module.sequentialLoad
                 if (undefined === arguments || startAt +span <= now)
                 {
                     startAt = now;
+                    span = 5000 +makeRandomInteger(55000);
                     const backgroundColor = makeColor(color);
                     color = nextColor(color);
                     const foregroundColor = makeColor(color);
