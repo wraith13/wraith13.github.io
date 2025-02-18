@@ -234,11 +234,14 @@ window.module.sequentialLoad
 ([
     { path:"https://wraith13.github.io/evil-timer.js/index.js", mapping:["evil-timer.js"] },
     { path:"https://wraith13.github.io/flounder.style.js/index.js", mapping:["flounder.style.js"] },
+    { path:"https://wraith13.github.io/phi-colors/library/source/index.js", mapping:["phi-colors"] },
 ]).then
 (
     map =>
     {
         const { FlounderStyle } = require("flounder.style.js");
+        const { phiColors } = require("phi-colors");
+        console.log({ phiColors });
         const valueToString = (value) => undefined === value ? "undefined": JSON.stringify(value);
         const stringify = (value) =>
         {
@@ -327,45 +330,22 @@ window.module.sequentialLoad
         const phi = 1.618033988749895;
         let startAt = 0;
         let offsetAt = -1;
-        let color = { r: 1.0, g: 0.0, b: 0.0 };
+        const rate = (min, max, r) => min + ((max -min) *r);
+        let h = Math.random();
+        let hsl =
+        {
+            h:rate(phiColors.HslHMin, phiColors.HslHMax, h),
+            s:rate(phiColors.HslSMin, phiColors.HslSMax, 0.7),
+            l:rate(phiColors.HslLMin, phiColors.HslLMax, 0.7),
+        };
+        //let color = { r: 1.0, g: 0.0, b: 0.0 };
+        let color = phiColors.hslToRgb(hsl);
         const nextColor = ({ r, g, b}) =>
         {
-            const lowThreshold = 0.001;
-            const highThreshold = 1.0 -lowThreshold;
-            const makeUnit = (slice) => (1.0 /slice) +lowThreshold;
-            if (b <= lowThreshold && lowThreshold < r && g <= highThreshold)
-            {
-                g += makeUnit(5);
-            }
-            else
-            if (b <= lowThreshold && lowThreshold < r && highThreshold < g)
-            {
-                r -= makeUnit(3);
-            }
-            else
-            if (r <= lowThreshold && lowThreshold < g && b <= highThreshold)
-            {
-                b += makeUnit(2);
-            }
-            else
-            if (r <= lowThreshold && lowThreshold < g && highThreshold < b)
-            {
-                g -= makeUnit(5);
-            }
-            else
-            if (g <= lowThreshold && lowThreshold < b && r <= highThreshold)
-            {
-                r += makeUnit(3);
-            }
-            else
-            if (g <= lowThreshold && lowThreshold < b && highThreshold < r)
-            {
-                b -= makeUnit(2);
-            }
-            r = Math.max(0.0, Math.min(1.0, r));
-            g = Math.max(0.0, Math.min(1.0, g));
-            b = Math.max(0.0, Math.min(1.0, b));
-            return { r, g, b, };
+            h += phiColors.phi /13;
+            h %= 1;
+            hsl.h = rate(phiColors.HslHMin, phiColors.HslHMax, h);
+            return phiColors.hslToRgb(hsl);
         };
         const makeColor = ({ r, g, b}) => `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
         canvasList[0].style.setProperty("background-color", makeColor(color));
@@ -431,7 +411,7 @@ window.module.sequentialLoad
                 if (undefined === arguments || startAt +span <= now)
                 {
                     startAt = now;
-                    span = 5000 +makeRandomInteger(55000);
+                    span = 5000; // +makeRandomInteger(55000);
                     const backgroundColor = makeColor(color);
                     color = nextColor(color);
                     const foregroundColor = makeColor(color);
