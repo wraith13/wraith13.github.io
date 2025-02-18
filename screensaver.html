@@ -330,30 +330,32 @@ window.module.sequentialLoad
         const phi = 1.618033988749895;
         let startAt = 0;
         let offsetAt = -1;
+        let span = 1000;
         const rate = (min, max, r) => min + ((max -min) *r);
         let h = Math.random();
+        let hueUnit = phiColors.phi /7;
         let hsl =
         {
             h:rate(phiColors.HslHMin, phiColors.HslHMax, h),
             s:rate(phiColors.HslSMin, phiColors.HslSMax, 0.7),
             l:rate(phiColors.HslLMin, phiColors.HslLMax, 0.7),
         };
-        //let color = { r: 1.0, g: 0.0, b: 0.0 };
-        let color = phiColors.hslToRgb(hsl);
-        const nextColor = ({ r, g, b}) =>
+        const makeForegroundColor = (step) =>
         {
-            h += phiColors.phi /13;
-            h %= 1;
-            hsl.h = rate(phiColors.HslHMin, phiColors.HslHMax, h);
-            return phiColors.hslToRgb(hsl);
+            hsl.h = h +hueUnit *(1 +(step /span));
+            return makeColor(phiColors.hslToRgb(hsl));
+        };
+        const makeBackgroundColor = (step) =>
+        {
+            hsl.h = h +hueUnit *(0 +(step /span));
+            return makeColor(phiColors.hslToRgb(hsl));
         };
         const makeColor = ({ r, g, b}) => `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
-        canvasList[0].style.setProperty("background-color", makeColor(color));
+        canvasList[0].style.setProperty("background-color", makeBackgroundColor(0));
         let arguments;
         let offsetCoefficient;
         let direction;
         let rotate;
-        let span;
         const fpsCalcUnit = 5;
         let frameTimings = [];
         let fpsHistory = [];
@@ -410,11 +412,14 @@ window.module.sequentialLoad
             {
                 if (undefined === arguments || startAt +span <= now)
                 {
+                    if (undefined !== arguments)
+                    {
+                        h += hueUnit;
+                    }
                     startAt = now;
-                    span = 5000; // +makeRandomInteger(55000);
-                    const backgroundColor = makeColor(color);
-                    color = nextColor(color);
-                    const foregroundColor = makeColor(color);
+                    span = 1000; // +makeRandomInteger(55000);
+                    const backgroundColor = makeBackgroundColor(0);
+                    const foregroundColor = makeForegroundColor(0);
                     arguments = makeRandomArguments(foregroundColor, backgroundColor);
                     offsetCoefficient = undefined;
                     direction = undefined;
@@ -432,9 +437,9 @@ window.module.sequentialLoad
                         direction = randomSelect(offsetCoefficient.directions);
                         rotate = 1 +makeRandomInteger(4);
                     }
-                    const step = (rotate *arguments.depth) %1.0;
-                    arguments.offsetX = offsetCoefficient.intervalSize * direction.x *step;
-                    arguments.offsetY = offsetCoefficient.intervalSize * direction.y *step;
+                    // const step = (rotate *arguments.depth) %1.0;
+                    // arguments.offsetX = offsetCoefficient.intervalSize * direction.x *step;
+                    // arguments.offsetY = offsetCoefficient.intervalSize * direction.y *step;
                 }
                 FlounderStyle.setStyle(canvasList[0], arguments);
                 if (showFPS.checked)
