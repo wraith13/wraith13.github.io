@@ -337,21 +337,16 @@ window.module.sequentialLoad
         let hsl =
         {
             h:rate(phiColors.HslHMin, phiColors.HslHMax, h),
-            s:rate(phiColors.HslSMin, phiColors.HslSMax, 0.7),
-            l:rate(phiColors.HslLMin, phiColors.HslLMax, 0.7),
+            s:rate(phiColors.HslSMin, phiColors.HslSMax, 0.8),
+            l:rate(phiColors.HslLMin, phiColors.HslLMax, 0.8),
         };
-        const makeForegroundColor = (step) =>
+        const makeColor = (step) =>
         {
-            hsl.h = h +hueUnit *(1 +(step /span));
-            return makeColor(phiColors.hslToRgb(hsl));
+            hsl.h = (h +(hueUnit *step)) %1;
+            const { r, g, b} = phiColors.hslToRgb(hsl);
+            return `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
         };
-        const makeBackgroundColor = (step) =>
-        {
-            hsl.h = h +hueUnit *(0 +(step /span));
-            return makeColor(phiColors.hslToRgb(hsl));
-        };
-        const makeColor = ({ r, g, b}) => `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
-        canvasList[0].style.setProperty("background-color", makeBackgroundColor(0));
+        canvasList[0].style.setProperty("background-color", makeColor(1));
         let arguments;
         let offsetCoefficient;
         let direction;
@@ -415,20 +410,23 @@ window.module.sequentialLoad
                     if (undefined !== arguments)
                     {
                         h += hueUnit;
+                        h %= 1;
                     }
                     startAt = now;
                     span = 1000; // +makeRandomInteger(55000);
-                    const backgroundColor = makeBackgroundColor(0);
-                    const foregroundColor = makeForegroundColor(0);
-                    arguments = makeRandomArguments(foregroundColor, backgroundColor);
+                    arguments = makeRandomArguments
+                    (
+                        makeColor(1.0),
+                        makeColor(0.0)
+                    );
                     offsetCoefficient = undefined;
                     direction = undefined;
                     console.log(stringify(arguments));
                 }
-                else
-                {
-                    arguments.depth = (now -startAt) /span;
-                }
+                const step = (now -startAt) /span;
+                arguments.foregroundColor = makeColor(1.0 +step);
+                arguments.backgroundColor = makeColor(0.0 +step);
+                arguments.depth = step;
                 if (0 == (arguments.anglePerDepth ?? 0) && undefined === arguments.maxPatternSize)
                 {
                     if (undefined === offsetCoefficient || undefined === direction)
