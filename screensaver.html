@@ -333,7 +333,7 @@ window.module.sequentialLoad
         let span = 1000;
         const rate = (min, max, r) => min + ((max -min) *r);
         let h = Math.random();
-        let hueUnit = phiColors.phi /7;
+        let hueUnit = phiColors.phi /13;
         let hsl =
         {
             h:rate(phiColors.HslHMin, phiColors.HslHMax, h),
@@ -342,7 +342,7 @@ window.module.sequentialLoad
         };
         const makeColor = (step) =>
         {
-            hsl.h = (h +(hueUnit *step)) %1;
+            hsl.h = rate(phiColors.HslHMin, phiColors.HslHMax, (h +(hueUnit *step)) %1);
             const { r, g, b} = phiColors.hslToRgb(hsl);
             return `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
         };
@@ -409,7 +409,7 @@ window.module.sequentialLoad
                 {
                     if (undefined !== arguments)
                     {
-                        h += hueUnit;
+                        h += hueUnit *2;
                         h %= 1;
                     }
                     startAt = now;
