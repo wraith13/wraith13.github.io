@@ -340,13 +340,14 @@ window.module.sequentialLoad
             s:rate(phiColors.HslSMin, phiColors.HslSMax, 0.8),
             l:rate(phiColors.HslLMin, phiColors.HslLMax, 0.8),
         };
-        const makeColor = (step) =>
+        const makeColor = (step, lightness) =>
         {
             hsl.h = rate(phiColors.HslHMin, phiColors.HslHMax, (h +(hueUnit *step)) %1);
+            hsl.l = rate(phiColors.HslLMin, phiColors.HslLMax, lightness ?? 0.8);
             const { r, g, b} = phiColors.hslToRgb(hsl);
             return `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
         };
-        canvasList[0].style.setProperty("background-color", makeColor(1));
+        canvasList[0].style.setProperty("background-color", makeColor(0));
         let arguments;
         let offsetCoefficient;
         let direction;
@@ -409,14 +410,14 @@ window.module.sequentialLoad
                 {
                     if (undefined !== arguments)
                     {
-                        h += hueUnit *2;
+                        h += hueUnit *1;
                         h %= 1;
                     }
                     startAt = now;
-                    span = 1000; // +makeRandomInteger(55000);
+                    span = 3000; // +makeRandomInteger(55000);
                     arguments = makeRandomArguments
                     (
-                        makeColor(1.0),
+                        makeColor(0.0),
                         makeColor(0.0)
                     );
                     offsetCoefficient = undefined;
@@ -424,8 +425,8 @@ window.module.sequentialLoad
                     console.log(stringify(arguments));
                 }
                 const step = (now -startAt) /span;
-                arguments.foregroundColor = makeColor(1.0 +step);
-                arguments.backgroundColor = makeColor(0.0 +step);
+                arguments.foregroundColor = makeColor(0.0 +step);
+                arguments.backgroundColor = makeColor(0.0, 0.8 *(1.0 -step));
                 arguments.depth = step;
                 if (0 == (arguments.anglePerDepth ?? 0) && undefined === arguments.maxPatternSize)
                 {
