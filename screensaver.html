@@ -241,7 +241,6 @@ window.module.sequentialLoad
     {
         const { FlounderStyle } = require("flounder.style.js");
         const { phiColors } = require("phi-colors");
-        console.log({ phiColors });
         const valueToString = (value) => undefined === value ? "undefined": JSON.stringify(value);
         const stringify = (value) =>
         {
@@ -334,16 +333,17 @@ window.module.sequentialLoad
         const rate = (min, max, r) => min + ((max -min) *r);
         let h = Math.random();
         let hueUnit = phiColors.phi /13;
+        let defaultLightness = 0.7;
         let hsl =
         {
             h:rate(phiColors.HslHMin, phiColors.HslHMax, h),
             s:rate(phiColors.HslSMin, phiColors.HslSMax, 0.8),
-            l:rate(phiColors.HslLMin, phiColors.HslLMax, 0.8),
+            l:rate(phiColors.HslLMin, phiColors.HslLMax, defaultLightness),
         };
         const makeColor = (step, lightness) =>
         {
             hsl.h = rate(phiColors.HslHMin, phiColors.HslHMax, (h +(hueUnit *step)) %1);
-            hsl.l = rate(phiColors.HslLMin, phiColors.HslLMax, lightness ?? 0.8);
+            hsl.l = rate(phiColors.HslLMin, phiColors.HslLMax, lightness ?? defaultLightness);
             const { r, g, b} = phiColors.hslToRgb(hsl);
             return `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
         };
@@ -402,6 +402,7 @@ window.module.sequentialLoad
             frameTimings.push(now);
             return result;
         };
+        let patternCount = 0;
         const animation = (now) =>
         {
             if (document.body.classList.contains("immersive"))
@@ -414,19 +415,22 @@ window.module.sequentialLoad
                         h %= 1;
                     }
                     startAt = now;
-                    span = 3000; // +makeRandomInteger(55000);
-                    arguments = makeRandomArguments
-                    (
-                        makeColor(0.0),
-                        makeColor(0.0)
-                    );
+                    if (0 === (patternCount++ %3))
+                    {
+                        span = 3000; // +makeRandomInteger(55000);
+                        arguments = makeRandomArguments
+                        (
+                            makeColor(1.0),
+                            makeColor(0.0)
+                        );
+                        console.log(stringify(arguments));
+                    }
                     offsetCoefficient = undefined;
                     direction = undefined;
-                    console.log(stringify(arguments));
                 }
                 const step = (now -startAt) /span;
-                arguments.foregroundColor = makeColor(0.0 +step);
-                arguments.backgroundColor = makeColor(0.0, 0.8 *(1.0 -step));
+                arguments.foregroundColor = makeColor(1.0);
+                arguments.backgroundColor = makeColor(0.0);
                 arguments.depth = step;
                 if (0 == (arguments.anglePerDepth ?? 0) && undefined === arguments.maxPatternSize)
                 {
