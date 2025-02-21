@@ -241,6 +241,8 @@ window.module.sequentialLoad
     {
         const { FlounderStyle } = require("flounder.style.js");
         const { phiColors } = require("phi-colors");
+        const diagonalSize = Math.sqrt(Math.pow(window.innerWidth, 2) +Math.pow(window.innerHeight, 2));
+        const rate = (min, max, r) => min + ((max -min) *r);
         const valueToString = (value) => undefined === value ? "undefined": JSON.stringify(value);
         const stringify = (value) =>
         {
@@ -316,7 +318,7 @@ window.module.sequentialLoad
                 makeRandomDilineArguments,
                 makeRandomTrilineArguments,
             ])
-            (foregroundColor, backgroundColor, 64 +Math.max(makeRandomInteger(1024), makeRandomInteger(1024)));
+            (foregroundColor, backgroundColor, rate(diagonalSize /10, diagonalSize /3, 1.0 -Math.pow(Math.random(), 2)));
         const screenBody = document.getElementById("screen-body");
         const canvasList = document.getElementsByClassName("canvas");
         const withFullscreen = document.getElementById("with-fullscreen");
@@ -330,7 +332,6 @@ window.module.sequentialLoad
         let startAt = 0;
         let offsetAt = -1;
         let span = 1000;
-        const rate = (min, max, r) => min + ((max -min) *r);
         let h = Math.random();
         let hueUnit = phiColors.phi /13;
         let defaultLightness = 0.7;
@@ -403,6 +404,9 @@ window.module.sequentialLoad
             return result;
         };
         let patternCount = 0;
+        const easing = (t) => t <= 0.5 ?
+            2 *Math.pow(t, 2):
+            1 -(2 *Math.pow(1 -t, 2));
         const animation = (now) =>
         {
             if (document.body.classList.contains("immersive"))
@@ -417,7 +421,7 @@ window.module.sequentialLoad
                     startAt = now;
                     if (0 === (patternCount++ %3))
                     {
-                        span = 3000; // +makeRandomInteger(55000);
+                        span = 5000; // +makeRandomInteger(55000);
                         arguments = makeRandomArguments
                         (
                             makeColor(1.0),
@@ -431,7 +435,7 @@ window.module.sequentialLoad
                 const step = (now -startAt) /span;
                 arguments.foregroundColor = makeColor(1.0);
                 arguments.backgroundColor = makeColor(0.0);
-                arguments.depth = step;
+                arguments.depth = easing(step);
                 if (0 == (arguments.anglePerDepth ?? 0) && undefined === arguments.maxPatternSize)
                 {
                     if (undefined === offsetCoefficient || undefined === direction)
