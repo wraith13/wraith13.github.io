@@ -334,7 +334,7 @@ window.module.sequentialLoad
         let span = 1000;
         let h = Math.random();
         let hueUnit = phiColors.phi /13;
-        let defaultLightness = 0.7;
+        let defaultLightness = 0.5;
         let hsl =
         {
             h:rate(phiColors.HslHMin, phiColors.HslHMax, h),
@@ -433,8 +433,8 @@ window.module.sequentialLoad
                     direction = undefined;
                 }
                 const step = (now -startAt) /span;
-                arguments.foregroundColor = makeColor(1.0);
-                arguments.backgroundColor = makeColor(0.0);
+                arguments.foregroundColor = makeColor(1.0, rate(defaultLightness, 1.0, Math.pow(1.0 -step, 2.0)));
+                arguments.backgroundColor = makeColor(0.0, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
                 arguments.depth = easing(step);
                 if (0 == (arguments.anglePerDepth ?? 0) && undefined === arguments.maxPatternSize)
                 {
