@@ -131,18 +131,22 @@ button
 }
 #screen-body .option-panel
 {
-    margin-top: 1rem;
+    position: absolute;
+    top: 3rem;
+    left: 1rem;
     color: rgb(230, 237, 243);
     background-color: rgba(1,4, 9, 0.6);
     border-radius: 0.5rem;
     padding: 0.5rem;
     padding-right: 1.0rem;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     cursor: pointer;
     transition: opacity 1000ms;
+    font-family: Courier;
+    font-size: 1.0rem;
 }
 #screen-body .option-panel select
 {
@@ -152,7 +156,7 @@ button
     border-radius: 0.5rem;
     padding: 0.5rem;
     font-family: Courier;
-    font-size: 1.2rem;
+    font-size: 1.0rem;
 }
 #screen-body #fps
 {
@@ -283,15 +287,17 @@ body.immersive #screen-body #powered-by
             </g>
         </svg>
     </button>
-    <label class="option-panel" for="with-fullscreen"><input id="with-fullscreen" type="checkbox">FullScreen</label>
-    <label class="option-panel" for="mode">
-        <select id="mode">
-            <option value="colorful">colorful</option>
-            <option value="monochrome">monochrome</option>
-            <option value="dark">dark</option>
-        </select>
-    </label>
-    <label class="option-panel" for="show-fps"><input id="show-fps" type="checkbox">Show FPS</label>
+    <div class="option-panel">
+        <label for="mode">
+            <select id="mode">
+                <option value="colorful">colorful</option>
+                <option value="monochrome">monochrome</option>
+                <option value="dark">dark</option>
+            </select>
+        </label>
+        <label for="with-fullscreen"><input id="with-fullscreen" type="checkbox">FullScreen</label>
+        <label for="show-fps"><input id="show-fps" type="checkbox">Show FPS</label>
+    </div>
     <div id="fps"></div>
     <div id="powered-by">
         <span class="title">powered by</span>
@@ -409,7 +415,7 @@ window.module.sequentialLoad
         let offsetAt = -1;
         let span = 1000;
         let h = Math.random();
-        let hueUnit = phiColors.phi /13;
+        let hueUnit = 1 / phiColors.phi;
         let defaultLightness = 0.5;
         let hsl =
         {
@@ -418,13 +424,18 @@ window.module.sequentialLoad
             l:rate(phiColors.HslLMin, phiColors.HslLMax, defaultLightness),
         };
         const makeColor = (step, lightness) =>
-        {
-            hsl.h = rate(phiColors.HslHMin, phiColors.HslHMax, (h +(hueUnit *step)) %1);
-            hsl.l = rate(phiColors.HslLMin, phiColors.HslLMax, lightness ?? defaultLightness);
-            const { r, g, b} = phiColors.hslToRgb(hsl);
-            return `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
-            //return phiColors.rgbForStyle(phiColors.hslToRgb(hsl));
-        };
+            phiColors.rgbForStyle
+            (
+                phiColors.clipRgb
+                (
+                    phiColors.hslToRgb
+                    ({
+                        h: rate(phiColors.HslHMin, phiColors.HslHMax, (h +(hueUnit *step)) %1),
+                        s: hsl.s,
+                        l: rate(phiColors.HslLMin, phiColors.HslLMax, lightness ?? defaultLightness),
+                    })
+                )
+            );
         canvasList[0].style.setProperty("background-color", makeColor(0));
         let arguments;
         let offsetCoefficient;
@@ -496,7 +507,7 @@ window.module.sequentialLoad
                         h %= 1;
                     }
                     startAt = now;
-                    if (0 === (patternCount++ %3))
+                    if (0 === (patternCount++ %3) || "monochrome" === document.getElementById("mode").value)
                     {
                         span = 5000; // +makeRandomInteger(55000);
                         arguments = makeRandomArguments
@@ -523,7 +534,8 @@ window.module.sequentialLoad
                             ({
                                 h: rate(phiColors.HslHMin, phiColors.HslHMax, 0),
                                 s: rate(phiColors.HslSMin, phiColors.HslSMax, 0),
-                                l: rate(phiColors.HslLMin, phiColors.HslLMax, 1.0 -step),
+                                //l: rate(phiColors.HslLMin, phiColors.HslLMax, 1.0 -step),
+                                l: 0 === (patternCount %2) ? phiColors.HslLMin : phiColors.HslLMax,
                             })
                         );
                         arguments.backgroundColor = phiColors.rgbForStyle
@@ -532,7 +544,8 @@ window.module.sequentialLoad
                             ({
                                 h: rate(phiColors.HslHMin, phiColors.HslHMax, 0),
                                 s: rate(phiColors.HslSMin, phiColors.HslSMax, 0),
-                                l: rate(phiColors.HslLMin, phiColors.HslLMax, step),
+                                //l: rate(phiColors.HslLMin, phiColors.HslLMax, step),
+                                l: 0 === (patternCount %2) ? phiColors.HslLMax : phiColors.HslLMin,
                             })
                         );
                         break;
