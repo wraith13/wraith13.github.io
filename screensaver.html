@@ -144,6 +144,16 @@ button
     cursor: pointer;
     transition: opacity 1000ms;
 }
+#screen-body .option-panel select
+{
+    color: rgb(230, 237, 243);
+    background-color: transparent;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    font-family: Courier;
+    font-size: 1.2rem;
+}
 #screen-body #fps
 {
     position: absolute;
@@ -274,6 +284,13 @@ body.immersive #screen-body #powered-by
         </svg>
     </button>
     <label class="option-panel" for="with-fullscreen"><input id="with-fullscreen" type="checkbox">FullScreen</label>
+    <label class="option-panel" for="mode">
+        <select id="mode">
+            <option value="colorful">colorful</option>
+            <option value="monochrome">monochrome</option>
+            <option value="dark">dark</option>
+        </select>
+    </label>
     <label class="option-panel" for="show-fps"><input id="show-fps" type="checkbox">Show FPS</label>
     <div id="fps"></div>
     <div id="powered-by">
@@ -406,6 +423,7 @@ window.module.sequentialLoad
             hsl.l = rate(phiColors.HslLMin, phiColors.HslLMax, lightness ?? defaultLightness);
             const { r, g, b} = phiColors.hslToRgb(hsl);
             return `rgb(${Math.floor(r *256)},${Math.floor(g *256)},${Math.floor(b *256)})`;
+            //return phiColors.rgbForStyle(phiColors.hslToRgb(hsl));
         };
         canvasList[0].style.setProperty("background-color", makeColor(0));
         let arguments;
@@ -492,8 +510,37 @@ window.module.sequentialLoad
                     direction = undefined;
                 }
                 const step = (now -startAt) /span;
-                arguments.foregroundColor = makeColor(1.0, rate(defaultLightness, 1.0, Math.pow(1.0 -step, 2.0)));
-                arguments.backgroundColor = makeColor(0.0, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
+                switch (document.getElementById("mode").value ?? "colorful")
+                {
+                    case "colorful":
+                        arguments.foregroundColor = makeColor(1.0, rate(defaultLightness, 1.0, Math.pow(1.0 -step, 2.0)));
+                        arguments.backgroundColor = makeColor(0.0, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
+                        break;
+                    case "monochrome":
+                        arguments.foregroundColor = phiColors.rgbForStyle
+                        (
+                            phiColors.hslToRgb
+                            ({
+                                h: rate(phiColors.HslHMin, phiColors.HslHMax, 0),
+                                s: rate(phiColors.HslSMin, phiColors.HslSMax, 0),
+                                l: rate(phiColors.HslLMin, phiColors.HslLMax, 1.0 -step),
+                            })
+                        );
+                        arguments.backgroundColor = phiColors.rgbForStyle
+                        (
+                            phiColors.hslToRgb
+                            ({
+                                h: rate(phiColors.HslHMin, phiColors.HslHMax, 0),
+                                s: rate(phiColors.HslSMin, phiColors.HslSMax, 0),
+                                l: rate(phiColors.HslLMin, phiColors.HslLMax, step),
+                            })
+                        );
+                        break;
+                    case "dark":
+                        arguments.foregroundColor = makeColor(1.0, rate(defaultLightness, 1.0, Math.pow(1.0 -step, 2.0)));
+                        arguments.backgroundColor = makeColor(0.0, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
+                        break;
+                }
                 arguments.depth = easing(step);
                 if (0 == (arguments.anglePerDepth ?? 0) && undefined === arguments.maxPatternSize)
                 {
