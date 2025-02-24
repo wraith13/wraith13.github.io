@@ -102,6 +102,7 @@ button
     bottom: 0px;
     left: 0px;
     z-index: -100;
+    mix-blend-mode: difference;
 }
 #screen-body button
 {
@@ -309,6 +310,18 @@ body.immersive #screen-body #powered-by
         </ul>
     </div>
     <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
+    <div class="canvas"></div>
 </div>
 <script src="https://wraith13.github.io/evil-commonjs/index.js"></script>
 <script>
@@ -324,7 +337,7 @@ window.module.sequentialLoad
         const { FlounderStyle } = require("flounder.style.js");
         const { phiColors } = require("phi-colors");
         const diagonalSize = Math.sqrt(Math.pow(window.innerWidth, 2) +Math.pow(window.innerHeight, 2));
-        const rate = (min, max, r) => min + ((max -min) *r);
+        const rate = (min, max) => (r) => min + ((max -min) *r);
         const valueToString = (value) => undefined === value ? "undefined": JSON.stringify(value);
         const stringify = (value) =>
         {
@@ -400,9 +413,9 @@ window.module.sequentialLoad
                 makeRandomDilineArguments,
                 makeRandomTrilineArguments,
             ])
-            (foregroundColor, backgroundColor, rate(diagonalSize /10, diagonalSize /3, 1.0 -Math.pow(Math.random(), 2)));
+            (foregroundColor, backgroundColor, rate(diagonalSize /50, diagonalSize /1.5)(1.0 -Math.pow(Math.random(), 1)));
         const screenBody = document.getElementById("screen-body");
-        const canvasList = document.getElementsByClassName("canvas");
+        const canvasList = Array.from(document.getElementsByClassName("canvas"));
         const withFullscreen = document.getElementById("with-fullscreen");
         const showFPS = document.getElementById("show-fps");
         const fullscreenEnabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
@@ -412,16 +425,16 @@ window.module.sequentialLoad
         }
         const phi = 1.618033988749895;
         let startAt = 0;
-        let offsetAt = -1;
-        let span = 1000;
+        let offsetAt = 0;
+        let span = 5000;
         let h = Math.random();
         let hueUnit = 1 / phiColors.phi;
         let defaultLightness = 0.5;
         let hsl =
         {
-            h:rate(phiColors.HslHMin, phiColors.HslHMax, h),
-            s:rate(phiColors.HslSMin, phiColors.HslSMax, 0.8),
-            l:rate(phiColors.HslLMin, phiColors.HslLMax, defaultLightness),
+            h:rate(phiColors.HslHMin, phiColors.HslHMax)(h),
+            s:rate(phiColors.HslSMin, phiColors.HslSMax)(0.8),
+            l:rate(phiColors.HslLMin, phiColors.HslLMax)(defaultLightness),
         };
         const makeColor = (step, lightness) =>
             phiColors.rgbForStyle
@@ -430,17 +443,13 @@ window.module.sequentialLoad
                 (
                     phiColors.hslToRgb
                     ({
-                        h: rate(phiColors.HslHMin, phiColors.HslHMax, (h +(hueUnit *step)) %1),
+                        h: rate(phiColors.HslHMin, phiColors.HslHMax)((h +(hueUnit *step)) %1),
                         s: hsl.s,
-                        l: rate(phiColors.HslLMin, phiColors.HslLMax, lightness ?? defaultLightness),
+                        l: rate(phiColors.HslLMin, phiColors.HslLMax)(lightness ?? defaultLightness),
                     })
                 )
             );
         canvasList[0].style.setProperty("background-color", makeColor(0));
-        let arguments;
-        let offsetCoefficient;
-        let direction;
-        let rotate;
         const fpsCalcUnit = 5;
         let frameTimings = [];
         let fpsHistory = [];
@@ -491,83 +500,73 @@ window.module.sequentialLoad
             frameTimings.push(now);
             return result;
         };
-        let patternCount = 0;
         const easing = (t) => t <= 0.5 ?
             2 *Math.pow(t, 2):
             1 -(2 *Math.pow(1 -t, 2));
+        const layers = canvasList.map
+        (
+            (canvas, ix) =>
+            ({
+                canvas,
+                mile: 0,
+                offset: ix /canvasList.length,
+                arguments: undefined,
+            })
+        );
+        const getStep = (universalStep, layer) => universalStep -(layer.mile +layer.offset);
         const animation = (now) =>
         {
             if (document.body.classList.contains("immersive"))
             {
-                if (undefined === arguments || startAt +span <= now)
-                {
-                    if (undefined !== arguments)
+                const universalStep = (now -startAt) /span;
+                layers.forEach
+                (
+                    (i, ix) =>
                     {
-                        h += hueUnit *1;
-                        h %= 1;
+                        let step = getStep(universalStep, i);
+                        if (0 <= step)
+                        {
+                            if (1.0 <= step || undefined === i.arguments)
+                            {
+                                i.arguments = Object.assign
+                                (
+                                    {},
+                                    layers[ix -1]?.arguments ?? makeRandomArguments
+                                    (
+                                        makeColor(1.0),
+                                        makeColor(0.0)
+                                    )
+                                );
+                            }
+                            while(1.0 <= step)
+                            {
+                                ++i.mile;
+                                step = getStep(universalStep, i);
+                            }
+                            switch (document.getElementById("mode").value ?? "colorful")
+                            {
+                                case "colorful":
+                                    i.arguments.foregroundColor = makeColor(1.0 +i.mile +i.offset, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
+                                    i.arguments.backgroundColor = makeColor(0.0 +i.mile +i.offset, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
+                                    break;
+                                case "monochrome":
+                                    i.arguments.foregroundColor = 0 === (i.mile %2) ? "black": "white";
+                                    i.arguments.backgroundColor = 0 === (i.mile %2) ? "white": "black";
+                                    break;
+                                case "dark":
+                                    i.arguments.foregroundColor = makeColor(1.0, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
+                                    i.arguments.backgroundColor = makeColor(0.0, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
+                                    break;
+                            }
+                            if (i.mile <= 0 && 0 < i.offset)
+                            {
+                                i.arguments.backgroundColor = "black";
+                            }
+                            i.arguments.depth = easing(step);
+                            FlounderStyle.setStyle(i.canvas, i.arguments);
+                        }
                     }
-                    startAt = now;
-                    if (0 === (patternCount++ %3) || "monochrome" === document.getElementById("mode").value)
-                    {
-                        span = 5000; // +makeRandomInteger(55000);
-                        arguments = makeRandomArguments
-                        (
-                            makeColor(1.0),
-                            makeColor(0.0)
-                        );
-                        console.log(stringify(arguments));
-                    }
-                    offsetCoefficient = undefined;
-                    direction = undefined;
-                }
-                const step = (now -startAt) /span;
-                switch (document.getElementById("mode").value ?? "colorful")
-                {
-                    case "colorful":
-                        arguments.foregroundColor = makeColor(1.0, rate(defaultLightness, 1.0, Math.pow(1.0 -step, 2.0)));
-                        arguments.backgroundColor = makeColor(0.0, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
-                        break;
-                    case "monochrome":
-                        arguments.foregroundColor = phiColors.rgbForStyle
-                        (
-                            phiColors.hslToRgb
-                            ({
-                                h: rate(phiColors.HslHMin, phiColors.HslHMax, 0),
-                                s: rate(phiColors.HslSMin, phiColors.HslSMax, 0),
-                                //l: rate(phiColors.HslLMin, phiColors.HslLMax, 1.0 -step),
-                                l: 0 === (patternCount %2) ? phiColors.HslLMin : phiColors.HslLMax,
-                            })
-                        );
-                        arguments.backgroundColor = phiColors.rgbForStyle
-                        (
-                            phiColors.hslToRgb
-                            ({
-                                h: rate(phiColors.HslHMin, phiColors.HslHMax, 0),
-                                s: rate(phiColors.HslSMin, phiColors.HslSMax, 0),
-                                //l: rate(phiColors.HslLMin, phiColors.HslLMax, step),
-                                l: 0 === (patternCount %2) ? phiColors.HslLMax : phiColors.HslLMin,
-                            })
-                        );
-                        break;
-                    case "dark":
-                        arguments.foregroundColor = makeColor(1.0, rate(defaultLightness, 1.0, Math.pow(1.0 -step, 2.0)));
-                        arguments.backgroundColor = makeColor(0.0, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
-                        break;
-                }
-                arguments.depth = easing(step);
-                if (0 == (arguments.anglePerDepth ?? 0) && undefined === arguments.maxPatternSize)
-                {
-                    if (undefined === offsetCoefficient || undefined === direction)
-                    {
-                        offsetCoefficient = FlounderStyle.calculateOffsetCoefficient(arguments);
-                        direction = randomSelect(offsetCoefficient.directions);
-                        rotate = 1 +makeRandomInteger(4);
-                    }
-                    // const step = (rotate *arguments.depth) %1.0;
-                    // arguments.offsetX = offsetCoefficient.intervalSize * direction.x *step;
-                    // arguments.offsetY = offsetCoefficient.intervalSize * direction.y *step;
-                }
-                FlounderStyle.setStyle(canvasList[0], arguments);
+                );
                 if (showFPS.checked)
                 {
                     document.getElementById("fps").innerText = getFpsText(now);
@@ -576,7 +575,7 @@ window.module.sequentialLoad
             }
             else
             {
-                if (undefined !== arguments)
+                if (undefined !== layers[0].arguments)
                 {
                     offsetAt = now -startAt;
                     document.getElementById("fps").innerText = "";
@@ -667,10 +666,7 @@ window.module.sequentialLoad
                     (
                         now =>
                         {
-                            if (undefined !== arguments)
-                            {
-                                startAt = now -offsetAt;
-                            }
+                            startAt = now -offsetAt;
                             resetFps();
                             animation(now);
                         }
