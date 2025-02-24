@@ -143,11 +143,18 @@ button
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: start;
+    align-items: stretch;
     cursor: pointer;
     transition: opacity 1000ms;
     font-family: Courier;
     font-size: 1.0rem;
+}
+#screen-body .option-panel label
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
 }
 #screen-body .option-panel select
 {
@@ -155,9 +162,10 @@ button
     background-color: transparent;
     border: none;
     border-radius: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.25rem;
     font-family: Courier;
     font-size: 1.0rem;
+    flex-grow: 1;
 }
 #screen-body #fps
 {
@@ -296,6 +304,8 @@ body.immersive #screen-body #powered-by
                 <option value="dark">dark</option>
             </select>
         </label>
+        <label for="layers"><select id="layer"></select></label>
+        <label for="span"><select id="span"></select></label>
         <label for="with-fullscreen"><input id="with-fullscreen" type="checkbox">FullScreen</label>
         <label for="show-fps"><input id="show-fps" type="checkbox">Show FPS</label>
     </div>
@@ -309,18 +319,6 @@ body.immersive #screen-body #powered-by
             <li><a href="https://github.com/wraith13/phi-colors">phi-colors</a></li>
         </ul>
     </div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
-    <div class="canvas"></div>
     <div class="canvas"></div>
 </div>
 <script src="https://wraith13.github.io/evil-commonjs/index.js"></script>
@@ -372,40 +370,36 @@ window.module.sequentialLoad
         };
         const makeRandomInteger = (size) => Math.floor(Math.random() *size);
         const randomSelect = (list) => list[makeRandomInteger(list.length)];
-        const makeRandomSpotArguments = (type, foregroundColor, backgroundColor, intervalSize) =>
+        const makeRandomSpotArguments = (type, intervalSize) =>
         ({
             type,
             layoutAngle: randomSelect([ "regular", "alternative", ]),
-            foregroundColor,
-            backgroundColor,
             intervalSize,
             depth: 0.0,
             maxPatternSize: randomSelect([ undefined, intervalSize /4, ]),
             reverseRate: randomSelect([ undefined, 0.0, ]),
         });
-        const makeRandomTrispotArguments = (foregroundColor, backgroundColor, intervalSize) =>
-            makeRandomSpotArguments("trispot", foregroundColor, backgroundColor, intervalSize);
-        const makeRandomTetraspotArguments = (foregroundColor, backgroundColor, intervalSize) =>
-            makeRandomSpotArguments("tetraspot", foregroundColor, backgroundColor, intervalSize);
-        const makeRandomLineArguments = (type, foregroundColor, backgroundColor, intervalSize) =>
+        const makeRandomTrispotArguments = (intervalSize) =>
+            makeRandomSpotArguments("trispot", intervalSize);
+        const makeRandomTetraspotArguments = (intervalSize) =>
+            makeRandomSpotArguments("tetraspot", intervalSize);
+        const makeRandomLineArguments = (type, intervalSize) =>
         ({
             type,
             layoutAngle: Math.random(),
-            foregroundColor,
-            backgroundColor,
             intervalSize,
             depth: 0.0,
             maxPatternSize: randomSelect([ undefined, intervalSize /(2 +makeRandomInteger(9)), ]),
             reverseRate: randomSelect([ undefined, 0.0, ]),
             anglePerDepth: randomSelect([ undefined, "auto", "-auto", 1,0, -1.0, ]),
         });
-        const makeRandomStripeArguments = (foregroundColor, backgroundColor, intervalSize) =>
-            makeRandomLineArguments("stripe", foregroundColor, backgroundColor, intervalSize);
-        const makeRandomDilineArguments = (foregroundColor, backgroundColor, intervalSize) =>
-            makeRandomLineArguments("diline", foregroundColor, backgroundColor, intervalSize);
-        const makeRandomTrilineArguments = (foregroundColor, backgroundColor, intervalSize) =>
-            makeRandomLineArguments("triline", foregroundColor, backgroundColor, intervalSize);
-        const makeRandomArguments = (foregroundColor, backgroundColor) => randomSelect
+        const makeRandomStripeArguments = (intervalSize) =>
+            makeRandomLineArguments("stripe", intervalSize);
+        const makeRandomDilineArguments = (intervalSize) =>
+            makeRandomLineArguments("diline", intervalSize);
+        const makeRandomTrilineArguments = (intervalSize) =>
+            makeRandomLineArguments("triline", intervalSize);
+        const makeRandomArguments = () => randomSelect
             ([
                 makeRandomTrispotArguments,
                 makeRandomTetraspotArguments,
@@ -413,9 +407,8 @@ window.module.sequentialLoad
                 makeRandomDilineArguments,
                 makeRandomTrilineArguments,
             ])
-            (foregroundColor, backgroundColor, rate(diagonalSize /50, diagonalSize /1.5)(1.0 -Math.pow(Math.random(), 1)));
+            (rate(diagonalSize /50, diagonalSize /1.5)(1.0 -Math.pow(Math.random(), 1)));
         const screenBody = document.getElementById("screen-body");
-        const canvasList = Array.from(document.getElementsByClassName("canvas"));
         const withFullscreen = document.getElementById("with-fullscreen");
         const showFPS = document.getElementById("show-fps");
         const fullscreenEnabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
@@ -449,7 +442,26 @@ window.module.sequentialLoad
                     })
                 )
             );
-        canvasList[0].style.setProperty("background-color", makeColor(0));
+        document.getElementsByClassName("canvas")[0].style.setProperty("background-color", makeColor(0));
+        const makeSelectOption = (value, text) =>
+        {
+            const option = document.createElement("option");
+            option.value = value;
+            option.innerText = text;
+            return option;
+        };
+        const layersSelect = document.getElementById("layer");
+        [1, 3, 5, 7, 13, 23, 47, 97].forEach
+        (
+            i => layersSelect.appendChild(makeSelectOption(i, `layers: ${i}`))
+        );
+        layersSelect.value = 7;
+        spanSelect = document.getElementById("span");
+        [1000, 3000, 5000, 12000, 30000, 60000, 180000].forEach
+        (
+            i => spanSelect.appendChild(makeSelectOption(i, `span: ${i /1000}s`))
+        );
+        spanSelect.value = span;
         const fpsCalcUnit = 5;
         let frameTimings = [];
         let fpsHistory = [];
@@ -503,16 +515,7 @@ window.module.sequentialLoad
         const easing = (t) => t <= 0.5 ?
             2 *Math.pow(t, 2):
             1 -(2 *Math.pow(1 -t, 2));
-        const layers = canvasList.map
-        (
-            (canvas, ix) =>
-            ({
-                canvas,
-                mile: 0,
-                offset: ix /canvasList.length,
-                arguments: undefined,
-            })
-        );
+        let layers = [];
         const getStep = (universalStep, layer) => universalStep -(layer.mile +layer.offset);
         const animation = (now) =>
         {
@@ -661,6 +664,44 @@ window.module.sequentialLoad
                         {
                             document.body.webkitRequestFullscreen();
                         }
+                    }
+                    const newSpan = parseInt(document.getElementById("span").value);
+                    if (span !== newSpan)
+                    {
+                        offsetAt = offsetAt *(newSpan /span);
+                        span = newSpan;
+                    }
+                    const newLayers = parseInt(document.getElementById("layer").value);
+                    if (layers.length !== newLayers)
+                    {
+                        const oldCanvasList = Array.from(document.getElementsByClassName("canvas"));
+                        if (oldCanvasList.length < newLayers)
+                        {
+                            for (let i = oldCanvasList.length; i < newLayers; ++i)
+                            {
+                                const newCanvas = document.createElement("div");
+                                newCanvas.classList.add("canvas");
+                                screenBody.appendChild(newCanvas);
+                            }
+                        }
+                        else
+                        {
+                            for (let i = newLayers; i < oldCanvasList.length; ++i)
+                            {
+                                screenBody.removeChild(oldCanvasList[i]);
+                            }
+                        }
+                        const canvasList = Array.from(document.getElementsByClassName("canvas"));
+                        layers = canvasList.map
+                        (
+                            (canvas, ix) =>
+                            ({
+                                canvas,
+                                mile: layers[ix]?.mile ?? 0,
+                                offset: ix /canvasList.length,
+                                arguments: layers[ix]?.arguments,
+                            })
+                        );
                     }
                     window.requestAnimationFrame
                     (
