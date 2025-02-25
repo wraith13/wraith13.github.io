@@ -104,7 +104,7 @@ button
     left: 0px;
     z-index: -100;
     mix-blend-mode: difference;
-    will-change: background-color background-image background-position background-size;
+    will-change: background-color, background-image, background-position, background-size;
 }
 #screen-body button
 {
@@ -340,6 +340,15 @@ window.module.sequentialLoad
     {
         const { FlounderStyle } = require("flounder.style.js");
         const { phiColors } = require("phi-colors");
+        const config =
+        {
+            layersEnum: [ 1, 3, 5, 7, 13, 23, 47, 97, ],
+            layersDefault: 7,
+            autoAdjustLayersCoolTime: 2500,
+            autoAdjustLayersThreshold: 5.0,
+            spanEnum: [ 1000, 3000, 5000, 12000, 30000, 60000, 180000, ],
+            spanDefault: 12000,
+        };
         const diagonalSize = Math.sqrt(Math.pow(window.innerWidth, 2) +Math.pow(window.innerHeight, 2));
         const rate = (min, max) => (r) => min + ((max -min) *r);
         const valueToString = (value) => undefined === value ? "undefined": JSON.stringify(value);
@@ -425,7 +434,7 @@ window.module.sequentialLoad
         const phi = 1.618033988749895;
         let startAt = 0;
         let offsetAt = 0;
-        let span = 12000;
+        let span = config.spanDefault;
         let h = Math.random();
         let hueUnit = 1 / phiColors.phi;
         let defaultLightness = 0.5;
@@ -457,13 +466,13 @@ window.module.sequentialLoad
             return option;
         };
         const layersSelect = document.getElementById("layer");
-        [1, 3, 5, 7, 13, 23, 47, 97].forEach
+        config.layersEnum.forEach
         (
             i => layersSelect.appendChild(makeSelectOption(i, `layers: ${i}`))
         );
-        layersSelect.value = 7;
+        layersSelect.value = config.layersDefault;
         spanSelect = document.getElementById("span");
-        [1000, 3000, 5000, 12000, 30000, 60000, 180000].forEach
+        config.spanEnum.forEach
         (
             i => spanSelect.appendChild(makeSelectOption(i, `span: ${i /1000}s`))
         );
@@ -478,6 +487,7 @@ window.module.sequentialLoad
         };
         const makeFpsText = (fps) =>
             `${fps.toLocaleString("en-US", { useGrouping: false, maximumFractionDigits: 2, minimumFractionDigits: 2, })} fps`;
+        let lastChangedLayersAt = 0;
         const getFpsText = (now) =>
         {
             let result = "";
@@ -514,6 +524,19 @@ window.module.sequentialLoad
                     }
                 );
                 result = currentMaxFps.text +" (max)\n" + current.text + " (now)\n" +currentMinFps.text +" (min)";
+                if
+                (
+                    1 < layers.length &&
+                    (lastChangedLayersAt +config.autoAdjustLayersCoolTime) <= now &&
+                    currentMaxFps.fps < config.autoAdjustLayersThreshold
+                )
+                {
+                    const newLayers = Math.max(...config.layersEnum.filter(i => i < layers.length));
+                    document.getElementById("layer").value = newLayers.toString();
+                    console.log(`fps: ${current.text}, layers: ${layers.length} -> ${newLayers}`);
+                    updateLayers(newLayers);
+                    lastChangedLayersAt = now;
+                }
             }
             frameTimings.push(now);
             return result;
@@ -527,6 +550,11 @@ window.module.sequentialLoad
         {
             if (document.body.classList.contains("immersive"))
             {
+                const fps = getFpsText(now);
+                if (showFPS.checked)
+                {
+                    document.getElementById("fps").innerText = fps;
+                }
                 const universalStep = (now -startAt) /span;
                 layers.forEach
                 (
@@ -576,10 +604,6 @@ window.module.sequentialLoad
                         }
                     }
                 );
-                if (showFPS.checked)
-                {
-                    document.getElementById("fps").innerText = getFpsText(now);
-                }
                 window.requestAnimationFrame(animation);
             }
             else
@@ -649,6 +673,37 @@ window.module.sequentialLoad
             "mousemove",
             () => mousemoveTimer.start(document.body, "mousemove", 1000)
         )
+        const updateLayers = (newLayers) =>
+        {
+            const oldCanvasList = Array.from(document.getElementsByClassName("canvas"));
+            if (oldCanvasList.length < newLayers)
+            {
+                for (let i = oldCanvasList.length; i < newLayers; ++i)
+                {
+                    const newCanvas = document.createElement("div");
+                    newCanvas.classList.add("canvas");
+                    screenBody.appendChild(newCanvas);
+                }
+            }
+            else
+            {
+                for (let i = newLayers; i < oldCanvasList.length; ++i)
+                {
+                    screenBody.removeChild(oldCanvasList[i]);
+                }
+            }
+            const canvasList = Array.from(document.getElementsByClassName("canvas"));
+            layers = canvasList.map
+            (
+                (canvas, ix) =>
+                ({
+                    canvas,
+                    mile: layers[ix]?.mile ?? 0,
+                    offset: ix /canvasList.length,
+                    arguments: layers[ix]?.arguments,
+                })
+            );
+        };
         document.getElementById("play-button").addEventListener
         (
             "click",
@@ -680,45 +735,19 @@ window.module.sequentialLoad
                     const newLayers = parseInt(document.getElementById("layer").value);
                     if (layers.length !== newLayers)
                     {
-                        const oldCanvasList = Array.from(document.getElementsByClassName("canvas"));
-                        if (oldCanvasList.length < newLayers)
-                        {
-                            for (let i = oldCanvasList.length; i < newLayers; ++i)
-                            {
-                                const newCanvas = document.createElement("div");
-                                newCanvas.classList.add("canvas");
-                                screenBody.appendChild(newCanvas);
-                            }
-                        }
-                        else
-                        {
-                            for (let i = newLayers; i < oldCanvasList.length; ++i)
-                            {
-                                screenBody.removeChild(oldCanvasList[i]);
-                            }
-                        }
-                        const canvasList = Array.from(document.getElementsByClassName("canvas"));
-                        layers = canvasList.map
-                        (
-                            (canvas, ix) =>
-                            ({
-                                canvas,
-                                mile: layers[ix]?.mile ?? 0,
-                                offset: ix /canvasList.length,
-                                arguments: layers[ix]?.arguments,
-                            })
-                        );
-                        easing = easingCheckbox.checked ?
-                            (t) => t <= 0.5 ?
-                                2 *Math.pow(t, 2):
-                                1 -(2 *Math.pow(1 -t, 2)):
-                            (t) => t;
+                        updateLayers(newLayers);
                     }
+                    easing = easingCheckbox.checked ?
+                        (t) => t <= 0.5 ?
+                            2 *Math.pow(t, 2):
+                            1 -(2 *Math.pow(1 -t, 2)):
+                        (t) => t;
                     window.requestAnimationFrame
                     (
                         now =>
                         {
                             startAt = now -offsetAt;
+                            lastChangedLayersAt = now;
                             resetFps();
                             animation(now);
                         }
