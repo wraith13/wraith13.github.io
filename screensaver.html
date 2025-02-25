@@ -55,8 +55,9 @@ button
     min-width: 2.25rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-weight: 400;
-    font-size: 1.0rem;
+    font-size: 0.75rem;
     line-height: 100%;
+    white-space: nowrap;
 }
 #screen-header .segment:first-child
 {
@@ -103,6 +104,7 @@ button
     left: 0px;
     z-index: -100;
     mix-blend-mode: difference;
+    will-change: background-color background-image background-position background-size;
 }
 #screen-body button
 {
@@ -147,7 +149,7 @@ button
     cursor: pointer;
     transition: opacity 1000ms;
     font-family: Courier;
-    font-size: 1.0rem;
+    font-size: 0.75rem;
 }
 #screen-body .option-panel label
 {
@@ -155,6 +157,7 @@ button
     flex-direction: row;
     justify-content: start;
     align-items: center;
+    font-size: 0.75rem;
 }
 #screen-body .option-panel select
 {
@@ -164,7 +167,7 @@ button
     border-radius: 0.5rem;
     padding: 0.25rem;
     font-family: Courier;
-    font-size: 1.0rem;
+    font-size: 0.75rem;
     flex-grow: 1;
 }
 #screen-body #fps
@@ -183,8 +186,10 @@ button
     cursor: pointer;
     transition: opacity 1000ms;
     font-family: Courier;
+    font-size: 0.75rem;
     text-align: right;
     white-space: pre;
+    will-change: contents;
 }
 #screen-body #fps:empty
 {
@@ -306,6 +311,7 @@ body.immersive #screen-body #powered-by
         </label>
         <label for="layers"><select id="layer"></select></label>
         <label for="span"><select id="span"></select></label>
+        <label for="easing"><input id="easing" type="checkbox">Easing</label>
         <label for="with-fullscreen"><input id="with-fullscreen" type="checkbox">FullScreen</label>
         <label for="show-fps"><input id="show-fps" type="checkbox">Show FPS</label>
     </div>
@@ -419,7 +425,7 @@ window.module.sequentialLoad
         const phi = 1.618033988749895;
         let startAt = 0;
         let offsetAt = 0;
-        let span = 5000;
+        let span = 12000;
         let h = Math.random();
         let hueUnit = 1 / phiColors.phi;
         let defaultLightness = 0.5;
@@ -512,9 +518,9 @@ window.module.sequentialLoad
             frameTimings.push(now);
             return result;
         };
-        const easing = (t) => t <= 0.5 ?
-            2 *Math.pow(t, 2):
-            1 -(2 *Math.pow(1 -t, 2));
+        const easingCheckbox = document.getElementById("easing");
+        //easingCheckbox.checked = true;
+        let easing;
         let layers = [];
         const getStep = (universalStep, layer) => universalStep -(layer.mile +layer.offset);
         const animation = (now) =>
@@ -549,8 +555,8 @@ window.module.sequentialLoad
                             switch (document.getElementById("mode").value ?? "colorful")
                             {
                                 case "colorful":
-                                    i.arguments.foregroundColor = makeColor(1.0 +i.mile +i.offset, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
-                                    i.arguments.backgroundColor = makeColor(0.0 +i.mile +i.offset, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
+                                    i.arguments.foregroundColor = makeColor(1.0 +i.mile +i.offset, 0.6);//, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
+                                    i.arguments.backgroundColor = makeColor(0.0 +i.mile +i.offset, 0.6);//, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
                                     break;
                                 case "monochrome":
                                     i.arguments.foregroundColor = 0 === (i.mile %2) ? "black": "white";
@@ -702,6 +708,11 @@ window.module.sequentialLoad
                                 arguments: layers[ix]?.arguments,
                             })
                         );
+                        easing = easingCheckbox.checked ?
+                            (t) => t <= 0.5 ?
+                                2 *Math.pow(t, 2):
+                                1 -(2 *Math.pow(1 -t, 2)):
+                            (t) => t;
                     }
                     window.requestAnimationFrame
                     (
