@@ -103,8 +103,15 @@ button
     bottom: 0px;
     left: 0px;
     z-index: -100;
+    will-change: mix-blend-mode, background-color, background-image, background-position, background-size;
+}
+#screen-body.difference-mix .canvas
+{
     mix-blend-mode: difference;
-    will-change: background-color, background-image, background-position, background-size;
+}
+#screen-body.exclusion-mix .canvas
+{
+    mix-blend-mode: exclusion;
 }
 #screen-body button
 {
@@ -320,13 +327,14 @@ body.immersive #screen-body #powered-by
         <label for="mode">
             Mode:
             <select id="mode">
-                <option value="colorful">colorful</option>
-                <option value="monochrome">mono</option>
-                <option value="dark">dark</option>
+                <option value="monochrome">monochrome</option>
+                <option value="primary-colors">primary-colors</option>
+                <option value="phi-colors">phi-colors</option>
             </select>
         </label>
         <label for="layers">Layers: <select id="layer"></select></label>
         <label for="span">Span: <select id="span"></select></label>
+        <label for=""bottom-fps">Bottom FPS: <select id="bottom-fps"></select></label>
         <label for="easing">Easing: <input id="easing" type="checkbox"></label>
         <label for="with-fullscreen">FullScreen: <input id="with-fullscreen" type="checkbox"></label>
         <label for="show-fps">Show FPS: <input id="show-fps" type="checkbox"></label>
@@ -358,11 +366,19 @@ window.module.sequentialLoad
         const { phiColors } = require("phi-colors");
         const config =
         {
+            modeDefault: "phi-colors",
+            colors:
+            {
+                monochrome: [ "black", "white", ],
+                //primaryColors: [ "red", "green", "blue", ],
+                primaryColors: [ "red", "yellow", "green", "cyan", "blue", "magenta", ],
+            },
             patternDefault: "multi",
             layersEnum: [ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, ],
             layersDefault: 23,
+            bottomFpsEnum: [ 1, 1.5, 3, 5, 10, 15, 20, 25, ],
+            bottomFpsDefault: 15,
             autoAdjustLayersCoolTime: 1500,
-            autoAdjustLayersThresholdFps: 7.5,
             spanEnum: [ 1000, 3000, 5000, 12000, 30000, 60000, 180000, ],
             spanDefault: 12000,
             intervalSizeMinRate: 0.03,
@@ -404,6 +420,7 @@ window.module.sequentialLoad
         };
         const makeRandomInteger = (size) => Math.floor(Math.random() *size);
         const randomSelect = (list) => list[makeRandomInteger(list.length)];
+        const indexSelect = (list, ix) => list[ix %list.length];
         const makeRandomSpotArguments = (type, intervalSize) =>
         ({
             type,
@@ -506,6 +523,7 @@ window.module.sequentialLoad
                 )
             );
         document.getElementsByClassName("canvas")[0].style.setProperty("background-color", makeColor(0));
+        document.getElementById("mode").value = config.modeDefault;
         const makeSelectOption = (value, text) =>
         {
             const option = document.createElement("option");
@@ -525,6 +543,12 @@ window.module.sequentialLoad
             i => spanSelect.appendChild(makeSelectOption(i, `${i /1000}s`))
         );
         spanSelect.value = span;
+        bottomFpsSelect = document.getElementById("bottom-fps");
+        config.bottomFpsEnum.forEach
+        (
+            i => bottomFpsSelect.appendChild(makeSelectOption(i, `${i}`))
+        );
+        bottomFpsSelect.value = config.bottomFpsDefault;
         const fpsCalcUnit = 5;
         let frameTimings = [];
         let fpsHistory = [];
@@ -574,12 +598,13 @@ window.module.sequentialLoad
                 result = currentMaxFps.text +" (max)\n" + current.text + " (now)\n" +currentMinFps.text +" (min)";
                 if
                 (
-                    1 < layers.length &&
+                    7 < layers.length &&
                     (lastChangedLayersAt +config.autoAdjustLayersCoolTime) <= now &&
-                    currentMaxFps.fps < config.autoAdjustLayersThresholdFps
+                    currentMaxFps.fps < parseFloat(bottomFpsSelect.value)
                 )
                 {
-                    const newLayers = Math.max(...config.layersEnum.filter(i => i < layers.length));
+                    const newLayersNominated = layers.length *currentMaxFps.fps /config.autoAdjustLayersThresholdFps;
+                    const newLayers = Math.max(7, ...config.layersEnum.filter(i => i < newLayersNominated));
                     document.getElementById("layer").value = newLayers.toString();
                     console.log(`fps: ${current.text}, layers: ${layers.length} -> ${newLayers}`);
                     updateLayers(newLayers);
@@ -629,20 +654,20 @@ window.module.sequentialLoad
                                 ++i.mile;
                                 step = getStep(universalStep, i);
                             }
-                            switch (document.getElementById("mode").value ?? "colorful")
+                            switch (document.getElementById("mode").value ?? "phi-colors")
                             {
-                                case "colorful":
-                                    i.arguments.foregroundColor = makeColor(1.0 +i.mile +i.offset, 0.6);//, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
-                                    i.arguments.backgroundColor = makeColor(0.0 +i.mile +i.offset, 0.6);//, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
-                                    break;
-                                case "monochrome":
-                                    i.arguments.foregroundColor = 0 === (i.mile %2) ? "black": "white";
-                                    i.arguments.backgroundColor = 0 === (i.mile %2) ? "white": "black";
-                                    break;
-                                case "dark":
-                                    i.arguments.foregroundColor = makeColor(1.0, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
-                                    i.arguments.backgroundColor = makeColor(0.0, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
-                                    break;
+                            case "monochrome":
+                                i.arguments.backgroundColor = indexSelect(config.colors.monochrome, i.mile );
+                                i.arguments.foregroundColor = indexSelect(config.colors.monochrome, i.mile +1);
+                                break;
+                            case "primary-colors":
+                                i.arguments.backgroundColor = indexSelect(config.colors.primaryColors, ix +i.mile);
+                                i.arguments.foregroundColor = indexSelect(config.colors.primaryColors, ix +i.mile +1);
+                                break;
+                            case "phi-colors":
+                                i.arguments.backgroundColor = makeColor(0.0 +i.mile +i.offset, 0.6);//, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
+                                i.arguments.foregroundColor = makeColor(1.0 +i.mile +i.offset, 0.6);//, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
+                                break;
                             }
                             if (i.mile <= 0 && 0 < i.offset)
                             {
@@ -782,10 +807,10 @@ window.module.sequentialLoad
                         span = newSpan;
                     }
                     const newLayers = parseInt(document.getElementById("layer").value);
-                    if (layers.length !== newLayers)
-                    {
-                        updateLayers(newLayers);
-                    }
+                    updateLayers(newLayers);
+                    screenBody.className = "monochrome" === document.getElementById("mode").value ?
+                        "exclusion-mix":
+                        "difference-mix";
                     easing = easingCheckbox.checked ?
                         (t) => t <= 0.5 ?
                             2 *Math.pow(t, 2):
