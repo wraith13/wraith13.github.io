@@ -135,16 +135,16 @@ button
 #screen-body .option-panel
 {
     position: absolute;
-    top: 3rem;
-    left: 1rem;
+    top: 2.5rem;
+    left: 0.5rem;
+    width: 33%;
+    min-width: 240px;
+    max-width: 360px;
     color: rgb(230, 237, 243);
-    background-color: rgba(1,4, 9, 0.6);
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    padding-right: 1.0rem;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: start;
     align-items: stretch;
     cursor: pointer;
     transition: opacity 1000ms;
@@ -155,9 +155,16 @@ button
 {
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: space-between;
     align-items: center;
     font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    margin-bottom: 0.125rem;
+    margin-right: 0.25rem;
+    background-color: rgba(1,4, 9, 0.6);
+    border-radius: 0.25rem;
+    height: 1.5rem;
+    flex-grow: 1;
 }
 #screen-body .option-panel select
 {
@@ -168,7 +175,7 @@ button
     padding: 0.25rem;
     font-family: Courier;
     font-size: 0.75rem;
-    flex-grow: 1;
+    text-align: right;
 }
 #screen-body #fps
 {
@@ -302,18 +309,27 @@ body.immersive #screen-body #powered-by
         </svg>
     </button>
     <div class="option-panel">
+        <label for="pattern">
+            Pattern:
+            <select id="pattern">
+                <option value="lines">lines</option>
+                <option value="spots">spots</option>
+                <option value="multi">multi</option>
+            </select>
+        </label>
         <label for="mode">
+            Mode:
             <select id="mode">
                 <option value="colorful">colorful</option>
-                <option value="monochrome">monochrome</option>
+                <option value="monochrome">mono</option>
                 <option value="dark">dark</option>
             </select>
         </label>
-        <label for="layers"><select id="layer"></select></label>
-        <label for="span"><select id="span"></select></label>
-        <label for="easing"><input id="easing" type="checkbox">Easing</label>
-        <label for="with-fullscreen"><input id="with-fullscreen" type="checkbox">FullScreen</label>
-        <label for="show-fps"><input id="show-fps" type="checkbox">Show FPS</label>
+        <label for="layers">Layers: <select id="layer"></select></label>
+        <label for="span">Span: <select id="span"></select></label>
+        <label for="easing">Easing: <input id="easing" type="checkbox"></label>
+        <label for="with-fullscreen">FullScreen: <input id="with-fullscreen" type="checkbox"></label>
+        <label for="show-fps">Show FPS: <input id="show-fps" type="checkbox"></label>
     </div>
     <div id="fps"></div>
     <div id="powered-by">
@@ -342,12 +358,15 @@ window.module.sequentialLoad
         const { phiColors } = require("phi-colors");
         const config =
         {
-            layersEnum: [ 1, 3, 5, 7, 13, 23, 47, 97, ],
-            layersDefault: 7,
-            autoAdjustLayersCoolTime: 2500,
-            autoAdjustLayersThreshold: 5.0,
+            patternDefault: "multi",
+            layersEnum: [ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, ],
+            layersDefault: 23,
+            autoAdjustLayersCoolTime: 1500,
+            autoAdjustLayersThresholdFps: 7.5,
             spanEnum: [ 1000, 3000, 5000, 12000, 30000, 60000, 180000, ],
             spanDefault: 12000,
+            intervalSizeMinRate: 0.03,
+            intervalSizeMaxRate: 0.6,
         };
         const diagonalSize = Math.sqrt(Math.pow(window.innerWidth, 2) +Math.pow(window.innerHeight, 2));
         const rate = (min, max) => (r) => min + ((max -min) *r);
@@ -414,16 +433,45 @@ window.module.sequentialLoad
             makeRandomLineArguments("diline", intervalSize);
         const makeRandomTrilineArguments = (intervalSize) =>
             makeRandomLineArguments("triline", intervalSize);
+        const getPatterns = () =>
+        {
+            switch (document.getElementById("pattern").value)
+            {
+                case "lines":
+                    return [
+                        makeRandomStripeArguments,
+                        makeRandomDilineArguments,
+                        makeRandomTrilineArguments,
+                    ];
+                case "spots":
+                    return [
+                        makeRandomTrispotArguments,
+                        makeRandomTetraspotArguments,
+                    ];
+                case "multi":
+                default:
+                    return [
+                        makeRandomStripeArguments,
+                        makeRandomDilineArguments,
+                        makeRandomTrilineArguments,
+                        makeRandomTrispotArguments,
+                        makeRandomTetraspotArguments,
+                    ];
+            }
+        };
         const makeRandomArguments = () => randomSelect
-            ([
-                makeRandomTrispotArguments,
-                makeRandomTetraspotArguments,
-                makeRandomStripeArguments,
-                makeRandomDilineArguments,
-                makeRandomTrilineArguments,
-            ])
-            (rate(diagonalSize /50, diagonalSize /1.5)(1.0 -Math.pow(Math.random(), 1)));
+            (getPatterns())
+            (
+                rate
+                (
+                    diagonalSize *config.intervalSizeMinRate,
+                    diagonalSize *config.intervalSizeMaxRate
+                )
+                (1.0 -Math.pow(Math.random(), 1))
+            );
         const screenBody = document.getElementById("screen-body");
+        const patternSelect = document.getElementById("pattern");
+        patternSelect.value = config.patternDefault;
         const withFullscreen = document.getElementById("with-fullscreen");
         const showFPS = document.getElementById("show-fps");
         const fullscreenEnabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
@@ -468,13 +516,13 @@ window.module.sequentialLoad
         const layersSelect = document.getElementById("layer");
         config.layersEnum.forEach
         (
-            i => layersSelect.appendChild(makeSelectOption(i, `layers: ${i}`))
+            i => layersSelect.appendChild(makeSelectOption(i, `${i}`))
         );
         layersSelect.value = config.layersDefault;
         spanSelect = document.getElementById("span");
         config.spanEnum.forEach
         (
-            i => spanSelect.appendChild(makeSelectOption(i, `span: ${i /1000}s`))
+            i => spanSelect.appendChild(makeSelectOption(i, `${i /1000}s`))
         );
         spanSelect.value = span;
         const fpsCalcUnit = 5;
@@ -528,7 +576,7 @@ window.module.sequentialLoad
                 (
                     1 < layers.length &&
                     (lastChangedLayersAt +config.autoAdjustLayersCoolTime) <= now &&
-                    currentMaxFps.fps < config.autoAdjustLayersThreshold
+                    currentMaxFps.fps < config.autoAdjustLayersThresholdFps
                 )
                 {
                     const newLayers = Math.max(...config.layersEnum.filter(i => i < layers.length));
@@ -536,6 +584,7 @@ window.module.sequentialLoad
                     console.log(`fps: ${current.text}, layers: ${layers.length} -> ${newLayers}`);
                     updateLayers(newLayers);
                     lastChangedLayersAt = now;
+                    resetFps();
                 }
             }
             frameTimings.push(now);
