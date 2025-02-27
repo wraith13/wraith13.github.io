@@ -27,7 +27,7 @@ button
     margin: 0px;
     padding: 0px;
     color: rgb(230,237,243);
-    background-color: rgb(1,4,9, 0.8);
+    background-color: rgb(32, 28, 38, 0.8);
     position: fixed;
     width: 100%;
     z-index: 900;
@@ -96,6 +96,15 @@ button
     align-items: center;
     background-color: black;
 }
+#top-coat
+{
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    z-index: -1;
+}
 #screen-body .canvas
 {
     position: fixed;
@@ -109,7 +118,7 @@ button
 }
 #screen-body button
 {
-    background-color: rgba(1,4, 9, 0.6);
+    background-color: rgba(32, 28, 38, 0.6);
     border-radius: 1.5rem;
     padding: 1.5rem;
     transition: opacity 1000ms;
@@ -125,7 +134,7 @@ button
 {
     #screen-body button:hover
     {
-        background-color: rgba(1,4, 9, 0.8);
+        background-color: rgba(32, 28, 38, 0.8);
     }
     #screen-body button:hover svg
     {
@@ -162,7 +171,7 @@ button
     padding: 0.125rem 0.5rem;
     margin-bottom: 0.125rem;
     margin-right: 0.25rem;
-    background-color: rgba(1,4, 9, 0.6);
+    background-color: rgba(32, 28, 38, 0.6);
     border-radius: 0.25rem;
     height: 1.5rem;
     flex-grow: 1;
@@ -184,7 +193,7 @@ button
     top: 1rem;
     right: 1rem;
     color: rgb(230, 237, 243);
-    background-color: rgba(1,4, 9, 0.6);
+    background-color: rgba(32, 28, 38, 0.6);
     border-radius: 0.5rem;
     padding: 0.5rem 1.0rem;
     display: flex;
@@ -209,7 +218,7 @@ button
     bottom: 1rem;
     right: 1rem;
     color: rgb(230, 237, 243);
-    background-color: rgba(1,4, 9, 0.6);
+    background-color: rgba(32, 28, 38, 0.6);
     border-radius: 0.5rem;
     padding: 0.5rem 1.0rem;
     display: block;
@@ -344,6 +353,7 @@ body.immersive #screen-body #powered-by
         </ul>
     </div>
     <div class="canvas"></div>
+    <div id="top-coat"></div>
 </div>
 <script src="https://wraith13.github.io/evil-commonjs/index.js"></script>
 <script>
@@ -378,7 +388,7 @@ window.module.sequentialLoad
             intervalSizeMinRate: 0.03,
             intervalSizeMaxRate: 0.6,
         };
-        const diagonalSize = Math.sqrt(Math.pow(window.innerWidth, 2) +Math.pow(window.innerHeight, 2));
+        const getDiagonalSize = () => Math.sqrt(Math.pow(window.innerWidth, 2) +Math.pow(window.innerHeight, 2));
         const rate = (min, max) => (r) => min + ((max -min) *r);
         const valueToString = (value) => undefined === value ? "undefined": JSON.stringify(value);
         const stringify = (value) =>
@@ -470,17 +480,22 @@ window.module.sequentialLoad
                     ];
             }
         };
-        const makeRandomArguments = () => randomSelect
-            (getPatterns())
+        const makeRandomArguments = () =>
+        {
+            const diagonalSize = getDiagonalSize();
+            const result = randomSelect(getPatterns())
             (
                 rate
                 (
                     diagonalSize *config.intervalSizeMinRate,
                     diagonalSize *config.intervalSizeMaxRate
                 )
-                (1.0 -Math.pow(Math.random(), 1))
+                (Math.random())
             );
+            return result;
+        };
         const screenBody = document.getElementById("screen-body");
+        const topCoat = document.getElementById("top-coat");
         const patternSelect = document.getElementById("pattern");
         patternSelect.value = config.patternDefault;
         const withFullscreen = document.getElementById("with-fullscreen");
@@ -620,14 +635,11 @@ window.module.sequentialLoad
                         {
                             if (1.0 <= step || undefined === i.arguments)
                             {
+                                const oldForegroundColor = i.arguments?.foregroundColor ?? "black";
                                 i.arguments = Object.assign
                                 (
                                     {},
-                                    layers[ix -1]?.arguments ?? makeRandomArguments
-                                    (
-                                        makeColor(1.0),
-                                        makeColor(0.0)
-                                    )
+                                    layers[ix -1]?.arguments ?? makeRandomArguments()
                                 );
                                 while(1.0 <= step)
                                 {
@@ -637,26 +649,16 @@ window.module.sequentialLoad
                                 switch (document.getElementById("mode").value ?? "phi-colors")
                                 {
                                 case "monochrome":
-                                    i.arguments.backgroundColor = indexSelect(config.colors.monochrome, i.mile );
-                                    i.arguments.foregroundColor = indexSelect(config.colors.monochrome, i.mile +1);
+                                    i.arguments.foregroundColor = indexSelect(config.colors.monochrome, i.mile +1.0);
                                     break;
                                 case "primary-colors":
-                                    i.arguments.backgroundColor = indexSelect(config.colors.primaryColors, ix +i.mile);
-                                    i.arguments.foregroundColor = indexSelect(config.colors.primaryColors, ix +i.mile +1);
+                                    i.arguments.foregroundColor = indexSelect(config.colors.primaryColors, ix +i.mile);
                                     break;
                                 case "phi-colors":
-                                    i.arguments.backgroundColor = makeColor(0.0 +i.mile +i.offset, 0.6);//, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
-                                    i.arguments.foregroundColor = makeColor(1.0 +i.mile +i.offset, 0.6);//, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
+                                    i.arguments.foregroundColor = makeColor(i.mile +i.offset, 0.6);
                                     break;
                                 }
-                                if (i.mile <= 0)
-                                {
-                                    i.arguments.backgroundColor = "black";
-                                }
-                            }
-                            if (i.mile <= 0 && 0 < i.offset)
-                            {
-                                i.arguments.backgroundColor = "black";
+                                i.arguments.backgroundColor = oldForegroundColor;
                             }
                             i.arguments.depth = easing(step);
                             FlounderStyle.setStyle(i.canvas, i.arguments);
@@ -714,7 +716,7 @@ window.module.sequentialLoad
                 );
             }
         }
-        screenBody.addEventListener
+        topCoat.addEventListener
         (
             "click",
             event =>
