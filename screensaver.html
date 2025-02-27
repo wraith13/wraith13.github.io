@@ -94,6 +94,7 @@ button
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: black;
 }
 #screen-body .canvas
 {
@@ -103,15 +104,8 @@ button
     bottom: 0px;
     left: 0px;
     z-index: -100;
-    will-change: mix-blend-mode, background-color, background-image, background-position, background-size;
-}
-#screen-body.difference-mix .canvas
-{
     mix-blend-mode: difference;
-}
-#screen-body.exclusion-mix .canvas
-{
-    mix-blend-mode: exclusion;
+    will-change: mix-blend-mode, background-color, background-image, background-position, background-size;
 }
 #screen-body button
 {
@@ -334,7 +328,7 @@ body.immersive #screen-body #powered-by
         </label>
         <label for="layers">Layers: <select id="layer"></select></label>
         <label for="span">Span: <select id="span"></select></label>
-        <label for=""bottom-fps">Bottom FPS: <select id="bottom-fps"></select></label>
+        <label for="fuse-fps">Fuse FPS: <select id="fuse-fps"></select></label>
         <label for="easing">Easing: <input id="easing" type="checkbox"></label>
         <label for="with-fullscreen">FullScreen: <input id="with-fullscreen" type="checkbox"></label>
         <label for="show-fps">Show FPS: <input id="show-fps" type="checkbox"></label>
@@ -376,10 +370,10 @@ window.module.sequentialLoad
             patternDefault: "multi",
             layersEnum: [ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, ],
             layersDefault: 23,
-            bottomFpsEnum: [ 1, 1.5, 3, 5, 10, 15, 20, 25, ],
-            bottomFpsDefault: 15,
+            fuseFpsEnum: [ 1, 1.5, 3, 5, 10, 15, 20, 25, ],
+            fuseFpsDefault: 3,
             autoAdjustLayersCoolTime: 1500,
-            spanEnum: [ 1000, 3000, 5000, 12000, 30000, 60000, 180000, ],
+            spanEnum: [ 1000, 3000, 5000, 12000, 30000, 60000, 180000, 300000, 900000, ],
             spanDefault: 12000,
             intervalSizeMinRate: 0.03,
             intervalSizeMaxRate: 0.6,
@@ -522,7 +516,6 @@ window.module.sequentialLoad
                     })
                 )
             );
-        document.getElementsByClassName("canvas")[0].style.setProperty("background-color", makeColor(0));
         document.getElementById("mode").value = config.modeDefault;
         const makeSelectOption = (value, text) =>
         {
@@ -543,12 +536,12 @@ window.module.sequentialLoad
             i => spanSelect.appendChild(makeSelectOption(i, `${i /1000}s`))
         );
         spanSelect.value = span;
-        bottomFpsSelect = document.getElementById("bottom-fps");
-        config.bottomFpsEnum.forEach
+        const fuseFpsSelect = document.getElementById("fuse-fps");
+        config.fuseFpsEnum.forEach
         (
-            i => bottomFpsSelect.appendChild(makeSelectOption(i, `${i}`))
+            i => fuseFpsSelect.appendChild(makeSelectOption(i, `${i}`))
         );
-        bottomFpsSelect.value = config.bottomFpsDefault;
+        fuseFpsSelect.value = config.fuseFpsDefault;
         const fpsCalcUnit = 5;
         let frameTimings = [];
         let fpsHistory = [];
@@ -559,7 +552,6 @@ window.module.sequentialLoad
         };
         const makeFpsText = (fps) =>
             `${fps.toLocaleString("en-US", { useGrouping: false, maximumFractionDigits: 2, minimumFractionDigits: 2, })} fps`;
-        let lastChangedLayersAt = 0;
         const getFpsText = (now) =>
         {
             let result = "";
@@ -596,20 +588,9 @@ window.module.sequentialLoad
                     }
                 );
                 result = currentMaxFps.text +" (max)\n" + current.text + " (now)\n" +currentMinFps.text +" (min)";
-                if
-                (
-                    7 < layers.length &&
-                    (lastChangedLayersAt +config.autoAdjustLayersCoolTime) <= now &&
-                    currentMaxFps.fps < parseFloat(bottomFpsSelect.value)
-                )
+                if (currentMaxFps.fps < parseFloat(fuseFpsSelect.value))
                 {
-                    const newLayersNominated = layers.length *currentMaxFps.fps /config.autoAdjustLayersThresholdFps;
-                    const newLayers = Math.max(7, ...config.layersEnum.filter(i => i < newLayersNominated));
-                    document.getElementById("layer").value = newLayers.toString();
-                    console.log(`fps: ${current.text}, layers: ${layers.length} -> ${newLayers}`);
-                    updateLayers(newLayers);
-                    lastChangedLayersAt = now;
-                    resetFps();
+                    pause();
                 }
             }
             frameTimings.push(now);
@@ -648,26 +629,30 @@ window.module.sequentialLoad
                                         makeColor(0.0)
                                     )
                                 );
-                            }
-                            while(1.0 <= step)
-                            {
-                                ++i.mile;
-                                step = getStep(universalStep, i);
-                            }
-                            switch (document.getElementById("mode").value ?? "phi-colors")
-                            {
-                            case "monochrome":
-                                i.arguments.backgroundColor = indexSelect(config.colors.monochrome, i.mile );
-                                i.arguments.foregroundColor = indexSelect(config.colors.monochrome, i.mile +1);
-                                break;
-                            case "primary-colors":
-                                i.arguments.backgroundColor = indexSelect(config.colors.primaryColors, ix +i.mile);
-                                i.arguments.foregroundColor = indexSelect(config.colors.primaryColors, ix +i.mile +1);
-                                break;
-                            case "phi-colors":
-                                i.arguments.backgroundColor = makeColor(0.0 +i.mile +i.offset, 0.6);//, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
-                                i.arguments.foregroundColor = makeColor(1.0 +i.mile +i.offset, 0.6);//, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
-                                break;
+                                while(1.0 <= step)
+                                {
+                                    ++i.mile;
+                                    step = getStep(universalStep, i);
+                                }
+                                switch (document.getElementById("mode").value ?? "phi-colors")
+                                {
+                                case "monochrome":
+                                    i.arguments.backgroundColor = indexSelect(config.colors.monochrome, i.mile );
+                                    i.arguments.foregroundColor = indexSelect(config.colors.monochrome, i.mile +1);
+                                    break;
+                                case "primary-colors":
+                                    i.arguments.backgroundColor = indexSelect(config.colors.primaryColors, ix +i.mile);
+                                    i.arguments.foregroundColor = indexSelect(config.colors.primaryColors, ix +i.mile +1);
+                                    break;
+                                case "phi-colors":
+                                    i.arguments.backgroundColor = makeColor(0.0 +i.mile +i.offset, 0.6);//, defaultLightness *(1.0 -(Math.pow(step, 2.0) *0.25)));
+                                    i.arguments.foregroundColor = makeColor(1.0 +i.mile +i.offset, 0.6);//, rate(defaultLightness, 1.0)(Math.pow(1.0 -step, 2.0)));
+                                    break;
+                                }
+                                if (i.mile <= 0)
+                                {
+                                    i.arguments.backgroundColor = "black";
+                                }
                             }
                             if (i.mile <= 0 && 0 < i.offset)
                             {
@@ -808,9 +793,6 @@ window.module.sequentialLoad
                     }
                     const newLayers = parseInt(document.getElementById("layer").value);
                     updateLayers(newLayers);
-                    screenBody.className = "monochrome" === document.getElementById("mode").value ?
-                        "exclusion-mix":
-                        "difference-mix";
                     easing = easingCheckbox.checked ?
                         (t) => t <= 0.5 ?
                             2 *Math.pow(t, 2):
