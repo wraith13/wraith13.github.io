@@ -35,7 +35,7 @@ button
     flex-direction: row;
     justify-content: start;
     align-items: center;
-    transition: margin-top 500ms;
+    transition: transform 500ms;
 }
 #screen-header a
 {
@@ -95,6 +95,20 @@ button
     justify-content: center;
     align-items: center;
     background-color: black;
+}
+#screen-footer
+{
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    z-index: 100;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: stretch;
+    transition: transform 500ms;
 }
 #top-coat
 {
@@ -212,51 +226,64 @@ button
 {
     display: none;
 }
-#screen-body #powered-by
+#screen-footer #powered-by-line
 {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
+    display: block;
+}
+#screen-footer #powered-by-line #powered-by
+{
+    margin: 1rem;
     color: rgb(230, 237, 243);
     background-color: rgba(32, 28, 38, 0.6);
     border-radius: 0.5rem;
     padding: 0.5rem 1.0rem;
-    display: block;
+    display: inline-block;
     cursor: pointer;
     transition: opacity 1000ms;
     font-family: Courier;
     font-size: 0.75rem;
     text-align: left;
+    float: right;
 }
-#screen-body #powered-by .title
+#screen-footer #powered-by .title
 {
     display: block;
     margin: 0px;
     padding: 0px;
 }
-#screen-body #powered-by ul
+#screen-footer #powered-by ul
 {
     display: block;
     margin: 0px;
     padding: 0px;
     padding-left: 1.0rem;
 }
-#screen-body #powered-by ul li
+#screen-footer #powered-by ul li
 {
     display: block;
     margin: 0px;
     padding: 0px;
 }
-#screen-body #powered-by ul li a
+#screen-footer #powered-by ul li a
 {
     color: rgba(230, 237, 243, 0.7);
 }
 @media (hover: hover)
 {
-    #screen-body #powered-by ul li a:hover
+    #screen-footer #powered-by ul li a:hover
     {
         color: rgb(230, 237, 243);
     }
+}
+#screen-footer #information-line
+{
+    background-color: rgb(32, 28, 38, 0.8);
+}
+#screen-footer #information-line #information
+{
+    color: rgb(230,237,243);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 0.75rem;
 }
 #screen-body .option-panel input
 {
@@ -265,7 +292,7 @@ button
 }
 body.immersive #screen-header
 {
-    margin-top: -2.5rem;
+    transform: translate(0px, -100%);
 }
 body.immersive:not(.mousemove) #screen-body
 {
@@ -297,27 +324,15 @@ body:not(.immersive) #screen-body #fps
 {
     display: none;
 }
-body.immersive #screen-body #powered-by
+body.immersive #screen-footer
 {
-    display: none;
+    transform: translate(0px, 100%);
 }
 </style>
 </head>
 <body>
 <h1 id="screen-header"><a class="segment" href="https://github.com/"><span>GitHub</span></a><a class="segment" href="https://github.com/wraith13"><span>wraith13</span></a><a class="segment" href="https://wraith13.github.io/"><span>wraith13.github.io</span></a><a class="segment" href="https://github.com/wraith13/wraith13.github.io/blob/master/screensaver.html"><span>screen saver</a></div></h1>
 <div id="screen-body">
-    <button id="play-button">
-        <svg width="100%" height="100%" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-            <g transform="matrix(1,0,0,1,-20.52,-0.152764)">
-                <path d="M277.128,192.306L277.129,192C277.294,169.198 295.857,150.737 318.698,150.737C326.626,150.737 334.038,152.961 340.345,156.819L893.467,476.149L893.46,476.161C906.034,483.312 914.523,496.833 914.523,512.321C914.523,529.423 904.173,544.126 889.4,550.504L340.335,867.492C339.741,867.855 339.138,868.203 338.526,868.537L336.016,869.985L335.929,869.834C330.678,872.232 324.842,873.568 318.697,873.568C295.755,873.568 277.128,854.942 277.128,832L277.128,192.306Z"/>
-            </g>
-        </svg>
-        <svg width="100%" height="100%" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-            <g transform="matrix(1.17021,0,0,1.125,-75.5745,-64)">
-                <path d="M444,291.176L444,732.824C444,752.238 428.847,768 410.183,768L289.817,768C271.153,768 256,752.238 256,732.824L256,291.176C256,271.762 271.153,256 289.817,256L410.183,256C428.847,256 444,271.762 444,291.176ZM748.218,291.176L748.218,732.824C748.218,752.238 733.065,768 714.401,768L594.035,768C575.371,768 560.218,752.238 560.218,732.824L560.218,291.176C560.218,271.762 575.371,256 594.035,256L714.401,256C733.065,256 748.218,271.762 748.218,291.176Z"/>
-            </g>
-        </svg>
-    </button>
     <div class="option-panel">
         <label for="pattern">
             Pattern:
@@ -343,17 +358,43 @@ body.immersive #screen-body #powered-by
         <label for="show-fps">Show FPS: <input id="show-fps" type="checkbox"></label>
     </div>
     <div id="fps"></div>
-    <div id="powered-by">
-        <span class="title">powered by</span>
-        <ul>
-            <li><a href="https://github.com/wraith13/evil-commonjs">evil-commonjs</a></li>
-            <li><a href="https://github.com/wraith13/evil-timer.js">evil-timer.js</a></li>
-            <li><a href="https://github.com/wraith13/flounder.style.js">flounder.style.js</a></li>
-            <li><a href="https://github.com/wraith13/phi-colors">phi-colors</a></li>
-        </ul>
-    </div>
+    <button id="play-button">
+        <svg width="100%" height="100%" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+            <g transform="matrix(1,0,0,1,-20.52,-0.152764)">
+                <path d="M277.128,192.306L277.129,192C277.294,169.198 295.857,150.737 318.698,150.737C326.626,150.737 334.038,152.961 340.345,156.819L893.467,476.149L893.46,476.161C906.034,483.312 914.523,496.833 914.523,512.321C914.523,529.423 904.173,544.126 889.4,550.504L340.335,867.492C339.741,867.855 339.138,868.203 338.526,868.537L336.016,869.985L335.929,869.834C330.678,872.232 324.842,873.568 318.697,873.568C295.755,873.568 277.128,854.942 277.128,832L277.128,192.306Z"/>
+            </g>
+        </svg>
+        <svg width="100%" height="100%" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+            <g transform="matrix(1.17021,0,0,1.125,-75.5745,-64)">
+                <path d="M444,291.176L444,732.824C444,752.238 428.847,768 410.183,768L289.817,768C271.153,768 256,752.238 256,732.824L256,291.176C256,271.762 271.153,256 289.817,256L410.183,256C428.847,256 444,271.762 444,291.176ZM748.218,291.176L748.218,732.824C748.218,752.238 733.065,768 714.401,768L594.035,768C575.371,768 560.218,752.238 560.218,732.824L560.218,291.176C560.218,271.762 575.371,256 594.035,256L714.401,256C733.065,256 748.218,271.762 748.218,291.176Z"/>
+            </g>
+        </svg>
+    </button>
     <div class="canvas"></div>
     <div id="top-coat"></div>
+</div>
+<div id="screen-footer">
+    <div id="powered-by-line">
+        <div id="powered-by">
+            <span class="title">powered by</span>
+            <ul>
+                <li><a href="https://github.com/wraith13/evil-commonjs">evil-commonjs</a></li>
+                <li><a href="https://github.com/wraith13/evil-timer.js">evil-timer.js</a></li>
+                <li><a href="https://github.com/wraith13/flounder.style.js">flounder.style.js</a></li>
+                <li><a href="https://github.com/wraith13/phi-colors">phi-colors</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="information-line">
+        <div id="information">
+            <ul>
+                <li>⚠️ sssss</li>
+                <li>⚠️ sssss</li>
+                <li>⚠️ sssss</li>
+                <li>⚠️ sssss</li>
+            </ul>
+        </div>
+    </div>
 </div>
 <script src="https://wraith13.github.io/evil-commonjs/index.js"></script>
 <script>
@@ -379,7 +420,7 @@ window.module.sequentialLoad
             },
             patternDefault: "multi",
             layersEnum: [ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, ],
-            layersDefault: 23,
+            layersDefault: 17,
             fuseFpsEnum: [ 1, 1.5, 3, 5, 10, 15, 20, 25, ],
             fuseFpsDefault: 3,
             autoAdjustLayersCoolTime: 1500,
