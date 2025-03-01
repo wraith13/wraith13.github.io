@@ -284,6 +284,22 @@ button
     color: rgb(230,237,243);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 0.75rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+#screen-footer #information-line #information ul
+{
+    display: inline-block;
+    list-style: none;
+    margin: 0px;
+    padding: 0.5rem;
+}
+#screen-footer #information-line #information ul li
+{
+    margin: 0px;
+    padding: 0.25rem;
 }
 #screen-body .option-panel input
 {
@@ -335,7 +351,7 @@ body.immersive #screen-footer
 <div id="screen-body">
     <div class="option-panel">
         <label for="pattern">
-            Pattern:
+            <span id="patternLabel">Pattern:</span>
             <select id="pattern">
                 <option value="lines">lines</option>
                 <option value="spots">spots</option>
@@ -387,11 +403,7 @@ body.immersive #screen-footer
     </div>
     <div id="information-line">
         <div id="information">
-            <ul>
-                <li>⚠️ sssss</li>
-                <li>⚠️ sssss</li>
-                <li>⚠️ sssss</li>
-                <li>⚠️ sssss</li>
+            <ul id="information-list">
             </ul>
         </div>
     </div>
@@ -421,13 +433,28 @@ window.module.sequentialLoad
             patternDefault: "multi",
             layersEnum: [ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, ],
             layersDefault: 17,
-            fuseFpsEnum: [ 1, 1.5, 3, 5, 10, 15, 20, 25, ],
-            fuseFpsDefault: 3,
+            fuseFpsEnum: [ 1, 1.5, 3, 5, 7.5, 10, 12.5, 15, 20, 25, ],
+            fuseFpsDefault: 5,
             autoAdjustLayersCoolTime: 1500,
-            spanEnum: [ 1000, 3000, 5000, 12000, 30000, 60000, 180000, 300000, 900000, ],
-            spanDefault: 12000,
+            spanEnum: [ 1000, 3000, 5000, 7500, 10000, 12500, 18000, 30000, 45000, 60000, 90000, 180000, 300000, 900000, ],
+            spanDefault: 7500,
             intervalSizeMinRate: 0.03,
             intervalSizeMaxRate: 0.6,
+            informations:
+            [
+                {
+                    "en": "⚠️ It will automatically stop when FPS(Max) falls below \"Fuse FPS\" to avoid crashing your web browser and OS.",
+                    "ja": "⚠️ あなたの Web ブラウザと OS がクラッシュする事を避ける為に FPS(Max) が \"Fuse FPS\" を下回ると自動停止します。",
+                },
+                {
+                    "en": "⚠️ The larger the \"Layers\", the more delicate the image can be enjoyed, but the load on the machine will also increase.",
+                    "ja": "⚠️ \"Layers\" が大きくなるほど繊細な映像をお楽しみ頂けますが、マシンの負荷も増大します。",
+                },
+                {
+                    "en": "⚠️ \"Pattern\" is heavy on \"spots\" and light on \"lines\".",
+                    "ja": "⚠️ \"Pattern\" は \"spots\" が重く \"lines\" が軽いです。",
+                }
+            ],
         };
         const getDiagonalSize = () => Math.sqrt(Math.pow(window.innerWidth, 2) +Math.pow(window.innerHeight, 2));
         const rate = (min, max) => (r) => min + ((max -min) *r);
@@ -589,7 +616,16 @@ window.module.sequentialLoad
         spanSelect = document.getElementById("span");
         config.spanEnum.forEach
         (
-            i => spanSelect.appendChild(makeSelectOption(i, `${i /1000}s`))
+            i => spanSelect.appendChild
+            (
+                makeSelectOption
+                (
+                    i,
+                    i < 1000 ? `${i}ms`:
+                    i < 60000 ? `${i /1000}s`:
+                    `${i /60000}m`
+                )
+            )
         );
         spanSelect.value = span;
         const fuseFpsSelect = document.getElementById("fuse-fps");
@@ -656,6 +692,18 @@ window.module.sequentialLoad
         //easingCheckbox.checked = true;
         let easing;
         let layers = [];
+        document.getElementsByClassName("canvas")[0].style.setProperty("background-color", makeColor(0.0));
+        let lang = "ja" === navigator.language.substring(0, 2) ? "ja": "en";
+        const informationList = document.getElementById("information-list");
+        config.informations.forEach
+        (
+            i =>
+            {
+                const li = document.createElement("li");
+                li.innerText = i[lang];
+                informationList.appendChild(li);
+            }
+        );
         const getStep = (universalStep, layer) => universalStep -(layer.mile +layer.offset);
         const animation = (now) =>
         {
@@ -676,7 +724,9 @@ window.module.sequentialLoad
                         {
                             if (1.0 <= step || undefined === i.arguments)
                             {
-                                const oldForegroundColor = i.arguments?.foregroundColor ?? "black";
+                                const oldForegroundColor =
+                                    i.arguments?.foregroundColor ??
+                                    (0 === ix ? makeColor(0.0): "black");
                                 i.arguments = Object.assign
                                 (
                                     {},
@@ -693,10 +743,10 @@ window.module.sequentialLoad
                                     i.arguments.foregroundColor = indexSelect(config.colors.monochrome, i.mile +1.0);
                                     break;
                                 case "primary-colors":
-                                    i.arguments.foregroundColor = indexSelect(config.colors.primaryColors, ix +i.mile);
+                                    i.arguments.foregroundColor = indexSelect(config.colors.primaryColors, ix +i.mile +1.0);
                                     break;
                                 case "phi-colors":
-                                    i.arguments.foregroundColor = makeColor(i.mile +i.offset, 0.6);
+                                    i.arguments.foregroundColor = makeColor(i.mile +i.offset +1.0, 0.6);
                                     break;
                                 }
                                 i.arguments.backgroundColor = oldForegroundColor;
